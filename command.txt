@@ -1,0 +1,27 @@
+pip install -r requirements.txt
+pip freeze> requirements.txt
+
+
+
+python -m virtualenv venv
+venv\scripts\activate
+
+
+
+
+python manage.py makemigrations
+python manage.py migrate
+
+
+
+python manage.py runserver 192.168.100.164:8000
+
+
+celery -A ixract.celery worker --pool=solo -l info
+
+ipconfig
+
+
+django-admin startproject projectname
+python manage.py startapp appname
+
