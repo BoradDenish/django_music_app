@@ -13,5 +13,17 @@ class User(models.Model):
     updated_at  = models.DateTimeField(null=True)
 
     class meta:
-        db_table = "user"
+        db_table = "users"
 
+
+class Session(models.Model):
+    session_id      = models.AutoField(primary_key=True)
+    session_email   = models.EmailField(unique=True)
+    session_user    = models.ForeignKey(User, on_delete=models.CASCADE)
+    session_token   = models.TextField()
+    deleted_at      = models.DateTimeField(null=True)
+    created_at      = models.DateTimeField(auto_now=True)
+    updated_at      = models.DateTimeField(null=True)
+
+    class Meta:
+        db_table = "sessions"
