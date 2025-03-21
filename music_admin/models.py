@@ -60,3 +60,26 @@ class Session(models.Model):
             except KeyError:
                 pass
         self.save()
+
+
+class Song(models.Model):
+    title = models.CharField(max_length=255)
+    artist = models.CharField(max_length=255)
+    album = models.CharField(max_length=255, blank=True, null=True)
+    genre = models.CharField(max_length=100, choices=[
+        ("Pop", "Pop"),
+        ("Rock", "Rock"),
+        ("Hip-Hop", "Hip-Hop"),
+        ("Jazz", "Jazz"),
+        ("Classical", "Classical"),
+        ("Electronic", "Electronic"),
+        ("Other", "Other"),
+    ])
+    release_date = models.DateField()
+    cover_image = models.ImageField(upload_to='covers/', blank=True, null=True)
+    audio_file = models.FileField(upload_to='songs/')
+    duration = models.DurationField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.title} - {self.artist}"

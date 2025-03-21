@@ -1,0 +1,22 @@
+{% extends 'admin/admin_base.html' %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<h1 class="text-3xl font-bold">📊 Dashboard</h1>
+
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+    <div class="p-6 bg-black/30 rounded-lg shadow-lg">
+        <h2 class="text-xl font-bold">Total Users</h2>
+        <p class="text-4xl">{{ total_users }}</p>
+    </div>
+    <div class="p-6 bg-black/30 rounded-lg shadow-lg">
+        <h2 class="text-xl font-bold">Total Songs</h2>
+        <p class="text-4xl">{{ total_songs }}</p>
+    </div>
+    <div class="p-6 bg-black/30 rounded-lg shadow-lg">
+        <h2 class="text-xl font-bold">Active Playlists</h2>
+        <p class="text-4xl">{{ total_playlists }}</p>
+    </div>
+</div>
+{% endblock %}
