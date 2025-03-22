@@ -6,30 +6,124 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Login - MusicApp</title>
     <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gradient-to-br from-gray-900 to-black flex justify-center items-center h-screen">
+    <style>
+        /* Background Animation */
+        body {
+            background: linear-gradient(-45deg, #0f0c29, #302b63, #24243e);
+            background-size: 400% 400%;
+            animation: gradientBG 8s ease infinite;
+        }
 
-    <div class="bg-black/50 p-8 rounded-lg shadow-lg w-96">
-        <h2 class="text-3xl font-bold text-center text-purple-400">Admin Login</h2>
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Floating Particles */
+        .particle {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.2);
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            animation: floatUp 5s linear infinite;
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(0); opacity: 1; }
+            100% { transform: translateY(-100vh); opacity: 0; }
+        }
+
+        /* Glowing Music Wave (FIXED HEIGHT) */
+        .music-wave {
+            display: flex;
+            justify-content: center;
+            gap: 3px;
+            height: 20px; /* Set fixed height */
+        }
+
+        .music-wave span {
+            display: inline-block;
+            width: 4px;
+            background: #8a2be2;
+            animation: waveAnim 1.2s infinite ease-in-out;
+        }
+
+        .music-wave span:nth-child(1) { animation-delay: 0s; }
+        .music-wave span:nth-child(2) { animation-delay: 0.2s; }
+        .music-wave span:nth-child(3) { animation-delay: 0.4s; }
+        .music-wave span:nth-child(4) { animation-delay: 0.6s; }
+        .music-wave span:nth-child(5) { animation-delay: 0.8s; }
+
+        @keyframes waveAnim {
+            0%, 100% { transform: scaleY(1); }
+            50% { transform: scaleY(1.8); }
+        }
+    </style>
+</head>
+<body class="h-screen flex items-center justify-center overflow-hidden relative">
+
+    <!-- Floating Particles -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            for (let i = 0; i < 30; i++) {
+                let particle = document.createElement("div");
+                particle.classList.add("particle");
+                particle.style.left = Math.random() * 100 + "vw";
+                particle.style.animationDuration = (Math.random() * 3 + 2) + "s";
+                document.body.appendChild(particle);
+            }
+        });
+    </script>
+
+    <!-- Login Box -->
+    <div class="relative w-96 bg-black/40 backdrop-blur-md shadow-lg p-8 rounded-xl border border-purple-500">
         
+        <!-- Neon Glow Effect -->
+        <div class="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-500 blur-xl opacity-30 rounded-xl"></div>
+
+        <!-- Admin Logo + Fixed Music Wave -->
+        <div class="text-center mb-6">
+            <h2 class="text-3xl font-bold text-purple-400">🎵 Admin Login</h2>
+            <div class="music-wave mt-4">
+                <span></span><span></span><span></span><span></span><span></span>
+            </div>
+            <p class="text-gray-300 text-sm mt-4">Access the music dashboard</p>
+        </div>
+
         {% if messages %}
-            <div class="mt-4 text-red-400">
+            <div class="mb-4 text-red-400 text-sm">
                 {% for message in messages %}
                     <p>{{ message }}</p>
                 {% endfor %}
             </div>
         {% endif %}
-        
-        <form method="POST" action="{% url 'admin_login' %}" class="mt-6">
+
+        <!-- Login Form -->
+        <form method="POST" action="{% url 'admin_login' %}" class="space-y-4">
             {% csrf_token %}
-            <label class="block text-gray-300">Username</label>
-            <input type="text" name="username" class="w-full p-2 rounded bg-gray-800 text-white mt-2" required>
-            
-            <label class="block text-gray-300 mt-4">Password</label>
-            <input type="password" name="password" class="w-full p-2 rounded bg-gray-800 text-white mt-2" required>
-            
-            <button type="submit" class="w-full mt-6 bg-purple-600 hover:bg-purple-700 p-2 rounded-lg">Login</button>
+
+            <div>
+                <label class="block text-gray-300 text-sm">Username</label>
+                <input type="text" name="username" placeholder="Enter username" 
+                    class="w-full px-4 py-2 mt-1 rounded-lg bg-gray-900 text-white border border-gray-700 focus:ring-2 focus:ring-purple-500 transition duration-300">
+            </div>
+
+            <div>
+                <label class="block text-gray-300 text-sm">Password</label>
+                <input type="password" name="password" placeholder="Enter password"
+                    class="w-full px-4 py-2 mt-1 rounded-lg bg-gray-900 text-white border border-gray-700 focus:ring-2 focus:ring-purple-500 transition duration-300">
+            </div>
+
+            <button type="submit"
+                class="w-full mt-4 py-2 rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 hover:scale-105 transform transition-all duration-300 shadow-lg">
+                🔒 Login
+            </button>
         </form>
+
+        <!-- Footer -->
+        <p class="text-center text-gray-400 text-sm mt-4">© 2025 MusicApp Admin</p>
     </div>
 
 </body>
