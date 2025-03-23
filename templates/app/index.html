@@ -1,0 +1,81 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MusicApp - Home</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Background Animation */
+        .hero-bg {
+            background: url('{% static "images/images6.jpg" %}') no-repeat center center/cover;
+        }
+
+        /* Hover Glow Effect */
+        .glow:hover {
+            box-shadow: 0 0 15px rgba(138, 43, 226, 0.7);
+        }
+
+        /* Music Card Animation */
+        .music-card:hover {
+            transform: scale(1.05);
+            transition: 0.3s ease-in-out;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white">
+    
+    <!-- Navbar -->
+    <nav class="flex justify-between items-center p-4 bg-black/50 backdrop-blur-lg fixed top-0 w-full z-10">
+        <h1 class="text-2xl font-bold text-purple-400">🎶 MusicApp</h1>
+        <div>
+            <a href="{% url 'login' %}" class="px-4 py-2 rounded bg-purple-600 hover:bg-purple-500 transition">Login</a>
+            <a href="{% url 'signup' %}" class="px-4 py-2 ml-2 rounded bg-pink-600 hover:bg-pink-500 transition">Sign Up</a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-bg h-screen flex flex-col justify-center items-center text-center">
+        <h2 class="text-5xl font-extrabold text-white drop-shadow-lg">Discover & Stream Your Favorite Music</h2>
+        <p class="text-gray-300 mt-4">Explore trending songs, top artists & exclusive playlists.</p>
+        <a href="#" class="mt-6 px-6 py-3 text-lg font-bold bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg glow transition">
+            🎵 Start Listening
+        </a>
+    </section>
+
+    <!-- Trending Songs -->
+    <section class="py-16 px-6">
+        <h2 class="text-3xl font-bold text-center mb-6">🔥 Trending Songs</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {% for song in trending_songs %}
+                <div class="music-card bg-black/40 p-4 rounded-lg backdrop-blur-lg">
+                    <img src="{{ song.cover }}" alt="{{ song.title }}" class="w-full h-40 rounded-lg object-cover">
+                    <h3 class="mt-2 text-lg font-semibold">{{ song.title }}</h3>
+                    <p class="text-sm text-gray-400">by {{ song.artist }}</p>
+                    <a href="#" class="block mt-2 px-4 py-2 text-center bg-purple-500 rounded hover:bg-purple-400 transition">▶ Play</a>
+                </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- Top Artists -->
+    <section class="py-16 px-6 bg-black/30">
+        <h2 class="text-3xl font-bold text-center mb-6">🎤 Top Artists</h2>
+        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
+            {% for artist in top_artists %}
+                <div class="text-center">
+                    <img src="{{ artist.image }}" alt="{{ artist.name }}" class="w-24 h-24 rounded-full object-cover mx-auto">
+                    <h3 class="mt-2 font-semibold">{{ artist.name }}</h3>
+                </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-6 text-center text-gray-400 bg-black/50">
+        <p>© 2025 MusicApp. All rights reserved.</p>
+    </footer>
+
+</body>
+</html>

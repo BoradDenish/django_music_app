@@ -44,8 +44,8 @@ def admin_dashboard(request):
 
 def admin_songs(request):
     songs = Song.objects.all()
-    return render(request, "admin_songs.html", {"songs": songs})
+    return render(request, "admin/songs/admin_songs.html", {"songs": songs})
 
 def admin_users(request):
     users = User.objects.all()
-    return render(request, "admin_users.html", {"users": users})
+    return render(request, "admin/users/admin_users.html", {"users": users})
