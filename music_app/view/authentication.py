@@ -5,12 +5,12 @@ from django.contrib.auth.forms import UserCreationForm
 def index(request):
     # Dummy Artist Data
     top_artists = [
-        {"name": "The Weeknd", "image": "/static/images/The-Weeknd.png"},
-        {"name": "Taylor Swift", "image": "/static/images/taylor-swift.png"},
-        {"name": "Drake", "image": "/static/images/Drake.jpg"},
-        {"name": "Ariana Grande", "image": "/static/images/ariana-grande.avif"},
-        {"name": "Ed Sheeran", "image": "/static/images/Ed-Sheeran.jpg"},
-        {"name": "BTS", "image": "/static/images/BTS.jpg"},
+        {"name": "The Weeknd", "image": "/static/artists/The-Weeknd.png"},
+        {"name": "Taylor Swift", "image": "/static/artists/taylor-swift.png"},
+        {"name": "Drake", "image": "/static/artists/Drake.jpg"},
+        {"name": "Ariana Grande", "image": "/static/artists/ariana-grande.avif"},
+        {"name": "Ed Sheeran", "image": "/static/artists/Ed-Sheeran.jpg"},
+        {"name": "BTS", "image": "/static/artists/BTS.jpg"},
     ]
 
     # Dummy Song Data

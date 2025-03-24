@@ -1,9 +1,25 @@
-<div class="fixed top-0 left-0 w-64 h-full bg-black/30 backdrop-blur-lg p-6 shadow-lg">
-    <h2 class="text-2xl font-bold text-purple-400 mb-6">🎵 Admin Panel</h2>
+<div class="fixed top-0 left-0 w-64 h-full bg-black/50 backdrop-blur-xl p-6 shadow-xl">
+    <h2 class="text-3xl font-bold text-purple-400 mb-6 text-center">🎵 Admin Panel</h2>
     <ul class="space-y-4">
-        <li><a href="{% url 'admin_dashboard' %}" class="block px-4 py-2 rounded-lg hover:bg-purple-600">📊 Dashboard</a></li>
-        <li><a href="{% url 'admin_songs' %}" class="block px-4 py-2 rounded-lg hover:bg-purple-600">🎼 Manage Songs</a></li>
-        <li><a href="{% url 'admin_users' %}" class="block px-4 py-2 rounded-lg hover:bg-purple-600">👥 Manage Users</a></li>
-        <li><a href="{% url 'admin_logout' %}" class="block px-4 py-2 rounded-lg hover:bg-red-600">🚪 Logout</a></li>
+        <li>
+            <a href="{% url 'admin_dashboard' %}" class="flex items-center px-4 py-3 rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 hover:scale-105 transition">
+                📊 Dashboard
+            </a>
+        </li>
+        <li>
+            <a href="{% url 'admin_songs' %}" class="flex items-center px-4 py-3 rounded-lg hover:bg-purple-600 transition">
+                🎼 Manage Songs
+            </a>
+        </li>
+        <li>
+            <a href="{% url 'admin_users' %}" class="flex items-center px-4 py-3 rounded-lg hover:bg-purple-600 transition">
+                👥 Manage Users
+            </a>
+        </li>
+        <li>
+            <a href="{% url 'admin_logout' %}" class="flex items-center px-4 py-3 rounded-lg hover:bg-red-600 transition">
+                🚪 Logout
+            </a>
+        </li>
     </ul>
 </div>

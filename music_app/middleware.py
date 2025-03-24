@@ -4,7 +4,7 @@ from django.utils.timezone import now
 from django.contrib.sessions.models import Session
 import json
 
-EXCLUDED_PATHS = ["/", "/a/login", "/a/users", "/a/songs", "/signup", "/login", "/dashboard","/a/home", "/forgot-pass", "/favicon.ico"]
+EXCLUDED_PATHS = ["/", "/a/login", "/a/users", "/a/songs", "/a/dashboard", "/signup", "/login", "/dashboard","/a/home", "/forgot-pass", "/favicon.ico"]
 
 class TokenAuthMiddleware(MiddlewareMixin):
     def process_request(self, request):

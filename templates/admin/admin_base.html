@@ -6,8 +6,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Admin - MusicApp{% endblock %}</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Background Animation */
+        .admin-bg {
+            background: url('{% static "images/admin_bg4.jpg" %}') no-repeat center center/cover;
+            min-height: 100vh;
+        }
+    </style>
 </head>
-<body class="bg-gray-900 text-white">
+<body class="admin-bg text-white">
 
     <!-- Sidebar -->
     {% include 'admin/admin_sidebar.html' %}
