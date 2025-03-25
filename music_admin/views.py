@@ -81,9 +81,26 @@ def admin_dashboard(request):
     })
 
 def admin_songs(request):
-    songs = Song.objects.all()
+    # songs = Song.objects.all()
+    songs = [
+        {"title": "Blinding Lights", "artist": "The Weeknd", "cover": "songs/blinding_lights.jpg"},
+        {"title": "Levitating", "artist": "Dua Lipa", "cover": "songs/levitating.jpg"},
+        {"title": "Shape of You", "artist": "Ed Sheeran", "cover": "songs/shape_of_you.jpg"},
+        {"title": "Peaches", "artist": "Justin Bieber", "cover": "songs/peaches.jpg"},
+        {"title": "Save Your Tears", "artist": "The Weeknd", "cover": "songs/save_your_tears.jpg"},
+        {"title": "Watermelon Sugar", "artist": "Harry Styles", "cover": "songs/watermelon_sugar.jpg"},
+    ]
     return render(request, "admin/songs/admin_songs.html", {"songs": songs})
 
 def admin_users(request):
-    users = User.objects.all()
+    # users = User.objects.all()
+    users = [
+        {"id": 1, "username": "Denish", "email": "denish@gmail.com"},
+        {"id": 2, "username": "Denish1", "email": "denish1@gmail.com"},
+        {"id": 3, "username": "Denish2", "email": "denish2@gmail.com"},
+        {"id": 4, "username": "Denish3", "email": "denish3@gmail.com"}
+    ]
     return render(request, "admin/users/admin_users.html", {"users": users})
+
+def delete_user(request):
+    return render(request, "admin/users/admin_users.html")
