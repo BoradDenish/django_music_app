@@ -1,0 +1,38 @@
+{% extends 'app/base.html' %}
+
+{% block title %}Upload Music - MusicApp{% endblock %}
+
+{% block content %}
+<div class="container mx-auto mt-8">
+    <h1 class="text-3xl font-bold">📤 Upload Music from URL</h1>
+    
+    <form action="{% url 'upload_url' %}" method="POST" class="mt-6 p-6 bg-black/30 rounded-lg shadow-lg">
+        {% csrf_token %}
+        <input type="text" name="music_url" placeholder="Paste YouTube or Music Link" 
+               class="w-full p-3 bg-gray-800 text-white rounded-md">
+        <button class="mt-4 w-full p-3 bg-purple-600 hover:bg-purple-700 rounded-md text-white font-bold">
+            Upload & Convert
+        </button>
+    </form>
+
+    <h2 class="mt-8 text-2xl font-bold">🎵 Your Uploaded Songs</h2>
+    {% if user_songs %}
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-4">
+        {% for song in user_songs %}
+        <div class="bg-black/30 p-4 rounded-lg shadow-lg flex items-center">
+            <img src="{{ song.cover_url }}" class="w-20 h-20 rounded-lg">
+            <div class="ml-4">
+                <h3 class="font-bold">{{ song.title }}</h3>
+                <p class="text-gray-400">{{ song.artist }}</p>
+            </div>
+            <a href="{{ song.file_url }}" class="ml-auto px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-lg">
+                ▶ Play
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p class="mt-4 text-gray-400">No uploaded songs yet. Paste a music link above to add songs!</p>
+    {% endif %}
+</div>
+{% endblock %}

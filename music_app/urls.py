@@ -6,4 +6,5 @@ urlpatterns = [
     path("login", authentication.login_view, name="login"),
     path("signup", authentication.signup_view, name="signup"),
     path("home", authentication.home, name="home"),
+    path("upload_url", authentication.upload_url, name="upload_url"),
 ]
