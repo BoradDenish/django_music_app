@@ -3,6 +3,7 @@ from django.shortcuts import redirect, render
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from music_admin.models import Song, User
+from django.contrib.auth.hashers import make_password
 
 # Create your views here.
 
@@ -71,7 +72,7 @@ def admin_dashboard(request):
         {"title": "Watermelon Sugar", "artist": "Harry Styles", "cover": "songs/watermelon_sugar.jpg", "play_count": 850},
     ]
 
-    return render(request, 'admin/admin_dashboard.html', {
+    return render(request, 'admin/layout/admin_dashboard.html', {
         'total_users': total_users,
         'total_songs': total_songs,
         'total_playlists': total_playlists,

@@ -1,9 +1,10 @@
 from django.urls import path
 from music_admin import views
+from music_admin.view import authentication
 
 urlpatterns = [
     # path("", views.index, name="index"),
-    path('login', views.admin_login, name='admin_login'),
+    path('login', authentication.admin_login, name='admin_login'),
     path('logout', views.admin_logout, name='admin_logout'),
     path('dashboard', views.admin_dashboard, name='admin_dashboard'),
     path('songs', views.admin_songs, name='admin_songs'),

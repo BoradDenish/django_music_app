@@ -19,7 +19,6 @@ class User(models.Model):
     user_name       = models.CharField(max_length=355)
     user_email      = models.CharField(max_length=255)
     user_password   = models.CharField(max_length=255, null=True)
-    sweet_word      = models.CharField(max_length=255, null=True)
     user_status     = models.BooleanField(default=0)
     user_profile_pic= models.ImageField(upload_to='profile/', blank=True, null=True, default='images/img.png')
     user_role       = models.ForeignKey(UserRole, on_delete=models.CASCADE, null=True)
