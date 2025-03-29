@@ -48,7 +48,7 @@ def signup_view(request):
     return render(request, "app/auth/signup.html", {"form": form})
 
 def home(request):
-    return render(request, "app/home.html")
+    return render(request, "app/layout/home.html")
 
 def upload_url(request):
     return render(request, "app/upload_url.html")
