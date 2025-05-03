@@ -28,7 +28,7 @@
             height: 5px;
             border-radius: 50%;
             animation: floatUp 5s linear infinite;
-            z-index: -1; /* Ensure particles do not interfere */
+            z-index: -1;
         }
 
         @keyframes floatUp {
@@ -36,17 +36,17 @@
             100% { transform: translateY(-100vh); opacity: 0; }
         }
 
-        /* Glowing Music Wave (FIXED HEIGHT) */
+        /* Music Wave Animation */
         .music-wave {
             display: flex;
             justify-content: center;
-            gap: 3px;
-            height: 20px; /* Set fixed height */
+            gap: 4px;
+            height: 20px;
         }
 
         .music-wave span {
             display: inline-block;
-            width: 4px;
+            width: 5px;
             background: #8a2be2;
             animation: waveAnim 1.2s infinite ease-in-out;
         }
@@ -61,17 +61,6 @@
             0%, 100% { transform: scaleY(1); }
             50% { transform: scaleY(1.8); }
         }
-
-        /* Fix Input Overlapping Issues */
-        /* input {
-            position: relative;
-            z-index: 10;
-        } */
-
-        /* Fix Glow Effect Blocking Click */
-        /* .absolute.inset-0 {
-            pointer-events: none;
-        } */
     </style>
 </head>
 <body class="h-screen flex items-center justify-center overflow-hidden relative">
@@ -90,14 +79,14 @@
     </script>
 
     <!-- Login Box -->
-    <div class="relative w-96 bg-black/40 backdrop-blur-md shadow-lg p-8 rounded-xl border border-purple-500">
+    <div class="relative w-full max-w-md bg-black/50 backdrop-blur-md shadow-2xl p-8 rounded-2xl border border-purple-500">
         
-        <!-- Neon Glow Effect (Now Fixed) -->
-        <div class="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-500 blur-xl opacity-30 rounded-xl pointer-events-none"></div>
+        <!-- Neon Glow Effect -->
+        <div class="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-500 blur-xl opacity-30 rounded-2xl pointer-events-none"></div>
 
-        <!-- Admin Logo + Fixed Music Wave -->
-        <div class="text-center mb-6">
-            <h2 class="text-3xl font-bold text-purple-400">🎵 Admin Login</h2>
+        <!-- Admin Logo + Music Wave -->
+        <div class="text-center mb-8">
+            <h2 class="text-4xl font-extrabold text-purple-400">🎵 Admin Login</h2>
             <div class="music-wave mt-4">
                 <span></span><span></span><span></span><span></span><span></span>
             </div>
@@ -113,29 +102,29 @@
         {% endif %}
 
         <!-- Login Form -->
-        <form method="POST" action="{% url 'admin_login' %}" class="space-y-4">
+        <form method="POST" action="{% url 'admin_login' %}" class="space-y-6">
             {% csrf_token %}
 
             <div>
-                <label class="block text-gray-300 text-sm">Email</label>
+                <label class="block text-gray-300 text-sm font-medium">Email</label>
                 <input type="text" name="email" placeholder="Enter Email Address" 
-                    class="w-full px-4 py-2 mt-1 rounded-lg bg-gray-900 text-white border border-gray-700 focus:ring-2 focus:ring-purple-500 transition duration-300">
+                    class="w-full px-4 py-3 mt-1 rounded-lg bg-gray-900 text-white border border-gray-700 focus:ring-2 focus:ring-purple-500 focus:outline-none transition duration-300">
             </div>
 
             <div>
-                <label class="block text-gray-300 text-sm">Password</label>
-                <input type="password" name="password" placeholder="Enter password"
-                    class="w-full px-4 py-2 mt-1 rounded-lg bg-gray-900 text-white border border-gray-700 focus:ring-2 focus:ring-purple-500 transition duration-300">
+                <label class="block text-gray-300 text-sm font-medium">Password</label>
+                <input type="password" name="password" placeholder="Enter Password"
+                    class="w-full px-4 py-3 mt-1 rounded-lg bg-gray-900 text-white border border-gray-700 focus:ring-2 focus:ring-purple-500 focus:outline-none transition duration-300">
             </div>
 
             <button type="submit"
-                class="w-full mt-4 py-2 rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 hover:scale-105 transform transition-all duration-300 shadow-lg">
+                class="w-full py-3 rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold hover:scale-105 transform transition-all duration-300 shadow-lg">
                 🔒 Login
             </button>
         </form>
 
         <!-- Footer -->
-        <p class="text-center text-gray-400 text-sm mt-4">© 2025 MusicApp Admin</p>
+        <p class="text-center text-gray-400 text-sm mt-6">© 2025 MusicApp Admin</p>
     </div>
 
 </body>

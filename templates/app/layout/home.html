@@ -1,4 +1,100 @@
+{% extends 'app/layout/app\layout\home.html -->
 {% extends 'app/layout/base.html' %}
+
+{% block title %}Home - MusicApp{% endblock %}
+
+{% block content %}
+<div class="container mx-auto">
+    
+    <!-- Featured Music Banner -->
+    <div class="relative w-full h-64 bg-cover bg-center rounded-lg shadow-lg overflow-hidden"
+         style="background-image: url('https://source.unsplash.com/1600x900/?concert,music')">
+        <div class="absolute inset-0 bg-black/50 flex items-center p-6">
+            <div>
+                <h1 class="text-4xl font-extrabold animate-fade-in">Discover New Beats</h1>
+                <p class="mt-2 text-gray-300">Explore the latest hits and trending tracks</p>
+                <button class="mt-4 px-5 py-2 bg-purple-600 hover:bg-purple-700 rounded-lg transition-transform transform hover:scale-105">🎧 Start Listening</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Latest Releases -->
+    <h2 class="mt-8 text-2xl font-bold">🎶 Latest Releases</h2>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mt-4">
+        {% for i in range(4) %}
+        <div class="bg-black/30 p-4 rounded-lg shadow-lg hover:shadow-xl transition-shadow">
+            <img src="https://source.unsplash.com/200x200/?music,album" class="rounded-lg">
+            <h3 class="mt-2 font-bold">Song Title</h3>
+            <p class="text-gray-400">Artist Name</p>
+            <button class="mt-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-lg transition-transform transform hover:scale-105">▶ Play</button>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Trending Songs -->
+    <h2 class="mt-8 text-2xl font-bold">🔥 Trending Now</h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-4">
+        {% for i in range(3) %}
+        <div class="flex items-center space-x-4 bg-black/30 p-4 rounded-lg shadow-lg hover:shadow-xl transition-shadow">
+            <img src="https://source.unsplash.com/100x100/?music,artist" class="rounded-lg">
+            <div>
+                <h3 class="font-bold">Trending Song</h3>
+                <p class="text-gray-400">Top Artist</p>
+            </div>
+            <button class="ml-auto px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-lg transition-transform transform hover:scale-105">▶ Play</button>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}app\layout\home.html -->
+{% extends 'app/layout/base.html' %}
+
+{% block title %}Home - MusicApp{% endblock %}
+
+{% block content %}
+<div class="container mx-auto">
+    
+    <!-- Featured Music Banner -->
+    <div class="relative w-full h-64 bg-cover bg-center rounded-lg shadow-lg overflow-hidden"
+         style="background-image: url('https://source.unsplash.com/1600x900/?concert,music')">
+        <div class="absolute inset-0 bg-black/50 flex items-center p-6">
+            <div>
+                <h1 class="text-4xl font-extrabold animate-fade-in">Discover New Beats</h1>
+                <p class="mt-2 text-gray-300">Explore the latest hits and trending tracks</p>
+                <button class="mt-4 px-5 py-2 bg-purple-600 hover:bg-purple-700 rounded-lg transition-transform transform hover:scale-105">🎧 Start Listening</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Latest Releases -->
+    <h2 class="mt-8 text-2xl font-bold">🎶 Latest Releases</h2>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mt-4">
+        {% for i in range(4) %}
+        <div class="bg-black/30 p-4 rounded-lg shadow-lg hover:shadow-xl transition-shadow">
+            <img src="https://source.unsplash.com/200x200/?music,album" class="rounded-lg">
+            <h3 class="mt-2 font-bold">Song Title</h3>
+            <p class="text-gray-400">Artist Name</p>
+            <button class="mt-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-lg transition-transform transform hover:scale-105">▶ Play</button>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Trending Songs -->
+    <h2 class="mt-8 text-2xl font-bold">🔥 Trending Now</h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-4">
+        {% for i in range(3) %}
+        <div class="flex items-center space-x-4 bg-black/30 p-4 rounded-lg shadow-lg hover:shadow-xl transition-shadow">
+            <img src="https://source.unsplash.com/100x100/?music,artist" class="rounded-lg">
+            <div>
+                <h3 class="font-bold">Trending Song</h3>
+                <p class="text-gray-400">Top Artist</p>
+            </div>
+            <button class="ml-auto px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-lg transition-transform transform hover:scale-105">▶ Play</button>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}base.html' %}
 
 {% block title %}Home - MusicApp{% endblock %}
 

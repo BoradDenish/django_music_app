@@ -12,19 +12,19 @@
     }
 </style>
 
-<h1 class="text-4xl font-bold text-white text-center">📊 Admin Dashboard</h1>
+<h1 class="text-4xl font-bold text-white text-center mb-10">📊 Admin Dashboard</h1>
 
 <!-- Statistics -->
-<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-10 text-white">
-    <div class="stat-card p-6 bg-black/50 rounded-lg shadow-lg">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-white">
+    <div class="stat-card p-6 bg-gradient-to-r from-purple-700 to-black rounded-lg shadow-lg">
         <h2 class="text-xl font-bold">Total Users</h2>
         <p class="text-4xl">{{ total_users }}</p>
     </div>
-    <div class="stat-card p-6 bg-black/50 rounded-lg shadow-lg">
+    <div class="stat-card p-6 bg-gradient-to-r from-pink-700 to-black rounded-lg shadow-lg">
         <h2 class="text-xl font-bold">Total Songs</h2>
         <p class="text-4xl">{{ total_songs }}</p>
     </div>
-    <div class="stat-card p-6 bg-black/50 rounded-lg shadow-lg">
+    <div class="stat-card p-6 bg-gradient-to-r from-blue-700 to-black rounded-lg shadow-lg">
         <h2 class="text-xl font-bold">Active Playlists</h2>
         <p class="text-4xl">{{ total_playlists }}</p>
     </div>
@@ -32,10 +32,10 @@
 
 <!-- Recently Added Songs -->
 <div class="mt-10">
-    <h2 class="text-3xl font-bold text-white">🎶 Recently Added Songs</h2>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-4">
+    <h2 class="text-3xl font-bold text-white mb-4">🎶 Recently Added Songs</h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         {% for song in recent_songs %}
-            <div class="p-4 bg-black/50 rounded-lg">
+            <div class="p-4 bg-gradient-to-b from-black/50 to-purple-800 rounded-lg shadow-lg">
                 <img src="{% static song.cover %}" alt="{{ song.title }}" class="w-full h-40 rounded-lg object-cover">
                 <h3 class="mt-2 text-lg font-semibold">{{ song.title }}</h3>
                 <p class="text-sm text-gray-300">by {{ song.artist }}</p>
@@ -46,8 +46,8 @@
 
 <!-- Recently Added Artists -->
 <div class="mt-10">
-    <h2 class="text-3xl font-bold text-white">🎤 Recently Added Artists</h2>
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mt-4">
+    <h2 class="text-3xl font-bold text-white mb-4">🎤 Recently Added Artists</h2>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
         {% for artist in recent_artists %}
             <div class="text-center">
                 <img src="{% static artist.image %}" alt="{{ artist.name }}" class="w-24 h-24 rounded-full object-cover mx-auto">
@@ -59,10 +59,10 @@
 
 <!-- Most Played Songs -->
 <div class="mt-10">
-    <h2 class="text-3xl font-bold text-white">🔥 Most Played Songs</h2>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-4">
+    <h2 class="text-3xl font-bold text-white mb-4">🔥 Most Played Songs</h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         {% for song in most_played %}
-            <div class="p-4 bg-black/50 rounded-lg">
+            <div class="p-4 bg-gradient-to-b from-black/50 to-red-800 rounded-lg shadow-lg">
                 <img src="{% static song.cover %}" alt="{{ song.title }}" class="w-full h-40 rounded-lg object-cover">
                 <h3 class="mt-2 text-lg font-semibold">{{ song.title }}</h3>
                 <p class="text-sm text-gray-300">Plays: {{ song.play_count }}</p>
