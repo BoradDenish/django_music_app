@@ -1,6 +1,13 @@
+from datetime import datetime, timedelta
+import secrets
+from django.http import JsonResponse
 from django.shortcuts import render, redirect
-from django.contrib.auth import login, authenticate
+from django.contrib.auth import login
 from django.contrib.auth.forms import UserCreationForm
+from django.utils import timezone
+from django.contrib.auth.hashers import check_password
+
+from music_admin.models import Session, User
 
 def index(request):
     # Dummy Artist Data
@@ -28,13 +35,51 @@ def index(request):
 
 def login_view(request):
     if request.method == "POST":
-        username = request.POST["username"]
-        password = request.POST["password"]
-        user = authenticate(request, username=username, password=password)
+        username = request.POST.get("username")
+        password = request.POST.get("password")
+        if not username or not password:
+            return render(request, "app/auth/login.html", {"error": "Please enter both username and password."})
+        
+        # Fetch user record safely
+        user = User.objects.exclude(user_status=0).exclude(user_role=1).filter(user_name=username).first()
+
+        if not user:
+            return JsonResponse({"status": 500, "message": "Email does not exist!"})
+
+        # Validate password
+        if not check_password(password, user.user_password):
+            return JsonResponse({"status": 500, "message": "Invalid password! Please try again."})
+
+        # Generate session token
+        session_token = secrets.token_hex()
+
+        # Store session token securely
+        request.session["user_session"] = {
+            "session_token": session_token,
+            "session_name": "user_session",
+        }
+        request.session["user_profile"] = user.user_profile_pic.url if user.user_profile_pic else None
+
+        # Set session expiry
+        exp_time = timezone.now() + timedelta(days=1)
+
+        # Store session in the database
+        session_data = Session(
+            session_user=user,
+            session_email=user.user_email,
+            session_token=session_token,
+            session_expire=exp_time,
+            session_status=1,
+            created_at=datetime.now(),
+        )
+        session_data.save()
+        
+        # user = authenticate(request, username=username, password=password)
         if user is not None:
-            login(request, user)
+            # login(request, user)
             return redirect("home")  # Change "home" to your actual home page URL name
     return render(request, "app/auth/login.html")
+
 
 def signup_view(request):
     if request.method == "POST":

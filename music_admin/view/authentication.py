@@ -9,11 +9,14 @@ from music_admin.models import Session, User
 def admin_login(request):
     if request.method == "POST":
         useremail = request.POST.get("email")  # Fix request.POST
-        password = request.POST.get("password")
+        password  = request.POST.get("password")
 
         # Validate email input before querying the database
         if not useremail:
             return JsonResponse({"status": 500, "message": "Please enter an email address!"})
+        
+        if not password:
+            return JsonResponse({"status": 500, "message": "Please enter a password!"})
 
         # Fetch user record safely
         user = User.objects.exclude(user_status=0).exclude(user_role=2).filter(user_email=useremail).first()
@@ -40,13 +43,12 @@ def admin_login(request):
 
         # Store session in the database
         session_data = Session(
-            session_user_id=user.user_id,
-            session_user_email=useremail,
+            session_user=user,
+            session_email=useremail,
             session_token=session_token,
             session_expire=exp_time,
             session_status=1,
-            session_created_at=datetime.now(),
-            session_is_delete=False,
+            created_at=datetime.now(),
         )
         session_data.save()
 

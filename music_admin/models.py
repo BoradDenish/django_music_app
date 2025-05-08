@@ -27,7 +27,7 @@ class User(models.Model):
     created_at      = models.DateTimeField(auto_now_add=True)
     updated_at      = models.DateTimeField(null=True)
 
-    class meta:
+    class Meta:
         db_table = "users"
 
     def update(self,*args, **kwargs):
@@ -44,6 +44,8 @@ class Session(models.Model):
     session_email   = models.EmailField(unique=True)
     session_user    = models.ForeignKey(User, on_delete=models.CASCADE)
     session_token   = models.TextField()
+    session_expire  = models.DateTimeField()
+    session_status  = models.BooleanField(default=0)
 
     deleted_at      = models.DateTimeField(null=True)
     created_at      = models.DateTimeField(auto_now=True)
@@ -79,6 +81,9 @@ class Song(models.Model):
     audio_file = models.FileField(upload_to='songs/')
     duration = models.DurationField()
     created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = "Songs"
 
     def __str__(self):
         return f"{self.title} - {self.artist}"
