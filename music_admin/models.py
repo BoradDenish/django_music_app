@@ -41,7 +41,7 @@ class User(models.Model):
 
 class Session(models.Model):
     session_id      = models.AutoField(primary_key=True)
-    session_email   = models.EmailField(unique=True)
+    session_email   = models.EmailField()
     session_user    = models.ForeignKey(User, on_delete=models.CASCADE)
     session_token   = models.TextField()
     session_expire  = models.DateTimeField()

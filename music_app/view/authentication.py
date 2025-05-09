@@ -35,13 +35,13 @@ def index(request):
 
 def login_view(request):
     if request.method == "POST":
-        username = request.POST.get("username")
-        password = request.POST.get("password")
-        if not username or not password:
-            return render(request, "app/auth/login.html", {"error": "Please enter both username and password."})
+        useremail = request.POST.get("email")
+        password  = request.POST.get("password")
+        if not useremail or not password:
+            return render(request, "app/auth/login.html", {"error": "Please enter both useremail and password."})
         
         # Fetch user record safely
-        user = User.objects.exclude(user_status=0).exclude(user_role=1).filter(user_name=username).first()
+        user = User.objects.exclude(user_status=0).exclude(user_role=1).filter(user_email=useremail).first()
 
         if not user:
             return JsonResponse({"status": 500, "message": "Email does not exist!"})
@@ -66,7 +66,7 @@ def login_view(request):
         # Store session in the database
         session_data = Session(
             session_user=user,
-            session_email=user.user_email,
+            session_email=useremail,
             session_token=session_token,
             session_expire=exp_time,
             session_status=1,
