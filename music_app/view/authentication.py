@@ -77,7 +77,7 @@ def login_view(request):
         # user = authenticate(request, username=username, password=password)
         if user is not None:
             # login(request, user)
-            return redirect("home")  # Change "home" to your actual home page URL name
+            return redirect("home")
     return render(request, "app/auth/login.html")
 
 
@@ -96,4 +96,34 @@ def home(request):
     return render(request, "app/layout/home.html")
 
 def upload_url(request):
-    return render(request, "app/upload_url.html")
+    return render(request, "app/songs/upload_url.html")
+
+def trending(request):
+    return render(request, "app/songs/trending.html")
+
+def library(request):
+    return render(request, "app/songs/library.html")
+
+def logout_view(request):
+    # Clear session data
+    if "user_session" in request.session:
+        del request.session["user_session"]
+    if "user_profile" in request.session:
+        del request.session["user_profile"]
+
+    # Redirect to login page
+    return redirect("login")
+
+def favorites(request):
+    return render(request, "app/songs/favorites.html")
+
+def playlist(request):
+    return render(request, "app/songs/playlist.html")
+
+def profile(request):
+    # Dummy User Data
+    user_data = {
+        "name": "John Doe",
+        "email": "john@gmail.com",
+    }
+    return render(request, "app/auth/profile.html", {"user_data": user_data})

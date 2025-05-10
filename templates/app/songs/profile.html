@@ -1,0 +1,40 @@
+{% extends 'app/layout/base.html' %}
+
+{% block title %}Your Profile - MusicApp{% endblock %}
+
+{% block content %}
+<div class="min-h-screen p-8 bg-gradient-to-br from-black via-gray-900/80 to-purple-950 text-white backdrop-blur-lg">
+
+    <h1 class="text-4xl md:text-5xl font-extrabold text-center mb-12 text-teal-400 drop-shadow-lg">
+        👤 Your Profile
+    </h1>
+
+    <div class="max-w-2xl mx-auto bg-white/5 p-8 rounded-2xl shadow-xl backdrop-blur-md">
+        <div class="flex flex-col items-center text-center">
+            <div class="w-28 h-28 mb-4 rounded-full bg-teal-500/20 flex items-center justify-center text-4xl text-white">
+                {{ user.username|first|upper }}
+            </div>
+            <h2 class="text-2xl font-bold text-white">{{ user.username }}</h2>
+            <p class="text-gray-400">{{ user.email }}</p>
+        </div>
+
+        <div class="mt-10 space-y-4">
+            <div class="bg-black/30 p-4 rounded-lg text-white flex justify-between items-center">
+                <span class="text-sm text-gray-300">Account Created:</span>
+                <span>{{ user.date_joined|date:"F j, Y" }}</span>
+            </div>
+            <div class="bg-black/30 p-4 rounded-lg text-white flex justify-between items-center">
+                <span class="text-sm text-gray-300">Last Login:</span>
+                <span>{{ user.last_login|date:"F j, Y, g:i a" }}</span>
+            </div>
+        </div>
+
+        <div class="mt-10 text-center">
+            <a href="{% url 'logout' %}" 
+               class="inline-block px-6 py-3 bg-red-600 hover:bg-red-500 rounded-full text-white font-bold text-lg transition transform hover:scale-105">
+                🚪 Logout
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
