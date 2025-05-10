@@ -13,4 +13,6 @@ urlpatterns = [
     path("favorites", authentication.favorites, name="favorites"),
     path("playlist", authentication.playlist, name="playlist"),
     path("profile", authentication.profile, name="profile"),
+    path("music_library", authentication.music_library, name="music_library"),
+    path("video_library", authentication.video_library, name="video_library"),
 ]

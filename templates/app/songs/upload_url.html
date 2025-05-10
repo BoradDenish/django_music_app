@@ -1,55 +1,26 @@
 {% extends 'app/layout/base.html' %}
-
-{% block title %}Upload Music - MusicApp{% endblock %}
-
+{% block title %}Upload - MusicApp{% endblock %}
 {% block content %}
-<div class="min-h-screen p-4 sm:p-6 md:p-8 bg-gradient-to-br from-black via-gray-900/80 to-purple-950 text-white">
+<div class="min-h-screen p-8 bg-gradient-to-br from-black via-gray-900/80 to-purple-950 text-white backdrop-blur-lg">
+    <h1 class="text-4xl font-extrabold text-center mb-10 text-purple-400 drop-shadow-lg">📤 Upload Content</h1>
 
-    <!-- Title -->
-    <h1 class="text-3xl sm:text-4xl md:text-5xl font-extrabold text-center mb-10 sm:mb-12 text-purple-400 drop-shadow-lg">
-        📤 Upload Music from URL
-    </h1>
-
-    <!-- Upload Form -->
-    <form action="{% url 'upload_url' %}" method="POST"
-          class="w-full max-w-xl mx-auto bg-white/5 p-6 sm:p-8 rounded-2xl shadow-lg backdrop-blur-md">
+    <form action="{% url 'upload_url' %}" method="POST" class="max-w-xl mx-auto bg-white/5 p-8 rounded-2xl shadow-lg backdrop-blur-md">
         {% csrf_token %}
-        <label for="music_url" class="block text-base sm:text-lg font-semibold text-gray-300 mb-2">
-            Paste YouTube or Music Link
+        <label class="block mb-4">
+            <span class="text-gray-300 font-semibold">Paste YouTube or Content URL</span>
+            <input type="text" name="content_url" placeholder="https://youtube.com/..." required
+                   class="w-full mt-2 p-4 bg-black/30 text-white rounded-lg placeholder-gray-400 focus:ring-2 focus:ring-purple-500">
         </label>
-        <input type="text" id="music_url" name="music_url"
-               placeholder="https://example.com/music-link"
-               class="w-full px-4 sm:px-5 py-3 sm:py-4 bg-black/30 text-white placeholder-gray-400 rounded-lg backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-purple-500 transition duration-300">
-
-        <button type="submit"
-                class="mt-5 sm:mt-6 w-full py-3 sm:py-4 bg-gradient-to-r from-purple-600 to-purple-800 hover:from-purple-500 hover:to-purple-700 rounded-lg text-white font-bold text-base sm:text-lg transition transform hover:scale-105">
-            ⬆️ Upload & Convert
+        <label class="block mb-6">
+            <span class="text-gray-300 font-semibold">Save as:</span>
+            <select name="content_type" class="w-full mt-2 p-3 bg-black/30 text-white rounded-lg focus:ring-2 focus:ring-purple-500">
+                <option value="music">🎵 Music</option>
+                <option value="video">🎬 Video</option>
+            </select>
+        </label>
+        <button type="submit" class="w-full py-4 bg-gradient-to-r from-purple-600 to-purple-800 hover:from-purple-500 hover:to-purple-700 rounded-lg text-white font-bold text-lg transition transform hover:scale-105">
+            Upload & Convert
         </button>
     </form>
-
-    <!-- Uploaded Songs -->
-    <h2 class="mt-14 sm:mt-16 text-2xl sm:text-3xl font-bold text-center text-white">
-        🎵 Your Uploaded Songs
-    </h2>
-
-    {% if user_songs %}
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 mt-8 sm:mt-10">
-        {% for song in user_songs %}
-        <div class="bg-white/5 p-5 sm:p-6 rounded-xl shadow-lg backdrop-blur-md text-center hover:shadow-xl transition duration-300 flex flex-col items-center">
-            <img src="{{ song.cover_url }}" alt="{{ song.title }}" class="w-20 h-20 sm:w-24 sm:h-24 rounded-xl mb-4 shadow-inner object-cover">
-            <h3 class="text-lg sm:text-xl font-bold text-white mb-1">{{ song.title }}</h3>
-            <p class="text-sm text-gray-300">{{ song.artist }}</p>
-            <a href="{{ song.file_url }}"
-               class="mt-4 px-5 py-2 bg-purple-700 hover:bg-purple-600 rounded-full text-white font-medium transition duration-300">
-                ▶ Play
-            </a>
-        </div>
-        {% endfor %}
-    </div>
-    {% else %}
-    <p class="mt-10 text-center text-gray-400 text-base sm:text-lg">
-        🚫 No uploaded songs yet. Paste a music link above to add your first track!
-    </p>
-    {% endif %}
 </div>
 {% endblock %}

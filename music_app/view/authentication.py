@@ -127,3 +127,38 @@ def profile(request):
         "email": "john@gmail.com",
     }
     return render(request, "app/auth/profile.html", {"user_data": user_data})
+
+def music_library(request):
+    # Dummy Music Library Data
+    music_library = [
+        {"title": "Song 1", "artist": "Artist 1", "cover": "/static/images/song1.jpg"},
+        {"title": "Song 2", "artist": "Artist 2", "cover": "/static/images/song2.jpg"},
+        {"title": "Song 3", "artist": "Artist 3", "cover": "/static/images/song3.jpg"},
+    ]
+    return render(request, "app/songs/music_library.html", {"audios": music_library})
+
+def video_library(request):
+    # Dummy Video Library Data
+    video_library = [
+        {"title": "Video 1", "artist": "Artist 1", "cover": "/static/images/video1.jpg"},
+        {"title": "Video 2", "artist": "Artist 2", "cover": "/static/images/video2.jpg"},
+        {"title": "Video 3", "artist": "Artist 3", "cover": "/static/images/video3.jpg"},
+    ]
+    return render(request, "app/songs/video_library.html", {"videos": video_library})
+
+
+
+# def upload_content(request):
+#     if request.method == 'POST':
+#         url = request.POST['content_url']
+#         content_type = request.POST['content_type']  # "music" or "video"
+#         title, file_url, thumbnail = download_content(url)  # implement this
+        
+#         if content_type == "music":
+#             Music.objects.create(title=title, file_url=file_url, cover_url=thumbnail)
+#         else:
+#             Video.objects.create(title=title, file_url=file_url, thumbnail_url=thumbnail)
+        
+#         return redirect('music_library' if content_type == 'music' else 'video_library')
+    
+#     return render(request, 'upload_content.html')
