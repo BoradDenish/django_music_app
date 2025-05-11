@@ -1,4 +1,5 @@
 from django.http import JsonResponse
+from django.shortcuts import redirect
 from django.utils.deprecation import MiddlewareMixin
 from django.utils.timezone import now
 from django.contrib.sessions.models import Session
@@ -13,6 +14,7 @@ class TokenAuthMiddleware(MiddlewareMixin):
 
         auth_header = request.headers.get("Authorization")
         if not auth_header:
+            # return redirect("/a/login")
             return JsonResponse({"error": "Authorization token missing"}, status=401)
 
         token = auth_header.split(" ")[-1]  # Expecting 'Bearer <token>' format
@@ -23,8 +25,10 @@ class TokenAuthMiddleware(MiddlewareMixin):
             expiry_date = session.expire_date
             
             if expiry_date < now():
+                # return redirect("/a/login")
                 return JsonResponse({"error": "Token expired"}, status=401)
         except Session.DoesNotExist:
+            # return redirect("/a/login")
             return JsonResponse({"error": "Invalid token"}, status=401)
 
         return None  # Continue processing if token is valid

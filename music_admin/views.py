@@ -29,9 +29,6 @@ def admin_login(request):
 
     return render(request, 'admin/auth/admin_login.html')
 
-def admin_logout(request):
-    logout(request)
-    return redirect('admin_login')
 
 
 from django.shortcuts import render

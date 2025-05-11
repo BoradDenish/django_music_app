@@ -5,12 +5,14 @@ from music_admin.view import authentication
 urlpatterns = [
     # path("", views.index, name="index"),
     path('login', authentication.admin_login, name='admin_login'),
-    path('logout', views.admin_logout, name='admin_logout'),
+    path('logout', authentication.admin_logout, name='admin_logout'),
     path('dashboard', views.admin_dashboard, name='admin_dashboard'),
     path('songs', views.admin_songs, name='admin_songs'),
     path('users', views.admin_users, name='admin_users'),
 
     path('user/delete/<int:id>', views.delete_user, name='delete_user'),
+
+    path('video', authentication.admin_video, name='admin_video'),
 
     # path('songs/edit/<int:song_id>', views.edit_song, name='edit_song'),
     # path('songs/delete/<int:song_id>', views.delete_song, name='delete_song'),

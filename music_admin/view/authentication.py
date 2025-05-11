@@ -56,3 +56,15 @@ def admin_login(request):
         return redirect("admin_dashboard")  # Ensure 'admin_dashboard' is the correct URL name
 
     return render(request, "admin/auth/admin_login.html")
+
+def admin_logout(request):
+    print("Logout called", request.session)
+    # Clear session data
+    request.session.flush()
+
+    # Redirect to login page
+    return redirect("admin_login")  # Ensure 'admin_login' is the correct URL name
+
+def admin_video(request):
+    return render(request, "admin/videos/admin_videos.html")
+
