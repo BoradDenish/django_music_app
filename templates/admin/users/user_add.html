@@ -1,0 +1,29 @@
+{% extends 'admin/layout/admin_base.html' %}
+{% block title %}➕ Add User{% endblock %}
+
+{% block content %}
+<div class="min-h-screen px-4 py-12 bg-gradient-to-br via-gray-900 to-purple-950 text-white">
+    <div class="max-w-2xl mx-auto bg-white/10 backdrop-blur-md p-10 rounded-2xl shadow-2xl ring-1 ring-white/20">
+        <h1 class="text-4xl font-bold mb-8 flex items-center gap-2">➕ Add New User</h1>
+        <form method="POST" enctype="multipart/form-data" class="space-y-6">
+            {% csrf_token %}
+            <div>
+                <label class="block mb-2 text-sm font-semibold text-white">Username</label>
+                <input type="text" name="username" placeholder="👤 Username" required class="w-full p-3 rounded-xl bg-white/10 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-600">
+            </div>
+            <div>
+                <label class="block mb-2 text-sm font-semibold text-white">Email</label>
+                <input type="email" name="email" placeholder="📧 Email" required class="w-full p-3 rounded-xl bg-white/10 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-600">
+            </div>
+            <div>
+                <label class="block mb-2 text-sm font-semibold text-white">Profile Picture</label>
+                <input type="file" name="user_img" class="w-full p-3 rounded-xl bg-white/10 text-white">
+            </div>
+            <div class="flex justify-between items-center mt-6">
+                <a href="{% url 'admin_users' %}" class="px-5 py-2 bg-gray-600 hover:bg-gray-500 text-white rounded-xl transition">Cancel</a>
+                <button type="submit" class="px-5 py-2 bg-green-600 hover:bg-green-500 text-white rounded-xl transition">Save</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

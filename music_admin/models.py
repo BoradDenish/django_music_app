@@ -18,14 +18,16 @@ class User(models.Model):
     user_id         = models.AutoField(primary_key=True)
     user_name       = models.CharField(max_length=355)
     user_email      = models.CharField(max_length=255)
-    user_password   = models.CharField(max_length=255, null=True)
+    user_phone      = models.CharField(max_length=255, null=True, blank=True)
+    user_password   = models.CharField(max_length=255, null=True, blank=True)
     user_status     = models.BooleanField(default=0)
     user_profile_pic= models.ImageField(upload_to='profile/', blank=True, null=True, default='images/img.png')
     user_role       = models.ForeignKey(UserRole, on_delete=models.CASCADE, null=True)
 
-    deleted_at      = models.DateTimeField(null=True)
+    deleted_at      = models.DateTimeField(null=True, blank=True)
     created_at      = models.DateTimeField(auto_now_add=True)
-    updated_at      = models.DateTimeField(null=True)
+    updated_at      = models.DateTimeField(null=True, blank=True)
+    user_last_login = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         db_table = "users"

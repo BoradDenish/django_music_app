@@ -1,37 +1,11 @@
 from django.http import JsonResponse
 from django.shortcuts import redirect, render
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import authenticate, login
 from django.contrib import messages
-from music_admin.models import Song, User
-from django.contrib.auth.hashers import make_password
-
 # Create your views here.
 
 def index(request):
     return JsonResponse({"HELLO": "MESSAGE"})
-
-
-
-def admin_login(request):
-    if request.user.is_authenticated:
-        return redirect('admin_dashboard')
-
-    if request.method == "POST":
-        username = request.POST['username']
-        password = request.POST['password']
-        user = authenticate(request, username=username, password=password)
-
-        if user is not None and user.is_staff:  # Ensures only admins can log in
-            login(request, user)
-            return redirect('admin_dashboard')
-        else:
-            messages.error(request, "Invalid credentials or not an admin.")
-
-    return render(request, 'admin/auth/admin_login.html')
-
-
-
-from django.shortcuts import render
 
 def admin_dashboard(request):
     # Static values instead of database queries
@@ -90,15 +64,8 @@ def admin_songs(request):
     ]
     return render(request, "admin/songs/admin_songs.html", {"songs": songs})
 
-def admin_users(request):
-    # users = User.objects.all()
-    users = [
-        {"id": 1, "username": "Denish", "email": "denish@gmail.com"},
-        {"id": 2, "username": "Denish1", "email": "denish1@gmail.com"},
-        {"id": 3, "username": "Denish2", "email": "denish2@gmail.com"},
-        {"id": 4, "username": "Denish3", "email": "denish3@gmail.com"}
-    ]
-    return render(request, "admin/users/admin_users.html", {"users": users})
-
 def delete_user(request):
     return render(request, "admin/users/admin_users.html")
+
+def admin_video(request):
+    return render(request, "admin/videos/admin_videos.html")
