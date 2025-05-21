@@ -12,9 +12,10 @@
     </div>
 
     <!-- Search Bar -->
-    <div class="mb-6">
-        <input type="text" placeholder="🔍 Search users..." class="w-full p-4 rounded-lg bg-white/10 text-white placeholder-gray-300 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-purple-500">
-    </div>
+    <form method="get" class="mb-6">
+        <input type="text" name="search" value="{{ search_query }}" placeholder="🔍 Search users..." 
+            class="w-full p-4 rounded-lg bg-white/10 text-white placeholder-gray-300 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-purple-500">
+    </form>
 
     <!-- Users Table -->
     <div class="overflow-hidden rounded-xl shadow-lg ring-1 ring-white/10 backdrop-blur-md">
@@ -33,11 +34,11 @@
                     <td class="p-2 flex items-center gap-4">
                         <img src="{{ user.profile_picture.url|default:'/static/images/default_user.jpg' }}" alt="Profile Picture" class="w-12 h-12 rounded-full border-2 border-purple-500 shadow-lg">
                     </td>
-                    <td class="p-2 font-semibold">{{ user.username }}</td>
-                    <td class="p-2 text-gray-300">{{ user.email }}</td>
+                    <td class="p-2 font-semibold">{{ user.user_name }}</td>
+                    <td class="p-2 text-gray-300">{{ user.user_email }}</td>
                     <td class="p-2 text-center flex justify-center gap-4">
                         <a href="{% url 'edit_user' %}" class="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-700 text-white rounded-lg shadow-md hover:scale-105 transition">✏️ Edit</a>
-                        <button onclick="openDeleteModal('{{ user.id }}')" class="px-4 py-2 bg-gradient-to-r from-red-500 to-red-700 text-white rounded-lg shadow-md hover:scale-105 transition">❌ Delete</button>
+                        <button onclick="openDeleteModal('{{ user.user_id }}')" class="px-4 py-2 bg-gradient-to-r from-red-500 to-red-700 text-white rounded-lg shadow-md hover:scale-105 transition">❌ Delete</button>
                     </td>
                 </tr>
                 {% endfor %}
@@ -48,18 +49,20 @@
     <!-- Pagination -->
     <div class="flex justify-between items-center mt-6 text-sm text-gray-300">
         {% if users.paginator.count > 0 %}
-            Showing {{ users.start }} to {{ users.end }} of {{ users.paginator.count }} records
+            Showing {{ users.start_index }} to {{ users.end_index }} of {{ users.paginator.count }} records
         {% else %}
             No records found
         {% endif %}
+
         <div class="flex gap-2">
             {% if users.has_previous %}
-            <a href="?page={{ users.previous_page_number }}" class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-500 transition">Previous</a>
+            <a href="?search={{ search_query }}&page={{ users.previous_page_number }}" class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-500 transition">Previous</a>
             {% endif %}
+
             {% if users.has_next %}
-            <a href="?page={{ users.next_page_number }}" class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-500 transition">Next</a>
+            <a href="?search={{ search_query }}&page={{ users.next_page_number }}" class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-500 transition">Next</a>
             {% endif %}
-        </div>
+            </div>
     </div>
 
     <!-- Delete Confirmation Modal -->
@@ -79,7 +82,7 @@
 
 <script>
     function openDeleteModal(userId) {
-        document.getElementById('deleteForm').action = `/admin/users/delete/${userId}/`;
+        document.getElementById('deleteForm').action = `/a/user/delete/${userId}`;
         document.getElementById('deleteUserModal').classList.remove('hidden');
         document.getElementById('deleteUserModal').classList.add('flex');
     }
