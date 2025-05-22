@@ -144,3 +144,4 @@ GitHub.sublime-settings
 !.vscode/extensions.json 
 .history
 /music_admin/migrations
+/static/images

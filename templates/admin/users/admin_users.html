@@ -1,6 +1,6 @@
 {% extends 'admin/layout/admin_base.html' %}
 {% block title %}🎵 Manage Users{% endblock %}
-
+{% load static %}
 {% block content %}
 <div class="min-h-screen p-8 bg-gradient-to-br from-black via-gray-900/80 to-purple-950 text-white backdrop-blur-lg">
 
@@ -31,8 +31,9 @@
             <tbody>
                 {% for user in users %}
                 <tr class="hover:bg-purple-800 transition-all duration-300">
-                    <td class="p-2 flex items-center gap-4">
-                        <img src="{{ user.profile_picture.url|default:'/static/images/default_user.jpg' }}" alt="Profile Picture" class="w-12 h-12 rounded-full border-2 border-purple-500 shadow-lg">
+                    <td class="p-2 px-6 items-center gap-4">
+                        <img src="{{ user.user_profile_url|default:'/static/images/default_user.jpg' }}" alt="Profile Picture" class="w-12 h-12 rounded-full border-2 border-purple-500 shadow-lg">
+
                     </td>
                     <td class="p-2 font-semibold">{{ user.user_name }}</td>
                     <td class="p-2 text-gray-300">{{ user.user_email }}</td>
@@ -82,6 +83,7 @@
 
 <script>
     function openDeleteModal(userId) {
+        alert(userId);
         document.getElementById('deleteForm').action = `/a/user/delete/${userId}`;
         document.getElementById('deleteUserModal').classList.remove('hidden');
         document.getElementById('deleteUserModal').classList.add('flex');
