@@ -38,7 +38,7 @@
                     <td class="p-2 font-semibold">{{ user.user_name }}</td>
                     <td class="p-2 text-gray-300">{{ user.user_email }}</td>
                     <td class="p-2 text-center flex justify-center gap-4">
-                        <a href="{% url 'edit_user' %}" class="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-700 text-white rounded-lg shadow-md hover:scale-105 transition">✏️ Edit</a>
+                        <a href="{% url 'edit_user' user.user_id %}" class="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-700 text-white rounded-lg shadow-md hover:scale-105 transition">✏️ Edit</a>
                         <button onclick="openDeleteModal('{{ user.user_id }}')" class="px-4 py-2 bg-gradient-to-r from-red-500 to-red-700 text-white rounded-lg shadow-md hover:scale-105 transition">❌ Delete</button>
                     </td>
                 </tr>

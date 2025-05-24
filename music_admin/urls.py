@@ -14,7 +14,7 @@ urlpatterns = [
 
     path('users', users.admin_users, name='admin_users'),
     path("add-user", users.add_user, name="add_user"),
-    path('user-edit', users.edit_user, name='edit_user'),
+    path('users/edit/<int:user_id>/', users.edit_user, name='edit_user'),
     path('user/delete/<int:id>', users.delete_user, name='delete_user'),
 
     path('songs', views.admin_songs, name='admin_songs'),

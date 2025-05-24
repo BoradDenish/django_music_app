@@ -71,15 +71,35 @@ def add_user(request):
     return render(request, "admin/users/user_add.html")
 
 
-def edit_user(request):
-    # Future enhancement: Pass user_id and fetch user
+def edit_user(request, user_id):
+    user = get_object_or_404(User, user_id=user_id)
+
     if request.method == "POST":
         username = request.POST.get("username")
         email = request.POST.get("email")
-        # TODO: implement update logic
-        messages.success(request, "User updated successfully.")
-        return redirect("admin_users")
-    return render(request, "admin/users/user_edit.html", {"id": 1})
+        profile_picture = request.FILES.get("profile_picture")
+
+        if not username or not email:
+            messages.error(request, "Username and Email are required.")
+            return render(request, "admin/users/user_edit.html", {"user": user})
+
+        user.user_name = username
+        user.user_email = email
+        if profile_picture:
+            user.user_profile_pic = profile_picture
+
+        try:
+            user.full_clean()
+            user.save()
+            messages.success(request, "User updated successfully.")
+            return redirect("admin_users")
+        except ValidationError as e:
+            messages.error(request, f"Validation error: {e}")
+        except Exception as e:
+            messages.error(request, f"An unexpected error occurred: {e}")
+
+    return render(request, "admin/users/user_edit.html", {"user": user})
+
 
 
 def delete_user(request, id):
