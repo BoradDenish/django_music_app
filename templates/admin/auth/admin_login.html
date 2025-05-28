@@ -86,11 +86,18 @@
 
         <!-- Admin Logo + Music Wave -->
         <div class="text-center mb-8">
-            <h2 class="text-4xl font-extrabold text-purple-400">🎵 Admin Login</h2>
+            <h2 class="text-4xl font-extrabold text-purple-400 flex items-center justify-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 inline-block text-pink-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-2v13"/>
+                    <circle cx="6" cy="18" r="3" fill="currentColor"/>
+                    <circle cx="18" cy="16" r="3" fill="currentColor"/>
+                </svg>
+                Admin Login
+            </h2>
             <div class="music-wave mt-4">
                 <span></span><span></span><span></span><span></span><span></span>
             </div>
-            <p class="text-gray-300 text-sm mt-4">Access the music dashboard</p>
+            <p class="text-gray-300 text-sm mt-4">Access the <span class="text-pink-400 font-semibold">Music & Songs</span> dashboard</p>
         </div>
 
         {% if messages %}
@@ -106,25 +113,28 @@
             {% csrf_token %}
 
             <div>
-                <label class="block text-gray-300 text-sm font-medium">Email</label>
-                <input type="text" name="email" placeholder="Enter Email Address" 
+                <label class="block text-gray-300 text-sm font-medium">Admin Email</label>
+                <input type="text" name="email" placeholder="Enter Admin Email Address" 
                     class="w-full px-4 py-3 mt-1 rounded-lg bg-gray-900 text-white border border-gray-700 focus:ring-2 focus:ring-purple-500 focus:outline-none transition duration-300">
             </div>
 
             <div>
-                <label class="block text-gray-300 text-sm font-medium">Password</label>
-                <input type="password" name="password" placeholder="Enter Password"
+                <label class="block text-gray-300 text-sm font-medium">Admin Password</label>
+                <input type="password" name="password" placeholder="Enter Admin Password"
                     class="w-full px-4 py-3 mt-1 rounded-lg bg-gray-900 text-white border border-gray-700 focus:ring-2 focus:ring-purple-500 focus:outline-none transition duration-300">
             </div>
 
             <button type="submit"
-                class="w-full py-3 rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold hover:scale-105 transform transition-all duration-300 shadow-lg">
-                🔒 Login
+                class="w-full py-3 rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold hover:scale-105 transform transition-all duration-300 shadow-lg flex items-center justify-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-2v13"/>
+                </svg>
+                Login
             </button>
         </form>
 
         <!-- Footer -->
-        <p class="text-center text-gray-400 text-sm mt-6">© 2025 MusicApp Admin</p>
+        <p class="text-center text-gray-400 text-sm mt-6">© 2025 MusicApp Admin • Manage your songs & playlists</p>
     </div>
 
 </body>
