@@ -7,34 +7,62 @@
     <title>{% block title %}Admin - MusicApp{% endblock %}</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Background Animation */
+        /* Off-white background */
         .admin-bg {
-            background: url('{% static "images/admin_bg4.jpg" %}') no-repeat center center/cover;
+            background: #f8fafc; /* pastel off-white */
             min-height: 100vh;
-            /* animation: fadeIn 2s ease-in-out; */
         }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
-            to {
-                opacity: 1;
-            }
+        .admin-bg::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            background: linear-gradient(120deg, #f8fafc 60%, #38bdf8 100%, #a21caf 120%);
+            opacity: 0.13;
+        }
+        /* Sidebar glass effect and vice accent */
+        .sidebar-glass {
+            background: linear-gradient(135deg, rgba(236,72,153,0.18) 0%, rgba(139,92,246,0.18) 100%);
+            backdrop-filter: blur(12px);
+        }
+        /* Music notes overlay with vice colors */
+        .music-notes-bg {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .music-notes-bg svg {
+            position: absolute;
+            opacity: 0.12;
+            filter: drop-shadow(0 0 8px #a21caf);
+            animation: floatNotes 12s linear infinite;
+        }
+        @keyframes floatNotes {
+            0% { transform: translateY(0) scale(1);}
+            100% { transform: translateY(-80px) scale(1.2);}
         }
     </style>
 </head>
-<body class="admin-bg text-white font-sans">
-
+<body class="admin-bg text-gray-900 font-sans">
+    <div class="music-notes-bg">
+        <svg width="60" height="60" style="left:10%;top:80px"><text x="0" y="40" font-size="48" fill="#ec4899">🎵</text></svg>
+        <svg width="40" height="40" style="left:70%;top:200px"><text x="0" y="32" font-size="32" fill="#06b6d4">🎶</text></svg>
+        <svg width="50" height="50" style="left:40%;top:400px"><text x="0" y="36" font-size="36" fill="#a21caf">🎼</text></svg>
+        <svg width="30" height="30" style="left:80%;top:600px"><text x="0" y="24" font-size="24" fill="#f59e42">🎤</text></svg>
+    </div>
     <!-- Sidebar -->
-    {% include 'admin/layout/admin_sidebar.html' %}
+    <div class="sidebar-glass fixed top-0 left-0 w-64 h-full shadow-2xl border-r-2 border-purple-400 z-30">
+        {% include 'admin/layout/admin_sidebar.html' %}
+    </div>
 
-    <div class="ml-64 p-6">
+    <div class="ml-64 p-6 pb-20">
         {% if messages %}
         <div id="message-container" class="mb-6">
             {% for message in messages %}
-                <div class="p-4 rounded-xl shadow-md {% if message.tags == 'success' %}bg-green-600{% elif message.tags == 'error' %}bg-red-600{% else %}bg-gray-700{% endif %}">
-                    <p class="text-white font-semibold">{{ message }}</p>
+                <div class="p-4 rounded-xl shadow-md {% if message.tags == 'success' %}bg-green-500/90 text-white{% elif message.tags == 'error' %}bg-red-500/90 text-white{% else %}bg-white/90 text-gray-900{% endif %}">
+                    <p class="font-semibold">{{ message }}</p>
                 </div>
             {% endfor %}
         </div>

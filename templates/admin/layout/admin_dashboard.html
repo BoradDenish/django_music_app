@@ -5,67 +5,114 @@
 
 {% block content %}
 <style>
-    /* Card Hover Effect */
+    .stat-card {
+        background: linear-gradient(135deg, rgba(34,211,238,0.92) 0%, rgba(139,92,246,0.92) 100%);
+        color: #fff;
+        backdrop-filter: blur(10px);
+        border: 2px solid #38bdf8;
+        box-shadow: 0 4px 24px 0 rgba(34,211,238,0.18), 0 1.5px 8px 0 rgba(139,92,246,0.12), 0 0 16px #38bdf8;
+        transition: transform 0.3s cubic-bezier(.4,2,.6,1), box-shadow 0.3s, border-color 0.3s;
+    }
     .stat-card:hover {
-        transform: scale(1.05);
-        transition: 0.3s ease-in-out;
+        transform: scale(1.07) rotate(-1deg);
+        box-shadow: 0 8px 32px 0 #38bdf8, 0 2px 16px 0 #6366f1, 0 0 24px #a21caf;
+        border-color: #fde047;
+    }
+    .section-title {
+        color: #38bdf8;
+        text-shadow: 0 2px 12px #a21caf99;
+    }
+    .song-card {
+        background: linear-gradient(135deg, rgba(59,130,246,0.85) 0%, rgba(16,185,129,0.85) 100%);
+        border: 2px solid #facc15;
+        transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+    }
+    .song-card:hover {
+        transform: scale(1.04) rotate(-1deg);
+        box-shadow: 0 8px 32px 0 #06b6d4, 0 2px 16px 0 #facc15;
+        border-color: #06b6d4;
+    }
+    .artist-card {
+        background: linear-gradient(135deg, rgba(251,191,36,0.85) 0%, rgba(139,92,246,0.85) 100%);
+        border: 2px solid #38bdf8;
+        transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+    }
+    .artist-card:hover {
+        transform: scale(1.07) rotate(1deg);
+        box-shadow: 0 8px 32px 0 #fde047, 0 2px 16px 0 #6366f1;
+        border-color: #a21caf;
+    }
+    .most-played-card {
+        background: linear-gradient(135deg, rgba(16,185,129,0.85) 0%, rgba(59,130,246,0.85) 100%);
+        border: 2px solid #f472b6;
+        transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+    }
+    .most-played-card:hover {
+        transform: scale(1.04) rotate(-1deg);
+        box-shadow: 0 8px 32px 0 #f472b6, 0 2px 16px 0 #06b6d4;
+        border-color: #fde047;
     }
 </style>
 
-<h1 class="text-4xl font-bold text-white text-center mb-10">📊 Admin Dashboard</h1>
+<h1 class="text-4xl font-extrabold text-cyan-400 text-center mb-10 flex items-center justify-center gap-2">
+    <span>📊</span> Admin Dashboard <span class="animate-bounce">🎶</span>
+</h1>
 
 <!-- Statistics -->
-<div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-white">
-    <div class="stat-card p-6 bg-gradient-to-r from-purple-700 to-black rounded-lg shadow-lg">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+    <div class="stat-card p-6 rounded-xl flex flex-col items-center">
+        <span class="text-5xl mb-2">👥</span>
         <h2 class="text-xl font-bold">Total Users</h2>
-        <p class="text-4xl">{{ total_users }}</p>
+        <p class="text-4xl font-extrabold text-yellow-300">{{ total_users }}</p>
     </div>
-    <div class="stat-card p-6 bg-gradient-to-r from-pink-700 to-black rounded-lg shadow-lg">
+    <div class="stat-card p-6 rounded-xl flex flex-col items-center">
+        <span class="text-5xl mb-2">🎵</span>
         <h2 class="text-xl font-bold">Total Songs</h2>
-        <p class="text-4xl">{{ total_songs }}</p>
+        <p class="text-4xl font-extrabold text-cyan-200">{{ total_songs }}</p>
     </div>
-    <div class="stat-card p-6 bg-gradient-to-r from-blue-700 to-black rounded-lg shadow-lg">
+    <div class="stat-card p-6 rounded-xl flex flex-col items-center">
+        <span class="text-5xl mb-2">🎼</span>
         <h2 class="text-xl font-bold">Active Playlists</h2>
-        <p class="text-4xl">{{ total_playlists }}</p>
+        <p class="text-4xl font-extrabold text-purple-200">{{ total_playlists }}</p>
     </div>
 </div>
 
 <!-- Recently Added Songs -->
-<div class="mt-10">
-    <h2 class="text-3xl font-bold text-white mb-4">🎶 Recently Added Songs</h2>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="mt-12">
+    <h2 class="text-3xl font-bold section-title mb-4 flex items-center gap-2">🎶 Recently Added Songs</h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
         {% for song in recent_songs %}
-            <div class="p-4 bg-gradient-to-b from-black/50 to-purple-800 rounded-lg shadow-lg">
-                <img src="{% static song.cover %}" alt="{{ song.title }}" class="w-full h-40 rounded-lg object-cover">
-                <h3 class="mt-2 text-lg font-semibold">{{ song.title }}</h3>
-                <p class="text-sm text-gray-300">by {{ song.artist }}</p>
+            <div class="song-card p-4 rounded-xl shadow-lg hover:scale-105 transition transform">
+                <img src="{% static song.cover %}" alt="{{ song.title }}" class="w-full h-40 rounded-lg object-cover border-2 border-yellow-300/40">
+                <h3 class="mt-3 text-lg font-semibold text-yellow-200 flex items-center gap-1">🎵 {{ song.title }}</h3>
+                <p class="text-sm text-cyan-100">by {{ song.artist }}</p>
             </div>
         {% endfor %}
     </div>
 </div>
 
 <!-- Recently Added Artists -->
-<div class="mt-10">
-    <h2 class="text-3xl font-bold text-white mb-4">🎤 Recently Added Artists</h2>
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+<div class="mt-12">
+    <h2 class="text-3xl font-bold section-title mb-4 flex items-center gap-2">🎤 Recently Added Artists</h2>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
         {% for artist in recent_artists %}
-            <div class="text-center">
-                <img src="{% static artist.image %}" alt="{{ artist.name }}" class="w-24 h-24 rounded-full object-cover mx-auto">
-                <h3 class="mt-2 font-semibold text-white">{{ artist.name }}</h3>
+            <div class="artist-card text-center p-4 rounded-xl shadow-lg hover:scale-105 transition transform">
+                <img src="{% static artist.image %}" alt="{{ artist.name }}" class="w-24 h-24 rounded-full object-cover mx-auto border-2 border-cyan-300/40">
+                <h3 class="mt-2 font-semibold text-white flex items-center gap-1">🎤 {{ artist.name }}</h3>
             </div>
         {% endfor %}
     </div>
 </div>
 
 <!-- Most Played Songs -->
-<div class="mt-10">
-    <h2 class="text-3xl font-bold text-white mb-4">🔥 Most Played Songs</h2>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="mt-12">
+    <h2 class="text-3xl font-bold text-green-300 mb-4 flex items-center gap-2">🔥 Most Played Songs</h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
         {% for song in most_played %}
-            <div class="p-4 bg-gradient-to-b from-black/50 to-red-800 rounded-lg shadow-lg">
-                <img src="{% static song.cover %}" alt="{{ song.title }}" class="w-full h-40 rounded-lg object-cover">
-                <h3 class="mt-2 text-lg font-semibold">{{ song.title }}</h3>
-                <p class="text-sm text-gray-300">Plays: {{ song.play_count }}</p>
+            <div class="most-played-card p-4 rounded-xl shadow-lg hover:scale-105 transition transform">
+                <img src="{% static song.cover %}" alt="{{ song.title }}" class="w-full h-40 rounded-lg object-cover border-2 border-pink-400/40">
+                <h3 class="mt-3 text-lg font-semibold text-pink-100 flex items-center gap-1">🎶 {{ song.title }}</h3>
+                <p class="text-sm text-yellow-100">Plays: {{ song.play_count }}</p>
             </div>
         {% endfor %}
     </div>

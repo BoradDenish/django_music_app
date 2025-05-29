@@ -1,31 +1,40 @@
-<div class="fixed top-0 left-0 w-64 h-full bg-gradient-to-b from-purple-800 to-black p-6 shadow-xl">
-    <h2 class="text-3xl font-bold text-purple-400 mb-6 text-center">🎵 Admin Panel</h2>
+<div class="fixed top-0 left-0 w-64 h-full bg-gradient-to-b from-cyan-400/90 via-purple-700/90 to-blue-500/80 p-6 shadow-2xl border-r-4 border-cyan-300 z-30 sidebar-glass" style="box-shadow: 0 0 32px 0 #38bdf8;">
+    <h2 class="text-3xl font-extrabold text-white mb-10 text-center flex items-center justify-center gap-2 drop-shadow-[0_2px_12px_#ec4899]">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-yellow-300 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-2v13"/>
+            <circle cx="6" cy="18" r="3" fill="currentColor"/>
+            <circle cx="18" cy="16" r="3" fill="currentColor"/>
+        </svg>
+        Music Admin
+    </h2>
     <ul class="space-y-4">
         <li>
-            <a href="{% url 'admin_dashboard' %}" class="flex items-center px-4 py-3 rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 hover:scale-105 transition transform">
-                📊 Dashboard
+            <a href="{% url 'admin_dashboard' %}" class="flex items-center gap-2 px-4 py-3 rounded-lg bg-gradient-to-r from-pink-500 via-purple-500 to-blue-400 shadow-lg hover:scale-105 transition transform font-semibold text-white">
+                <span>📊</span> Dashboard
             </a>
         </li>
         <li>
-            <a href="{% url 'admin_users' %}" class="flex items-center px-4 py-3 rounded-lg hover:bg-purple-600 hover:scale-105 transition transform">
-                👥 Manage Users
+            <a href="{% url 'admin_users' %}" class="flex items-center gap-2 px-4 py-3 rounded-lg hover:bg-pink-400/30 hover:scale-105 transition transform font-semibold text-white">
+                <span>👥</span> Manage Users
             </a>
         </li>
         <li>
-            <a href="{% url 'admin_songs' %}" class="flex items-center px-4 py-3 rounded-lg hover:bg-purple-600 hover:scale-105 transition transform">
-                🎼 Manage Songs
+            <a href="{% url 'admin_songs' %}" class="flex items-center gap-2 px-4 py-3 rounded-lg hover:bg-purple-400/30 hover:scale-105 transition transform font-semibold text-white">
+                <span>🎵</span> Manage Songs
             </a>
         </li>
         <li>
-            <a href="{% url 'admin_video' %}" class="flex items-center px-4 py-3 rounded-lg hover:bg-purple-600 hover:scale-105 transition transform">
-                🎬 Manage Videos
+            <a href="{% url 'admin_video' %}" class="flex items-center gap-2 px-4 py-3 rounded-lg hover:bg-blue-400/30 hover:scale-105 transition transform font-semibold text-white">
+                <span>🎬</span> Manage Videos
             </a>
         </li>
         <li>
-            <a href="{% url 'admin_logout' %}" class="flex items-center px-4 py-3 rounded-lg hover:bg-red-600 hover:scale-105 transition transform">
-                🚪 Logout
+            <a href="{% url 'admin_logout' %}" class="flex items-center gap-2 px-4 py-3 rounded-lg hover:bg-yellow-400/30 hover:scale-105 transition transform font-semibold text-white">
+                <span>🚪</span> Logout
             </a>
         </li>
     </ul>
+    <div class="absolute bottom-6 left-0 w-full flex justify-center">
+        <span class="text-xs text-pink-200 opacity-80 tracking-widest animate-pulse">Feel the beat 🎶</span>
+    </div>
 </div>
-777c
