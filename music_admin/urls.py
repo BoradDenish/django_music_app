@@ -20,8 +20,8 @@ urlpatterns = [
     path('songs', views.admin_songs, name='admin_songs'),
     path('video', views.admin_video, name='admin_video'),
 
-    # path('songs/edit/<int:song_id>', views.edit_song, name='edit_song'),
-    # path('songs/delete/<int:song_id>', views.delete_song, name='delete_song'),
-    # path('songs/add', views.add_song, name='add_song'),
+    path('songs/add', views.add_song, name='add_song'),
+    path('songs/edit/<int:song_id>', views.edit_song, name='edit_song'),
+    path('songs/delete/<int:song_id>', views.delete_song, name='delete_song'),
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

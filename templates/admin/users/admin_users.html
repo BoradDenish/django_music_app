@@ -2,11 +2,11 @@
 {% block title %}🎵 Manage Users{% endblock %}
 {% load static %}
 {% block content %}
-<div class="min-h-screen p-8 bg-gradient-to-br from-black via-gray-900/80 to-purple-950 text-white backdrop-blur-lg">
+<div class="min-h-screen p-8 bg-gradient-to-br from-cyan-400 via-purple-900 to-blue-900 text-white">
 
     <div class="flex justify-between items-center mb-8">
-        <h1 class="text-4xl font-bold flex items-center gap-2">🎵 Manage Users</h1>
-        <a href="{% url 'add_user' %}" class="px-6 py-3 bg-gradient-to-r from-green-500 to-green-700 hover:scale-105 transition-transform text-white rounded-lg shadow-lg flex items-center gap-2">
+        <h1 class="text-4xl font-bold flex items-center gap-2 drop-shadow-[0_2px_12px_#38bdf8]">🎵 Manage Users</h1>
+        <a href="{% url 'add_user' %}" class="px-6 py-3 bg-gradient-to-r from-green-400 via-cyan-400 to-blue-500 hover:scale-105 transition-transform text-white rounded-lg shadow-lg flex items-center gap-2 font-semibold">
             ➕ Add User
         </a>
     </div>
@@ -14,32 +14,31 @@
     <!-- Search Bar -->
     <form method="get" class="mb-6">
         <input type="text" name="search" value="{{ search_query }}" placeholder="🔍 Search users..." 
-            class="w-full p-4 rounded-lg bg-white/10 text-white placeholder-gray-300 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-purple-500">
+            class="w-full p-4 rounded-lg bg-white/10 text-white placeholder-cyan-100 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-cyan-400">
     </form>
 
     <!-- Users Table -->
-    <div class="overflow-hidden rounded-xl shadow-lg ring-1 ring-white/10 backdrop-blur-md">
-        <table class="w-full bg-gradient-to-br from-purple-900 via-black to-purple-950 text-white rounded-xl overflow-hidden">
+    <div class="overflow-hidden rounded-xl shadow-xl ring-1 ring-cyan-400/20 backdrop-blur-md bg-white/5">
+        <table class="w-full bg-gradient-to-br from-purple-900/80 via-blue-900/80 to-cyan-900/80 text-white rounded-xl overflow-hidden">
             <thead>
-                <tr class="bg-gradient-to-r from-purple-700 via-purple-600 to-purple-700 text-white shadow-md">
-                    <th class="p-2 text-left border-b border-purple-800">🎤 Profile</th>
-                    <th class="p-2 text-left border-b border-purple-800">🎵 Username</th>
-                    <th class="p-2 text-left border-b border-purple-800">📧 Email</th>
-                    <th class="p-2 text-center border-b border-purple-800">🎛️ Actions</th>
+                <tr class="bg-gradient-to-r from-cyan-700 via-purple-700 to-blue-700 text-white shadow-md">
+                    <th class="p-2 text-left border-b border-cyan-800">🎤 Profile</th>
+                    <th class="p-2 text-left border-b border-cyan-800">🎵 Username</th>
+                    <th class="p-2 text-left border-b border-cyan-800">📧 Email</th>
+                    <th class="p-2 text-center border-b border-cyan-800">🎛️ Actions</th>
                 </tr>
             </thead>
             <tbody>
                 {% for user in users %}
-                <tr class="hover:bg-purple-800 transition-all duration-300">
+                <tr class="hover:bg-cyan-800/60 transition-all duration-300">
                     <td class="p-2 px-6 items-center gap-4">
-                        <img src="{{ user.user_profile_url|default:'/static/images/default_user.jpg' }}" alt="Profile Picture" class="w-12 h-12 rounded-full border-2 border-purple-500 shadow-lg">
-
+                        <img src="{{ user.user_profile_url|default:'/static/images/default_user.jpg' }}" alt="Profile Picture" class="w-12 h-12 rounded-full border-2 border-cyan-400 shadow-lg">
                     </td>
                     <td class="p-2 font-semibold">{{ user.user_name }}</td>
-                    <td class="p-2 text-gray-300">{{ user.user_email }}</td>
+                    <td class="p-2 text-cyan-100">{{ user.user_email }}</td>
                     <td class="p-2 text-center flex justify-center gap-4">
-                        <a href="{% url 'edit_user' user.user_id %}" class="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-700 text-white rounded-lg shadow-md hover:scale-105 transition">✏️ Edit</a>
-                        <button onclick="openDeleteModal('{{ user.user_id }}')" class="px-4 py-2 bg-gradient-to-r from-red-500 to-red-700 text-white rounded-lg shadow-md hover:scale-105 transition">❌ Delete</button>
+                        <a href="{% url 'edit_user' user.user_id %}" class="px-4 py-2 bg-gradient-to-r from-blue-400 to-blue-700 text-white rounded-lg shadow-md hover:scale-105 transition font-semibold">✏️ Edit</a>
+                        <button onclick="openDeleteModal('{{ user.user_id }}')" class="px-4 py-2 bg-gradient-to-r from-red-400 to-red-700 text-white rounded-lg shadow-md hover:scale-105 transition font-semibold">❌ Delete</button>
                     </td>
                 </tr>
                 {% endfor %}
@@ -48,7 +47,7 @@
     </div>
 
     <!-- Pagination -->
-    <div class="flex justify-between items-center mt-6 text-sm text-gray-300">
+    <div class="flex justify-between items-center mt-6 text-sm text-cyan-100">
         {% if users.paginator.count > 0 %}
             Showing {{ users.start_index }} to {{ users.end_index }} of {{ users.paginator.count }} records
         {% else %}
@@ -57,33 +56,31 @@
 
         <div class="flex gap-2">
             {% if users.has_previous %}
-            <a href="?search={{ search_query }}&page={{ users.previous_page_number }}" class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-500 transition">Previous</a>
+            <a href="?search={{ search_query }}&page={{ users.previous_page_number }}" class="px-4 py-2 bg-gradient-to-r from-cyan-600 to-blue-600 text-white rounded-lg hover:scale-105 transition">Previous</a>
             {% endif %}
-
             {% if users.has_next %}
-            <a href="?search={{ search_query }}&page={{ users.next_page_number }}" class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-500 transition">Next</a>
+            <a href="?search={{ search_query }}&page={{ users.next_page_number }}" class="px-4 py-2 bg-gradient-to-r from-cyan-600 to-blue-600 text-white rounded-lg hover:scale-105 transition">Next</a>
             {% endif %}
-            </div>
+        </div>
     </div>
 
     <!-- Delete Confirmation Modal -->
     <div id="deleteUserModal" class="fixed inset-0 bg-black/70 hidden items-center justify-center z-50">
-        <div class="bg-gradient-to-br from-gray-900 via-purple-900 to-black p-8 rounded-2xl shadow-2xl w-full max-w-md mx-auto text-white relative">
-            <h2 class="text-2xl font-bold mb-4">❌ Delete User</h2>
-            <p class="mb-6 text-sm text-gray-300">Are you sure you want to delete this user? This action cannot be undone.</p>
+        <div class="bg-gradient-to-br from-blue-900 via-purple-900 to-cyan-900 p-8 rounded-2xl shadow-2xl w-full max-w-md mx-auto text-white relative ring-2 ring-cyan-400/40">
+            <h2 class="text-2xl font-bold mb-4 text-red-400">❌ Delete User</h2>
+            <p class="mb-6 text-sm text-cyan-100">Are you sure you want to delete this user? This action cannot be undone.</p>
             <form method="POST" id="deleteForm" class="flex justify-end gap-4">
                 {% csrf_token %}
-                <button type="button" onclick="closeDeleteModal()" class="btn-gray">Cancel</button>
-                <button type="submit" class="btn-red">Delete</button>
+                <button type="button" onclick="closeDeleteModal()" class="px-5 py-2 bg-gradient-to-r from-gray-600 to-gray-800 rounded-lg hover:bg-gray-700 transition">Cancel</button>
+                <button type="submit" class="px-5 py-2 bg-gradient-to-r from-red-500 to-red-700 rounded-lg hover:bg-red-600 transition">Delete</button>
             </form>
-            <button onclick="closeDeleteModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-2xl">×</button>
+            <button onclick="closeDeleteModal()" class="absolute top-4 right-4 text-cyan-300 hover:text-white text-2xl">×</button>
         </div>
     </div>
 </div>
 
 <script>
     function openDeleteModal(userId) {
-        alert(userId);
         document.getElementById('deleteForm').action = `/a/user/delete/${userId}`;
         document.getElementById('deleteUserModal').classList.remove('hidden');
         document.getElementById('deleteUserModal').classList.add('flex');
