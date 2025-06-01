@@ -1,6 +1,6 @@
 from django.urls import path
 from music_admin import views
-from music_admin.view import authentication, users
+from music_admin.view import authentication, users, songs
 
 from django.conf import settings
 from django.conf.urls.static import static
@@ -17,11 +17,11 @@ urlpatterns = [
     path('users/edit/<int:user_id>/', users.edit_user, name='edit_user'),
     path('user/delete/<int:id>', users.delete_user, name='delete_user'),
 
-    path('songs', views.admin_songs, name='admin_songs'),
     path('video', views.admin_video, name='admin_video'),
 
-    path('songs/add', views.add_song, name='add_song'),
-    path('songs/edit/<int:song_id>', views.edit_song, name='edit_song'),
-    path('songs/delete/<int:song_id>', views.delete_song, name='delete_song'),
+    path('songs', songs.admin_songs, name='admin_songs'),
+    path('songs/add', songs.add_song, name='add_song'),
+    path('songs/edit/<int:song_id>', songs.edit_song, name='edit_song'),
+    path('songs/delete/<int:song_id>', songs.delete_song, name='delete_song'),
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

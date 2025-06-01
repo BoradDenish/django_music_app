@@ -52,17 +52,17 @@ def admin_dashboard(request):
         'most_played': most_played,
     })
 
-def admin_songs(request):
-    # songs = Song.objects.all()
-    songs = [
-        {"id": 1, "title": "Blinding Lights", "artist": "The Weeknd", "cover": "songs/blinding_lights.jpg"},
-        {"id": 2, "title": "Levitating", "artist": "Dua Lipa", "cover": "songs/levitating.jpg"},
-        {"id": 3, "title": "Shape of You", "artist": "Ed Sheeran", "cover": "songs/shape_of_you.jpg"},
-        {"id": 4, "title": "Peaches", "artist": "Justin Bieber", "cover": "songs/peaches.jpg"},
-        {"id": 5, "title": "Save Your Tears", "artist": "The Weeknd", "cover": "songs/save_your_tears.jpg"},
-        {"id": 6, "title": "Watermelon Sugar", "artist": "Harry Styles", "cover": "songs/watermelon_sugar.jpg"},
-    ]
-    return render(request, "admin/songs/admin_songs.html", {"songs": songs})
+# def admin_songs(request):
+#     # songs = Song.objects.all()
+#     songs = [
+#         {"id": 1, "title": "Blinding Lights", "artist": "The Weeknd", "cover": "songs/blinding_lights.jpg"},
+#         {"id": 2, "title": "Levitating", "artist": "Dua Lipa", "cover": "songs/levitating.jpg"},
+#         {"id": 3, "title": "Shape of You", "artist": "Ed Sheeran", "cover": "songs/shape_of_you.jpg"},
+#         {"id": 4, "title": "Peaches", "artist": "Justin Bieber", "cover": "songs/peaches.jpg"},
+#         {"id": 5, "title": "Save Your Tears", "artist": "The Weeknd", "cover": "songs/save_your_tears.jpg"},
+#         {"id": 6, "title": "Watermelon Sugar", "artist": "Harry Styles", "cover": "songs/watermelon_sugar.jpg"},
+#     ]
+#     return render(request, "admin/songs/admin_songs.html", {"songs": songs})
 
 def delete_user(request):
     return render(request, "admin/users/admin_users.html")
@@ -70,26 +70,26 @@ def delete_user(request):
 def admin_video(request):
     return render(request, "admin/videos/admin_videos.html")
 
-def add_song(request):
-    if request.method == "POST":
-        # Here you would handle the form submission to add a new song
-        # For now, we will just show a success message
-        messages.success(request, "Song added successfully!")
-        return redirect('admin_songs')  # Redirect to the songs page after adding
+# def add_song(request):
+#     if request.method == "POST":
+#         # Here you would handle the form submission to add a new song
+#         # For now, we will just show a success message
+#         messages.success(request, "Song added successfully!")
+#         return redirect('admin_songs')  # Redirect to the songs page after adding
 
-    return render(request, "admin/songs/add_song.html")  # Render the add song form
+#     return render(request, "admin/songs/add_song.html")  # Render the add song form
 
-def edit_song(request, song_id):
-    # Here you would fetch the song by ID and handle the form submission
-    # For now, we will just show a success message
-    if request.method == "POST":
-        messages.success(request, "Song edited successfully!")
-        return redirect('admin_songs')  # Redirect to the songs page after editing
+# def edit_song(request, song_id):
+#     # Here you would fetch the song by ID and handle the form submission
+#     # For now, we will just show a success message
+#     if request.method == "POST":
+#         messages.success(request, "Song edited successfully!")
+#         return redirect('admin_songs')  # Redirect to the songs page after editing
 
-    return render(request, "admin/songs/edit_song.html", {"song_id": song_id})  # Render the edit song form
+#     return render(request, "admin/songs/edit_song.html", {"song_id": song_id})  # Render the edit song form
 
-def delete_song(request, song_id):
-    # Here you would handle the deletion of the song by ID
-    # For now, we will just show a success message
-    messages.success(request, "Song deleted successfully!")
-    return redirect('admin_songs')  # Redirect to the songs page after deletion
+# def delete_song(request, song_id):
+#     # Here you would handle the deletion of the song by ID
+#     # For now, we will just show a success message
+#     messages.success(request, "Song deleted successfully!")
+#     return redirect('admin_songs')  # Redirect to the songs page after deletion

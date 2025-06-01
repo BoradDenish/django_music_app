@@ -5,7 +5,7 @@
 <div class="min-h-screen px-4 py-12 bg-gradient-to-br from-cyan-400 via-purple-900 to-blue-900 text-white">
     <div class="max-w-2xl mx-auto bg-white/10 backdrop-blur-md p-10 rounded-2xl shadow-2xl ring-1 ring-cyan-400/30">
         <h1 class="text-4xl font-bold mb-8 flex items-center gap-2 drop-shadow-[0_2px_12px_#38bdf8]">➕ Add New Song</h1>
-        <form method="POST" enctype="multipart/form-data" class="space-y-6">
+        <form method="POST" enctype="multipart/form-data" action="{% url 'add_song' %}" class="space-y-6">
             {% csrf_token %}
             <div>
                 <label class="block mb-2 text-sm font-semibold text-cyan-200">Song Title</label>
@@ -14,6 +14,27 @@
             <div>
                 <label class="block mb-2 text-sm font-semibold text-cyan-200">Artist</label>
                 <input type="text" name="artist" placeholder="🎤 Artist" required class="w-full p-3 rounded-xl bg-white/10 text-white placeholder-cyan-200 focus:outline-none focus:ring-2 focus:ring-cyan-400">
+            </div>
+            <div>
+                <label class="block mb-2 text-sm font-semibold text-cyan-200">Genre</label>
+                <select name="genre" required class="w-full p-3 rounded-xl bg-white/10 text-white focus:outline-none focus:ring-2 focus:ring-cyan-400">
+                    <option value="">Select Genre</option>
+                    <option value="Pop">Pop</option>
+                    <option value="Rock">Rock</option>
+                    <option value="Hip-Hop">Hip-Hop</option>
+                    <option value="Jazz">Jazz</option>
+                    <option value="Classical">Classical</option>
+                    <option value="Electronic">Electronic</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+            <div>
+                <label class="block mb-2 text-sm font-semibold text-cyan-200">Release Date</label>
+                <input type="date" name="release_date" required class="w-full p-3 rounded-xl bg-white/10 text-white focus:outline-none focus:ring-2 focus:ring-cyan-400">
+            </div>
+            <div>
+                <label class="block mb-2 text-sm font-semibold text-cyan-200">Duration (hh:mm:ss)</label>
+                <input type="text" name="duration" placeholder="00:03:30" required class="w-full p-3 rounded-xl bg-white/10 text-white focus:outline-none focus:ring-2 focus:ring-cyan-400">
             </div>
             <div>
                 <label class="block mb-2 text-sm font-semibold text-cyan-200">Audio File</label>
