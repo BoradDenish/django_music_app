@@ -83,6 +83,7 @@ class Song(models.Model):
     audio_file = models.FileField(upload_to='songs/')
     duration = models.DurationField()
     created_at = models.DateTimeField(auto_now_add=True)
+    media_type = models.CharField(max_length=10, choices=[('audio', 'Audio'), ('video', 'Video')], null=True, blank=True)
 
     class Meta:
         db_table = "Songs"
