@@ -68,9 +68,9 @@ def add_song(request):
                 # Get cover image path if downloaded
                 thumbnail_url = info.get('thumbnail')
                 # Try to get metadata
-                title = info.get('title', title)
-                artist = info.get('artist', artist) or info.get('uploader', artist)
-                genre = info.get('genre', genre)
+                title = info.get('title') or title or 'Unknown Title'
+                artist = info.get('artist') or info.get('uploader') or artist or 'Unknown Artist'
+                genre = info.get('genre') or genre or 'Unknown Genre'
                 release_date = info.get('release_date', release_date)
                 if release_date and len(release_date) == 8:
                     release_date = f"{release_date[:4]}-{release_date[4:6]}-{release_date[6:]}"
