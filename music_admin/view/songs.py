@@ -4,8 +4,25 @@ from django.db.models import Q
 from music_admin.models import Song
 from django.views.decorators.http import require_http_methods
 from django.conf import settings
+from django.templatetags.static import static
 import yt_dlp
 import os
+import logging
+import re
+import shutil
+
+# Logging setup for songs.py
+LOG_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'log')
+os.makedirs(LOG_DIR, exist_ok=True)
+logger = logging.getLogger('songs_logger')
+handler = logging.FileHandler(os.path.join(LOG_DIR, 'songs.log'))
+formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
+handler.setFormatter(formatter)
+if not logger.hasHandlers():
+    logger.addHandler(handler)
+logger.setLevel(logging.INFO)
+
+MAX_AUDIO_FILE_LENGTH = 255  # or whatever your model allows
 
 def admin_songs(request):
     search_query = request.GET.get('search', '')
@@ -15,18 +32,26 @@ def admin_songs(request):
             Q(title__icontains=search_query) | Q(artist__icontains=search_query)
         )
     for song in songs_queryset:
-        if song.audio_file:
+        # If audio_file is a FileField and has a url
+        if hasattr(song.audio_file, 'url'):
             song.audio_url = song.audio_file.url
+        # If audio_file is a string path (e.g., 'songs/filename.mp3')
+        elif song.audio_file:
+            # Convert backslashes to forward slashes for URL
+            audio_path = str(song.audio_file).replace('\\', '/')
+            song.audio_url = settings.MEDIA_URL + audio_path
         else:
             song.audio_url = ""
     context = {
         'songs': songs_queryset,
         'search_query': search_query,
     }
+    print("Files in media/songs:", os.listdir(os.path.join(settings.MEDIA_ROOT, 'songs')))
     return render(request, 'admin/songs/admin_songs.html', context)
 
 @require_http_methods(["GET", "POST"])
 def add_song(request):
+    logger.info("add_song called by user: %s", request.user if hasattr(request, 'user') else 'anonymous')
     if request.method == "POST":
         youtube_url = request.POST.get('youtube_url', '').strip()
         media_type = request.POST.get('media_type', '').strip()
@@ -38,7 +63,6 @@ def add_song(request):
         audio_file = request.FILES.get('audio_file')
         cover_image = None
 
-        # If YouTube URL is provided, use yt-dlp to fetch and fill details
         if youtube_url:
             try:
                 output_dir = os.path.join(settings.MEDIA_ROOT, 'songs')
@@ -56,12 +80,34 @@ def add_song(request):
                 with yt_dlp.YoutubeDL(ydl_opts) as ydl:
                     info = ydl.extract_info(youtube_url, download=True)
                 # Get file path
+                file_title = info.get('title', 'unknown')
+                safe_title = re.sub(r'[^\w\-]', '_', file_title)
                 if media_type == 'audio':
                     ext = 'mp3'
                 else:
                     ext = info.get('ext', 'mp4')
-                file_title = info.get('title', 'unknown')
-                file_path = os.path.join('songs', f"{file_title}.{ext}")
+
+                original_filename = f"{file_title}.{ext}"
+                safe_filename = f"{safe_title}.{ext}"
+
+                output_dir = os.path.join(settings.MEDIA_ROOT, 'songs')
+                original_path = os.path.join(output_dir, original_filename)
+                safe_path = os.path.join(output_dir, safe_filename)
+
+                # Always rename the file to the sanitized name
+                if os.path.exists(original_path):
+                    if original_filename != safe_filename:
+                        if os.path.exists(safe_path):
+                            os.remove(safe_path)  # Remove if already exists to avoid error
+                        os.rename(original_path, safe_path)
+                elif not os.path.exists(safe_path):
+                    # fallback: if safe_path doesn't exist but original does, move anyway
+                    raise Exception(f"Downloaded file not found: {original_path}")
+
+                # Now always use the safe_filename for DB and URL
+                file_path = os.path.join('songs', safe_filename)
+                if len(file_path) > MAX_AUDIO_FILE_LENGTH:
+                    file_path = file_path[:MAX_AUDIO_FILE_LENGTH]
                 abs_file_path = os.path.join(settings.MEDIA_ROOT, file_path)
                 # Get file size
                 file_size = os.path.getsize(abs_file_path) if os.path.exists(abs_file_path) else 0
@@ -97,13 +143,16 @@ def add_song(request):
                 song.full_clean()
                 song.save()
                 messages.success(request, "Song added successfully from YouTube.")
+                logger.info("Song added from YouTube: %s by %s", title, artist)
                 return redirect("admin_songs")
             except Exception as e:
                 messages.error(request, f"Error downloading from YouTube: {e}")
+                logger.error("Error downloading from YouTube: %s", e)
                 return render(request, "admin/songs/add_song.html")
         else:
             # Manual upload
             if not title or not artist or not genre or not release_date or not duration or not audio_file or not media_type:
+                logger.warning("Missing fields in manual song upload")
                 messages.error(request, "All fields are required.")
                 return render(request, "admin/songs/add_song.html")
             try:
@@ -122,9 +171,11 @@ def add_song(request):
                 song.full_clean()
                 song.save()
                 messages.success(request, "Song added successfully.")
+                logger.info("Song added manually: %s by %s", title, artist)
                 return redirect("admin_songs")
             except Exception as e:
                 messages.error(request, f"An error occurred: {e}")
+                logger.error("Error adding song manually: %s", e)
 
     return render(request, "admin/songs/add_song.html")
 
@@ -155,6 +206,7 @@ def edit_song(request, song_id):
             return redirect("admin_songs")
         except Exception as e:
             messages.error(request, f"An error occurred: {e}")
+            logger.error(f"An error occurred: {e}")
 
     song.audio_url = song.audio_file.url if song.audio_file else ""
     return render(request, "admin/songs/edit_song.html", {"song": song})
@@ -167,6 +219,7 @@ def delete_song(request, song_id):
         messages.success(request, "Song deleted successfully.")
     except Exception as e:
         messages.error(request, f"An error occurred: {e}")
+        logger.error(f"An error occurred: {e}")
     return redirect("admin_songs")
 
 def download_youtube_audio(youtube_url, output_dir):

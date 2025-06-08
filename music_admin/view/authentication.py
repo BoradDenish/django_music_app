@@ -5,6 +5,19 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.hashers import check_password
 from django.utils import timezone
 from music_admin.models import Session, User
+import logging
+import os
+
+# Logging setup for authentication.py
+LOG_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'log')
+os.makedirs(LOG_DIR, exist_ok=True)
+logger = logging.getLogger('authentication_logger')
+handler = logging.FileHandler(os.path.join(LOG_DIR, 'authentication.log'))
+formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
+handler.setFormatter(formatter)
+if not logger.hasHandlers():
+    logger.addHandler(handler)
+logger.setLevel(logging.INFO)
 
 def admin_login(request):
     if request.method == "POST":

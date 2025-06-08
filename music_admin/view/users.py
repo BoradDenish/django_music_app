@@ -5,6 +5,19 @@ from django.contrib import messages
 from django.core.exceptions import ValidationError
 from django.templatetags.static import static
 from music_admin.models import User, UserRole
+import logging
+import os
+
+# Logging setup for users.py
+LOG_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'log')
+os.makedirs(LOG_DIR, exist_ok=True)
+logger = logging.getLogger('users_logger')
+handler = logging.FileHandler(os.path.join(LOG_DIR, 'users.log'))
+formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
+handler.setFormatter(formatter)
+if not logger.hasHandlers():
+    logger.addHandler(handler)
+logger.setLevel(logging.INFO)
 
 
 def admin_users(request):
@@ -60,13 +73,17 @@ def add_user(request):
             new_user.full_clean()
             new_user.save()
             messages.success(request, "User added successfully.")
+            logger.info(f"User added: {username} ({email})")
             return redirect("admin_users")
         except ValidationError as e:
             messages.error(request, f"Validation error: {e}")
+            logger.warning(f"Validation error when adding user {username}: {e}")
         except UserRole.DoesNotExist:
             messages.error(request, "User role not found.")
+            logger.error(f"User role not found when adding user {username}")
         except Exception as e:
             messages.error(request, f"An unexpected error occurred: {e}")
+            logger.error(f"Unexpected error when adding user {username}: {e}")
 
     return render(request, "admin/users/user_add.html")
 
@@ -92,11 +109,14 @@ def edit_user(request, user_id):
             user.full_clean()
             user.save()
             messages.success(request, "User updated successfully.")
+            logger.info(f"User updated: {username} ({email})")
             return redirect("admin_users")
         except ValidationError as e:
             messages.error(request, f"Validation error: {e}")
+            logger.warning(f"Validation error when updating user {username}: {e}")
         except Exception as e:
             messages.error(request, f"An unexpected error occurred: {e}")
+            logger.error(f"Unexpected error when updating user {username}: {e}")
 
     return render(request, "admin/users/user_edit.html", {"user": user})
 
@@ -108,7 +128,9 @@ def delete_user(request, id):
         user.deleted_at = timezone.now()
         user.save()
         messages.success(request, "User deleted successfully.")
+        logger.info(f"User deleted: {user.user_name} ({user.user_email})")
         return redirect("admin_users")
     else:
         messages.error(request, "Invalid request method.")
+        logger.warning(f"Invalid request method for deleting user ID {id}")
         return redirect("admin_users")

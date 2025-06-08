@@ -80,7 +80,7 @@ class Song(models.Model):
     ])
     release_date = models.DateField()
     cover_image = models.ImageField(upload_to='covers/', blank=True, null=True)
-    audio_file = models.FileField(upload_to='songs/')
+    audio_file = models.FileField(upload_to='songs/', max_length=255, blank=True, null=True)
     duration = models.DurationField()
     created_at = models.DateTimeField(auto_now_add=True)
     media_type = models.CharField(max_length=10, choices=[('audio', 'Audio'), ('video', 'Video')], null=True, blank=True)

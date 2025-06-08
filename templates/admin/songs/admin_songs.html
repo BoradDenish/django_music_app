@@ -36,7 +36,7 @@
                     <input type="range" id="progress-{{ song.id }}" value="0" min="0" max="100" step="1" class="flex-1 accent-cyan-400 h-1 rounded-lg">
                     <span id="duration-{{ song.id }}" class="text-xs text-cyan-200 min-w-[40px]">0:00</span>
                 </div>
-                <audio id="audio-{{ song.id }}" src="{{ song.audio_file.url }}"></audio>
+                <audio id="audio-{{ song.id }}" src="{{ song.audio_url }}"></audio>
             </div>
             {% endif %}
             <div class="flex-1">
