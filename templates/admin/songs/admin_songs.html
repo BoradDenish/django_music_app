@@ -26,10 +26,11 @@
                     <span class="text-5xl text-cyan-300">🎵</span>
                 {% endif %}
             </div>
-            {% if song.audio_file %}
+            {{ song.duration }}
+            {% if song.audio_url and ".mp3" in song.audio_url|lower %}
             <div class="w-full flex flex-col items-center mb-2">
                 <div class="flex items-center gap-2 w-full">
-                    <button id="play-btn-{{ song.id }}" class="bg-cyan-500 hover:bg-cyan-700 text-white rounded-full p-2 shadow-lg transition text-xl">
+                    <button type="button" id="play-btn-{{ song.id }}" class="bg-cyan-500 hover:bg-cyan-700 text-white rounded-full p-2 shadow-lg transition text-xl">
                         ▶️
                     </button>
                     <span id="current-{{ song.id }}" class="text-xs text-cyan-200 min-w-[40px]">0:00</span>
@@ -86,23 +87,33 @@ document.addEventListener('DOMContentLoaded', function() {
             return Math.floor(sec/60) + ':' + ('0' + (sec%60)).slice(-2);
         }
 
+        // Set duration when metadata is loaded
         audio.addEventListener('loadedmetadata', function() {
-            duration.textContent = formatTime(audio.duration);
-            progress.max = Math.floor(audio.duration);
+            if (isNaN(audio.duration) || audio.duration === Infinity) {
+                duration.textContent = '0:00';
+                progress.max = 100;
+            } else {
+                duration.textContent = formatTime(audio.duration);
+                progress.max = Math.floor(audio.duration);
+            }
         });
 
+        // Update progress and current time
         audio.addEventListener('timeupdate', function() {
             progress.value = Math.floor(audio.currentTime);
             current.textContent = formatTime(audio.currentTime);
         });
 
+        // Reset UI when audio ends
         audio.addEventListener('ended', function() {
             playBtn.textContent = '▶️';
             progress.value = 0;
             current.textContent = '0:00';
         });
 
-        playBtn.addEventListener('click', function() {
+        // Play/Pause logic
+        playBtn.addEventListener('click', function(e) {
+            e.preventDefault(); // Prevent form submission if inside a form
             // Pause all other audios
             document.querySelectorAll('audio').forEach(a => {
                 if(a !== audio) {
@@ -120,8 +131,14 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
+        // Seek logic
         progress.addEventListener('input', function() {
             audio.currentTime = progress.value;
+        });
+
+        // Debug: log errors if audio fails to load
+        audio.addEventListener('error', function(e) {
+            console.error('Audio failed to load:', audio.src, e);
         });
     });
 });

@@ -65,11 +65,26 @@ def add_song(request):
 
         if youtube_url:
             try:
+                # Extract YouTube video ID using yt_dlp
+                with yt_dlp.YoutubeDL({'quiet': True}) as ydl:
+                    info_dict = ydl.extract_info(youtube_url, download=False)
+                    youtube_id = info_dict.get('id')
+                # Check if this YouTube video is already in the DB
+                existing_song = Song.objects.filter(youtube_id=youtube_id).first()
+                if existing_song:
+                    messages.warning(request, "This YouTube song already exists in the database.")
+                    return redirect("admin_songs")
+
                 output_dir = os.path.join(settings.MEDIA_ROOT, 'songs')
                 os.makedirs(output_dir, exist_ok=True)
+
+                # Always use YouTube ID for filename
+                ext = 'mp3' if media_type == 'audio' else info_dict.get('ext', 'mp4')
+                safe_filename = f"{youtube_id}.{ext}"
+
                 ydl_opts = {
                     'format': 'bestaudio/best' if media_type == 'audio' else 'bestvideo+bestaudio/best',
-                    'outtmpl': f'{output_dir}/%(title)s.%(ext)s',
+                    'outtmpl': os.path.join(output_dir, safe_filename),
                     'postprocessors': [{
                         'key': 'FFmpegExtractAudio',
                         'preferredcodec': 'mp3',
@@ -79,41 +94,12 @@ def add_song(request):
                 }
                 with yt_dlp.YoutubeDL(ydl_opts) as ydl:
                     info = ydl.extract_info(youtube_url, download=True)
-                # Get file path
-                file_title = info.get('title', 'unknown')
-                safe_title = re.sub(r'[^\w\-]', '_', file_title)
-                if media_type == 'audio':
-                    ext = 'mp3'
-                else:
-                    ext = info.get('ext', 'mp4')
 
-                original_filename = f"{file_title}.{ext}"
-                safe_filename = f"{safe_title}.{ext}"
-
-                output_dir = os.path.join(settings.MEDIA_ROOT, 'songs')
-                original_path = os.path.join(output_dir, original_filename)
-                safe_path = os.path.join(output_dir, safe_filename)
-
-                # Always rename the file to the sanitized name
-                if os.path.exists(original_path):
-                    if original_filename != safe_filename:
-                        if os.path.exists(safe_path):
-                            os.remove(safe_path)  # Remove if already exists to avoid error
-                        os.rename(original_path, safe_path)
-                elif not os.path.exists(safe_path):
-                    # fallback: if safe_path doesn't exist but original does, move anyway
-                    raise Exception(f"Downloaded file not found: {original_path}")
-
-                # Now always use the safe_filename for DB and URL
                 file_path = os.path.join('songs', safe_filename)
                 if len(file_path) > MAX_AUDIO_FILE_LENGTH:
                     file_path = file_path[:MAX_AUDIO_FILE_LENGTH]
                 abs_file_path = os.path.join(settings.MEDIA_ROOT, file_path)
-                # Get file size
-                file_size = os.path.getsize(abs_file_path) if os.path.exists(abs_file_path) else 0
-                # Get cover image path if downloaded
                 thumbnail_url = info.get('thumbnail')
-                # Try to get metadata
                 title = info.get('title') or title or 'Unknown Title'
                 artist = info.get('artist') or info.get('uploader') or artist or 'Unknown Artist'
                 genre = info.get('genre') or genre or 'Unknown Genre'
@@ -125,7 +111,6 @@ def add_song(request):
                     from datetime import timedelta
                     duration_td = timedelta(seconds=duration_seconds)
                 else:
-                    # fallback to form
                     h, m, s = map(int, (duration or "0:0:0").split(":"))
                     from datetime import timedelta
                     duration_td = timedelta(hours=h, minutes=m, seconds=s)
@@ -139,6 +124,7 @@ def add_song(request):
                     audio_file=file_path,
                     cover_image=thumbnail_url,
                     media_type=media_type,
+                    youtube_id=youtube_id,
                 )
                 song.full_clean()
                 song.save()

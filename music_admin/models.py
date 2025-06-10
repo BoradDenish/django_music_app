@@ -84,6 +84,7 @@ class Song(models.Model):
     duration = models.DurationField()
     created_at = models.DateTimeField(auto_now_add=True)
     media_type = models.CharField(max_length=10, choices=[('audio', 'Audio'), ('video', 'Video')], null=True, blank=True)
+    youtube_id = models.CharField(max_length=32, blank=True, null=True, unique=True)
 
     class Meta:
         db_table = "Songs"
