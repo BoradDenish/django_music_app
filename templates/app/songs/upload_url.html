@@ -1,26 +1,85 @@
 {% extends 'app/layout/base.html' %}
-{% block title %}Upload - MusicApp{% endblock %}
-{% block content %}
-<div class="min-h-screen p-8 bg-gradient-to-br from-black via-gray-900/80 to-purple-950 text-white backdrop-blur-lg">
-    <h1 class="text-4xl font-extrabold text-center mb-10 text-purple-400 drop-shadow-lg">📤 Upload Content</h1>
+{% load static %}
 
-    <form action="{% url 'upload_url' %}" method="POST" class="max-w-xl mx-auto bg-white/5 p-8 rounded-2xl shadow-lg backdrop-blur-md">
-        {% csrf_token %}
-        <label class="block mb-4">
-            <span class="text-gray-300 font-semibold">Paste YouTube or Content URL</span>
-            <input type="text" name="content_url" placeholder="https://youtube.com/..." required
-                   class="w-full mt-2 p-4 bg-black/30 text-white rounded-lg placeholder-gray-400 focus:ring-2 focus:ring-purple-500">
-        </label>
-        <label class="block mb-6">
-            <span class="text-gray-300 font-semibold">Save as:</span>
-            <select name="content_type" class="w-full mt-2 p-3 bg-black/30 text-white rounded-lg focus:ring-2 focus:ring-purple-500">
-                <option value="music">🎵 Music</option>
-                <option value="video">🎬 Video</option>
-            </select>
-        </label>
-        <button type="submit" class="w-full py-4 bg-gradient-to-r from-purple-600 to-purple-800 hover:from-purple-500 hover:to-purple-700 rounded-lg text-white font-bold text-lg transition transform hover:scale-105">
-            Upload & Convert
-        </button>
-    </form>
+{% block title %}Upload - MusicApp{% endblock %}
+
+{% block content %}
+<div class="animate-fade-up">
+    <div class="max-w-3xl mx-auto">
+        <div class="text-center mb-12">
+            <span class="text-accent-neon-cyan font-black tracking-[0.3em] uppercase text-[10px] mb-4 block">Expand the Library</span>
+            <h1 class="text-5xl md:text-6xl font-black tracking-tighter">
+                Upload <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600">Content</span>
+            </h1>
+            <p class="text-gray-400 mt-4 text-lg">Seamlessly import your favorite tracks and videos from the web using our advanced conversion engine.</p>
+        </div>
+
+        <div class="glass p-10 md:p-16 relative overflow-hidden rounded-[40px]">
+            <div class="absolute -right-20 -top-20 w-64 h-64 bg-purple-600/10 rounded-full blur-[100px]"></div>
+            <div class="absolute -left-20 -bottom-20 w-64 h-64 bg-cyan-600/10 rounded-full blur-[100px]"></div>
+
+            <form action="{% url 'upload_url' %}" method="POST" class="relative z-10 space-y-8">
+                {% csrf_token %}
+                
+                <div class="space-y-3">
+                    <label class="text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] ml-2">Content Source URL</label>
+                    <div class="relative group">
+                        <i class="fas fa-link absolute left-5 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-accent-neon-cyan transition-colors"></i>
+                        <input type="url" name="content_url" placeholder="https://www.youtube.com/watch?v=..." required
+                               class="w-full bg-white/5 border border-white/5 rounded-2xl pl-14 pr-6 py-5 focus:border-cyan-500/50 focus:bg-white/10 outline-none transition-all duration-300 placeholder-gray-700 text-lg">
+                    </div>
+                    <p class="text-[10px] text-gray-600 ml-2">We support YouTube, Soundcloud, and direct media links.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="space-y-3">
+                        <label class="text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] ml-2">Media Type</label>
+                        <select name="content_type" class="w-full bg-white/5 border border-white/5 rounded-2xl px-6 py-5 focus:border-cyan-500/50 focus:bg-white/10 outline-none transition-all duration-300 appearance-none text-gray-300 cursor-pointer">
+                            <option value="music">🎵 High-Fidelity Audio</option>
+                            <option value="video">🎬 Cinematic Video</option>
+                        </select>
+                    </div>
+                    <div class="space-y-3">
+                        <label class="text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] ml-2">Storage Preference</label>
+                        <div class="flex items-center gap-4 bg-white/5 border border-white/5 rounded-2xl px-6 py-5">
+                            <span class="text-sm text-gray-400 flex-1">Download & Store Locally</span>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" name="store_locally" class="sr-only peer">
+                                <div class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-cyan-600"></div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-primary w-full py-5 rounded-2xl text-xl mt-6 flex items-center justify-center gap-3">
+                    <i class="fas fa-bolt"></i> Start Processing
+                </button>
+            </form>
+        </div>
+
+        <div class="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="text-center p-6">
+                <div class="w-12 h-12 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-4 text-cyan-400">
+                    <i class="fas fa-rocket"></i>
+                </div>
+                <h4 class="font-bold mb-2">Instant Conversion</h4>
+                <p class="text-xs text-gray-500">Fast processing times using our distributed nodes.</p>
+            </div>
+            <div class="text-center p-6">
+                <div class="w-12 h-12 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-4 text-purple-400">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <h4 class="font-bold mb-2">Secure Storage</h4>
+                <p class="text-xs text-gray-500">Your content is encrypted and stored on private buckets.</p>
+            </div>
+            <div class="text-center p-6">
+                <div class="w-12 h-12 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-4 text-pink-400">
+                    <i class="fas fa-sync"></i>
+                </div>
+                <h4 class="font-bold mb-2">Cloud Sync</h4>
+                <p class="text-xs text-gray-500">Available across all your devices immediately.</p>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}

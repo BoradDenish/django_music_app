@@ -4,34 +4,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign Up - Music App</title>
+    <title>Sign Up - MusicApp</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
-<body class="flex items-center justify-center min-h-screen bg-gradient-to-br from-purple-900 via-black to-gray-900">
-    <div class="relative w-full max-w-md p-8 bg-white/10 backdrop-blur-lg rounded-xl shadow-2xl border border-white/20">
-        <h2 class="mb-6 text-4xl font-extrabold text-center text-white tracking-wide">Join the Beat! 🎶</h2>
-        <form method="POST" class="space-y-6">
+<body class="flex items-center justify-center min-h-screen relative overflow-hidden">
+    <!-- Animated background elements -->
+    <div class="absolute top-1/4 right-1/4 w-96 h-96 bg-cyan-600/10 rounded-full blur-[120px] animate-pulse"></div>
+    <div class="absolute bottom-1/4 left-1/4 w-96 h-96 bg-purple-600/10 rounded-full blur-[120px] animate-pulse"></div>
+
+    <div class="relative w-full max-w-md p-10 glass border border-white/10 shadow-2xl animate-fade-in mx-4 my-10">
+        <div class="text-center mb-10">
+            <div class="w-16 h-16 bg-gradient-to-tr from-cyan-500 to-blue-600 rounded-2xl flex items-center justify-center shadow-lg mx-auto mb-6">
+                <i class="fas fa-user-plus text-white text-2xl"></i>
+            </div>
+            <h2 class="text-3xl font-black tracking-tighter">Create Account</h2>
+            <p class="text-gray-400 mt-2">Start your musical journey today.</p>
+        </div>
+
+        <form method="POST" class="space-y-5">
             {% csrf_token %}
-            <div>
-                <label class="block text-sm font-medium text-white mb-1">Username</label>
-                <input type="text" name="username" class="w-full px-4 py-2 text-gray-900 bg-white/80 border-none rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none" placeholder="Enter your username" required>
+            <div class="space-y-2">
+                <label class="text-xs font-bold text-gray-400 uppercase tracking-wider">Username</label>
+                <div class="relative">
+                    <i class="fas fa-user absolute left-4 top-1/2 -translate-y-1/2 text-gray-500"></i>
+                    <input type="text" name="username" class="w-full bg-white/5 border border-white/10 rounded-xl pl-12 pr-4 py-3 focus:border-cyan-500 outline-none transition" placeholder="johndoe" required>
+                </div>
             </div>
-            <div>
-                <label class="block text-sm font-medium text-white mb-1">Email</label>
-                <input type="email" name="email" class="w-full px-4 py-2 text-gray-900 bg-white/80 border-none rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none" placeholder="Enter your email" required>
+            <div class="space-y-2">
+                <label class="text-xs font-bold text-gray-400 uppercase tracking-wider">Email Address</label>
+                <div class="relative">
+                    <i class="fas fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-gray-500"></i>
+                    <input type="email" name="email" class="w-full bg-white/5 border border-white/10 rounded-xl pl-12 pr-4 py-3 focus:border-cyan-500 outline-none transition" placeholder="you@example.com" required>
+                </div>
             </div>
-            <div>
-                <label class="block text-sm font-medium text-white mb-1">Password</label>
-                <input type="password" name="password1" class="w-full px-4 py-2 text-gray-900 bg-white/80 border-none rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none" placeholder="Enter your password" required>
+            <div class="space-y-2">
+                <label class="text-xs font-bold text-gray-400 uppercase tracking-wider">Password</label>
+                <div class="relative">
+                    <i class="fas fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-gray-500"></i>
+                    <input type="password" name="password1" class="w-full bg-white/5 border border-white/10 rounded-xl pl-12 pr-4 py-3 focus:border-cyan-500 outline-none transition" placeholder="••••••••" required>
+                </div>
             </div>
-            <div>
-                <label class="block text-sm font-medium text-white mb-1">Confirm Password</label>
-                <input type="password" name="password2" class="w-full px-4 py-2 text-gray-900 bg-white/80 border-none rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none" placeholder="Confirm your password" required>
+            <div class="space-y-2">
+                <label class="text-xs font-bold text-gray-400 uppercase tracking-wider">Confirm Password</label>
+                <div class="relative">
+                    <i class="fas fa-check-double absolute left-4 top-1/2 -translate-y-1/2 text-gray-500"></i>
+                    <input type="password" name="password2" class="w-full bg-white/5 border border-white/10 rounded-xl pl-12 pr-4 py-3 focus:border-cyan-500 outline-none transition" placeholder="••••••••" required>
+                </div>
             </div>
-            <button type="submit" class="w-full py-3 text-white bg-purple-600 rounded-lg hover:bg-purple-700 hover:shadow-lg transition duration-300">Sign Up</button>
+
+            <button type="submit" class="btn-neon-cyan w-full py-4 rounded-xl font-bold shadow-xl mt-4">
+                Join Now
+            </button>
         </form>
-        <p class="mt-6 text-center text-white/80 text-sm">
-            Already have an account? <a href="{% url 'login' %}" class="text-purple-400 hover:underline">Login</a>
+
+        <p class="mt-8 text-center text-gray-400 text-sm">
+            Already have an account? <a href="{% url 'login' %}" class="text-cyan-400 font-bold hover:underline">Sign In</a>
         </p>
     </div>
 </body>

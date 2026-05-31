@@ -1,31 +1,101 @@
 <!-- Hamburger button (mobile) -->
-<button id="toggleSidebar" class="md:hidden fixed top-4 left-4 z-50 bg-purple-600 text-white p-2 rounded-full shadow-lg focus:outline-none">
-    ☰
+<button id="toggleSidebar" class="md:hidden fixed top-4 right-4 z-50 bg-white/10 text-white p-3 rounded-xl backdrop-blur-md border border-white/20 shadow-lg focus:outline-none">
+    <i class="fas fa-bars"></i>
 </button>
 
 <!-- Sidebar -->
-<div id="sidebar" class="fixed top-0 left-0 w-64 h-full bg-black/30 backdrop-blur-lg p-6 shadow-lg transform -translate-x-full md:translate-x-0 transition-transform duration-300 z-40">
-    <h2 class="text-2xl font-bold text-purple-400 mb-6">🎵 MusicApp</h2>
-    <ul class="space-y-4">
-        <li><a href="{% url 'home' %}" class="block px-4 py-2 rounded-lg hover:bg-purple-600 hover:text-white">🏠 Home</a></li>
-        <li><a href="{% url 'trending' %}" class="block px-4 py-2 rounded-lg hover:bg-purple-600 hover:text-white">🔥 Trending</a></li>
-        <li><a href="{% url 'library' %}" class="block px-4 py-2 rounded-lg hover:bg-purple-600 hover:text-white">📂 My Library</a></li>
-        <li><a href="{% url 'music_library' %}" class="block px-4 py-2 rounded-lg hover:bg-purple-600 hover:text-white">🎵 Music</a></li>
-        <li><a href="{% url 'video_library' %}" class="block px-4 py-2 rounded-lg hover:bg-purple-600 hover:text-white">🎬 Videos</a></li>
-        <li><a href="{% url 'favorites' %}" class="block px-4 py-2 rounded-lg hover:bg-purple-600 hover:text-white">❤️ Favorites</a></li>
-        <li><a href="{% url 'playlist' %}" class="block px-4 py-2 rounded-lg hover:bg-purple-600 hover:text-white">🎧 Playlists</a></li>
-        <li><a href="{% url 'upload_url' %}" class="block px-4 py-2 rounded-lg hover:bg-purple-600 hover:text-white">📤 Upload Music</a></li>
-        <li><a href="{% url 'profile' %}" class="block px-4 py-2 rounded-lg hover:bg-purple-600 hover:text-white">👤 Profile</a></li>
-        <li><a href="{% url 'logout' %}" class="block px-4 py-2 rounded-lg hover:bg-red-600 hover:text-white">🚪 Logout</a></li>
-    </ul>
-</div>
+<aside id="sidebar" class="fixed top-0 left-0 w-64 h-full glass-dark border-r border-white/5 p-6 transform -translate-x-full md:translate-x-0 transition-all duration-500 z-40 flex flex-col">
+    <!-- Logo -->
+    <div class="mb-12 flex items-center gap-3 px-2">
+        <div class="w-10 h-10 bg-gradient-to-tr from-purple-600 via-pink-500 to-orange-400 rounded-xl flex items-center justify-center shadow-[0_0_20px_rgba(188,19,254,0.4)]">
+            <i class="fas fa-music text-white text-lg"></i>
+        </div>
+        <h2 class="text-2xl font-black tracking-tighter text-white">
+            Music<span class="text-accent-neon-purple">App</span>
+        </h2>
+    </div>
+    
+    <nav class="flex-1 space-y-8 overflow-y-auto no-scrollbar">
+        <!-- Main Menu -->
+        <div>
+            <p class="text-[10px] uppercase tracking-[0.2em] text-gray-500 font-black mb-4 px-4">Menu</p>
+            <ul class="space-y-1">
+                <li><a href="{% url 'home' %}" class="sidebar-link flex items-center gap-4 px-4 py-3 rounded-xl group">
+                    <i class="fas fa-home w-5 text-gray-400 group-hover:text-white transition-colors"></i> 
+                    <span class="font-semibold">Home</span>
+                </a></li>
+                <li><a href="{% url 'trending' %}" class="sidebar-link flex items-center gap-4 px-4 py-3 rounded-xl group">
+                    <i class="fas fa-bolt w-5 text-orange-400 group-hover:text-white transition-colors"></i> 
+                    <span class="font-semibold">Trending</span>
+                </a></li>
+                <li><a href="{% url 'library' %}" class="sidebar-link flex items-center gap-4 px-4 py-3 rounded-xl group">
+                    <i class="fas fa-compass w-5 text-blue-400 group-hover:text-white transition-colors"></i> 
+                    <span class="font-semibold">Explore</span>
+                </a></li>
+            </ul>
+        </div>
 
-<!-- Script to toggle sidebar on small screens -->
+        <!-- Your Collection -->
+        <div>
+            <p class="text-[10px] uppercase tracking-[0.2em] text-gray-500 font-black mb-4 px-4">Collection</p>
+            <ul class="space-y-1">
+                <li><a href="{% url 'music_library' %}" class="sidebar-link flex items-center gap-4 px-4 py-3 rounded-xl group">
+                    <i class="fas fa-music w-5 text-purple-400 group-hover:text-white transition-colors"></i> 
+                    <span class="font-semibold">Songs</span>
+                </a></li>
+                <li><a href="{% url 'video_library' %}" class="sidebar-link flex items-center gap-4 px-4 py-3 rounded-xl group">
+                    <i class="fas fa-play-circle w-5 text-red-400 group-hover:text-white transition-colors"></i> 
+                    <span class="font-semibold">Videos</span>
+                </a></li>
+                <li><a href="{% url 'favorites' %}" class="sidebar-link flex items-center gap-4 px-4 py-3 rounded-xl group">
+                    <i class="fas fa-heart w-5 text-pink-500 group-hover:text-white transition-colors"></i> 
+                    <span class="font-semibold">Favorites</span>
+                </a></li>
+                <li><a href="{% url 'playlist' %}" class="sidebar-link flex items-center gap-4 px-4 py-3 rounded-xl group">
+                    <i class="fas fa-list w-5 text-cyan-400 group-hover:text-white transition-colors"></i> 
+                    <span class="font-semibold">Playlists</span>
+                </a></li>
+            </ul>
+        </div>
+
+        <!-- General -->
+        <div>
+            <p class="text-[10px] uppercase tracking-[0.2em] text-gray-500 font-black mb-4 px-4">General</p>
+            <ul class="space-y-1">
+                <li><a href="{% url 'upload_url' %}" class="sidebar-link flex items-center gap-4 px-4 py-3 rounded-xl group">
+                    <i class="fas fa-cloud-upload-alt w-5 text-green-400 group-hover:text-white transition-colors"></i> 
+                    <span class="font-semibold">Upload</span>
+                </a></li>
+                <li><a href="{% url 'profile' %}" class="sidebar-link flex items-center gap-4 px-4 py-3 rounded-xl group">
+                    <i class="fas fa-user-circle w-5 text-gray-300 group-hover:text-white transition-colors"></i> 
+                    <span class="font-semibold">Profile</span>
+                </a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Logout -->
+    <div class="mt-auto pt-6 border-t border-white/5">
+        <a href="{% url 'logout' %}" class="flex items-center gap-4 px-4 py-3 rounded-xl text-gray-500 hover:text-red-400 hover:bg-red-400/10 transition-all group">
+            <i class="fas fa-sign-out-alt w-5 group-hover:rotate-12 transition-transform"></i> 
+            <span class="font-bold">Logout</span>
+        </a>
+    </div>
+</aside>
+
+<style>
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+</style>
+
+<!-- Script to handle active states -->
 <script>
-    const toggleButton = document.getElementById('toggleSidebar');
-    const sidebar = document.getElementById('sidebar');
-
-    toggleButton.addEventListener('click', () => {
-        sidebar.classList.toggle('-translate-x-full');
+    document.addEventListener('DOMContentLoaded', () => {
+        const currentPath = window.location.pathname;
+        document.querySelectorAll('.sidebar-link').forEach(link => {
+            if (link.getAttribute('href') === currentPath) {
+                link.classList.add('active');
+            }
+        });
     });
 </script>

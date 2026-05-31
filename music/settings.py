@@ -41,9 +41,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'music_admin',
-    'music_app'
+    'music_player',
 ]
+
+AUTH_USER_MODEL = 'music_player.User'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -53,7 +54,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    # 'music_app.middleware.TokenAuthMiddleware'
 ]
 
 ROOT_URLCONF = 'music.urls'
@@ -82,17 +82,8 @@ WSGI_APPLICATION = 'music.wsgi.application'
 
 DATABASES = {
     'default': {
-        # 'ENGINE': 'django.db.backends.sqlite3',
-        # 'NAME': BASE_DIR / 'db.sqlite3',
-        'ENGINE'    : 'django.db.backends.mysql',
-        'NAME'      : env('DATABASE_NAME'),
-        'USER'      : env('DATABASE_USER'),
-        'PASSWORD'  : env('DATABASE_PASS'),
-        'HOST'      : env('HOST'),
-        'PORT'      : env('PORT'),
-        'OPTIONS': {
-            'sql_mode' : 'STRICT_TRANS_TABLES'
-        }    
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
@@ -139,7 +130,7 @@ STATICFILES_DIRS = [
 ]
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_ROOT = BASE_DIR / 'media'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field

@@ -1,32 +1,79 @@
 {% extends 'app/layout/base.html' %}
+{% load static %}
 
 {% block title %}Trending - MusicApp{% endblock %}
 
 {% block content %}
-<div class="min-h-screen p-8 bg-gradient-to-br from-black via-gray-900/80 to-purple-950 text-white backdrop-blur-lg">
-    
-    <h1 class="text-4xl md:text-5xl font-extrabold text-center mb-12 text-purple-400 drop-shadow-lg">
-        🔥 Trending Music
-    </h1>
+<div class="animate-fade-up">
+    <div class="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
+        <div>
+            <span class="text-accent-neon-pink font-bold tracking-widest text-xs uppercase mb-2 block">Weekly Charts</span>
+            <h1 class="text-5xl md:text-6xl font-black tracking-tighter">
+                🔥 Trending <span class="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-pink-500 to-red-600">Now</span>
+            </h1>
+            <p class="text-gray-400 mt-4 text-lg max-w-xl">The hottest tracks across the platform today, curated by listener engagement.</p>
+        </div>
+        <div class="flex gap-3">
+            <button class="glass p-4 rounded-2xl hover:bg-white/10 transition group">
+                <i class="fas fa-filter text-gray-400 group-hover:text-white"></i>
+            </button>
+        </div>
+    </div>
 
     {% if trending_songs %}
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-8">
         {% for song in trending_songs %}
-        <div class="bg-white/5 p-6 rounded-xl shadow-lg backdrop-blur-md flex flex-col items-center text-center hover:shadow-xl transition duration-300">
-            <img src="{{ song.cover_url }}" alt="{{ song.title }}" class="w-24 h-24 rounded-xl mb-4 shadow-inner">
-            <h3 class="text-xl font-bold text-white mb-1">{{ song.title }}</h3>
-            <p class="text-sm text-gray-300">{{ song.artist }}</p>
-            <a href="{{ song.file_url }}" 
-               class="mt-4 px-6 py-2 bg-purple-700 hover:bg-purple-600 rounded-full text-white font-medium transition duration-300">
-                ▶ Play
-            </a>
+        <div class="song-card glass p-5 group relative" 
+             onclick="playSong('{{ song.audio_url }}', '{{ song.title }}', '{{ song.artist }}', '{% if song.cover_image %}{{ song.cover_image.url }}{% else %}{% static 'artists/default.jpg' %}{% endif %}')">
+            
+            <div class="relative overflow-hidden rounded-2xl aspect-square mb-5 shadow-2xl">
+                <img src="{% if song.cover_image %}{{ song.cover_image.url }}{% else %}{% static 'artists/default.jpg' %}{% endif %}" 
+                     alt="{{ song.title }}" 
+                     class="w-full h-full object-cover transition duration-700 group-hover:scale-110">
+                
+                <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-all duration-500 flex items-center justify-center backdrop-blur-[2px]">
+                    <div class="w-16 h-16 bg-white text-black rounded-full flex items-center justify-center text-2xl shadow-[0_0_30px_rgba(255,255,255,0.3)] transform translate-y-8 group-hover:translate-y-0 transition-all duration-500 ease-out">
+                        <i class="fas fa-play ml-1"></i>
+                    </div>
+                </div>
+
+                <!-- Rank Badge -->
+                <div class="absolute top-3 left-3 px-3 py-1 bg-black/60 backdrop-blur-md rounded-full text-[10px] font-black text-white border border-white/10 z-10">
+                    #{{ forloop.counter }}
+                </div>
+
+                <div class="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <button class="w-10 h-10 glass rounded-full flex items-center justify-center text-white hover:text-pink-500 transition-colors">
+                        <i class="fas fa-heart"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="space-y-1">
+                <h3 class="text-lg font-bold truncate group-hover:text-accent-neon-pink transition-colors">{{ song.title }}</h3>
+                <p class="text-sm text-gray-400 truncate">{{ song.artist }}</p>
+            </div>
+            
+            <div class="mt-4 pt-4 border-t border-white/5 flex justify-between items-center">
+                <span class="px-3 py-1 rounded-full bg-orange-500/10 text-[10px] text-orange-400 uppercase font-bold tracking-widest border border-orange-500/20">
+                    {{ song.genre }}
+                </span>
+                <span class="text-[10px] text-gray-500 font-medium">Top Trend</span>
+            </div>
         </div>
         {% endfor %}
     </div>
     {% else %}
-    <p class="mt-10 text-center text-gray-400 text-lg">
-        🚫 No trending songs found.
-    </p>
+    <div class="glass-dark p-20 text-center max-w-2xl mx-auto mt-10 rounded-[40px] border-dashed border-2 border-white/10">
+        <div class="w-24 h-24 bg-gradient-to-tr from-orange-500/20 to-red-500/20 rounded-full flex items-center justify-center mx-auto mb-8">
+            <i class="fas fa-fire text-5xl text-orange-500"></i>
+        </div>
+        <h2 class="text-3xl font-black mb-4">Nothing is trending?</h2>
+        <p class="text-gray-400 mb-10 text-lg">Check back later for the latest hits across the platform.</p>
+        <a href="{% url 'home' %}" class="btn-primary">
+            Go Home
+        </a>
+    </div>
     {% endif %}
 </div>
 {% endblock %}

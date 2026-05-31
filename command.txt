@@ -1,27 +1,28 @@
+# --- Django Music App Commands ---
+
+# 1. Activate Virtual Environment
+# Windows:
+.\venv\Scripts\activate
+# Mac/Linux:
+source venv/bin/activate
+
+# 2. Install Dependencies
 pip install -r requirements.txt
-pip freeze> requirements.txt
 
-
-
-python -m virtualenv venv
-venv\scripts\activate
-
-
-
-
-python manage.py makemigrations
+# 3. Database Setup (Fresh Start)
+python manage.py makemigrations music_player
 python manage.py migrate
 
+# 4. Seed Initial Data (Songs, Artists, Test User)
+python manage.py seed_data
 
+# 5. Create Superuser (Admin access)
+python manage.py createsuperuser
 
-python manage.py runserver 192.168.100.164:8000
+# 6. Run the Server
+# Accessible via http://localhost:8000 AND your Network IP
+python manage.py runserver 0.0.0.0:8000
 
-
-celery -A ixract.celery worker --pool=solo -l info
-
-ipconfig
-
-
-django-admin startproject projectname
-python manage.py startapp appname
-
+# --- Default Credentials (if using seed_data) ---
+# Test User: user / user123
+# Superuser: admin / admin123 (if created via superuser command)
