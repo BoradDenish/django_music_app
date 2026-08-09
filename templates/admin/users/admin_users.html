@@ -32,13 +32,13 @@
                 {% for user in users %}
                 <tr class="hover:bg-cyan-800/60 transition-all duration-300">
                     <td class="p-2 px-6 items-center gap-4">
-                        <img src="{{ user.user_profile_url|default:'/static/images/default_user.jpg' }}" alt="Profile Picture" class="w-12 h-12 rounded-full border-2 border-cyan-400 shadow-lg">
+                        <img src="{% if user.profile_pic %}{{ user.profile_pic.url }}{% else %}{% static 'images/img.png' %}{% endif %}" alt="Profile Picture" class="w-12 h-12 rounded-full border-2 border-cyan-400 shadow-lg">
                     </td>
-                    <td class="p-2 font-semibold">{{ user.user_name }}</td>
-                    <td class="p-2 text-cyan-100">{{ user.user_email }}</td>
+                    <td class="p-2 font-semibold">{{ user.username }}</td>
+                    <td class="p-2 text-cyan-100">{{ user.email }}</td>
                     <td class="p-2 text-center flex justify-center gap-4">
-                        <a href="{% url 'edit_user' user.user_id %}" class="px-4 py-2 bg-gradient-to-r from-blue-400 to-blue-700 text-white rounded-lg shadow-md hover:scale-105 transition font-semibold">✏️ Edit</a>
-                        <button onclick="openDeleteModal('{{ user.user_id }}')" class="px-4 py-2 bg-gradient-to-r from-red-400 to-red-700 text-white rounded-lg shadow-md hover:scale-105 transition font-semibold">❌ Delete</button>
+                        <a href="{% url 'edit_user' user.id %}" class="px-4 py-2 bg-gradient-to-r from-blue-400 to-blue-700 text-white rounded-lg shadow-md hover:scale-105 transition font-semibold">✏️ Edit</a>
+                        <button onclick="openDeleteModal('{{ user.id }}')" class="px-4 py-2 bg-gradient-to-r from-red-400 to-red-700 text-white rounded-lg shadow-md hover:scale-105 transition font-semibold">❌ Delete</button>
                     </td>
                 </tr>
                 {% endfor %}

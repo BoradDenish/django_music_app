@@ -29,6 +29,12 @@ class Song(models.Model):
     media_type = models.CharField(max_length=10, choices=[('audio', 'Audio'), ('video', 'Video')], default='audio')
     youtube_id = models.CharField(max_length=32, blank=True, null=True, unique=True)
 
+    @property
+    def audio_url(self):
+        if self.audio_file:
+            return self.audio_file.url
+        return ""
+
     def __str__(self):
         return f"{self.title} - {self.artist}"
 

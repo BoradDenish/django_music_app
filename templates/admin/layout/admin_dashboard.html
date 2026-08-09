@@ -83,7 +83,7 @@
     <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
         {% for song in recent_songs %}
             <div class="song-card p-4 rounded-xl shadow-lg hover:scale-105 transition transform">
-                <img src="{% static song.cover %}" alt="{{ song.title }}" class="w-full h-40 rounded-lg object-cover border-2 border-yellow-300/40">
+                <img src="{% if song.cover_image %}{{ song.cover_image.url }}{% else %}{% static 'artists/default.jpg' %}{% endif %}" alt="{{ song.title }}" class="w-full h-40 rounded-lg object-cover border-2 border-yellow-300/40">
                 <h3 class="mt-3 text-lg font-semibold text-yellow-200 flex items-center gap-1">🎵 {{ song.title }}</h3>
                 <p class="text-sm text-cyan-100">by {{ song.artist }}</p>
             </div>
@@ -97,22 +97,22 @@
     <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
         {% for artist in recent_artists %}
             <div class="artist-card text-center p-4 rounded-xl shadow-lg hover:scale-105 transition transform">
-                <img src="{% static artist.image %}" alt="{{ artist.name }}" class="w-24 h-24 rounded-full object-cover mx-auto border-2 border-cyan-300/40">
+                <img src="{{ artist.image }}" alt="{{ artist.name }}" class="w-24 h-24 rounded-full object-cover mx-auto border-2 border-cyan-300/40">
                 <h3 class="mt-2 font-semibold text-white flex items-center gap-1">🎤 {{ artist.name }}</h3>
             </div>
         {% endfor %}
     </div>
 </div>
 
-<!-- Most Played Songs -->
+<!-- Most Favorited Songs -->
 <div class="mt-12">
-    <h2 class="text-3xl font-bold text-green-300 mb-4 flex items-center gap-2">🔥 Most Played Songs</h2>
+    <h2 class="text-3xl font-bold text-green-300 mb-4 flex items-center gap-2">🔥 Most Favorited Songs</h2>
     <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
         {% for song in most_played %}
             <div class="most-played-card p-4 rounded-xl shadow-lg hover:scale-105 transition transform">
-                <img src="{% static song.cover %}" alt="{{ song.title }}" class="w-full h-40 rounded-lg object-cover border-2 border-pink-400/40">
+                <img src="{% if song.cover_image %}{{ song.cover_image.url }}{% else %}{% static 'artists/default.jpg' %}{% endif %}" alt="{{ song.title }}" class="w-full h-40 rounded-lg object-cover border-2 border-pink-400/40">
                 <h3 class="mt-3 text-lg font-semibold text-pink-100 flex items-center gap-1">🎶 {{ song.title }}</h3>
-                <p class="text-sm text-yellow-100">Plays: {{ song.play_count }}</p>
+                <p class="text-sm text-yellow-100">Favorites: {{ song.favorite_count }}</p>
             </div>
         {% endfor %}
     </div>

@@ -21,7 +21,7 @@
         <div class="bg-gradient-to-br from-purple-900/80 via-blue-900/80 to-cyan-900/80 rounded-xl shadow-xl ring-1 ring-cyan-400/20 backdrop-blur-md p-4 flex flex-col hover:scale-105 transition-transform">
             <div class="aspect-video bg-black rounded-lg overflow-hidden mb-4 flex items-center justify-center relative">
                 {% if song.cover_image %}
-                    <img src="{{ song.cover_image }}" alt="{{ song.title }}" class="object-cover w-full h-full">
+                    <img src="{{ song.cover_image.url }}" alt="{{ song.title }}" class="object-cover w-full h-full">
                 {% else %}
                     <span class="text-5xl text-cyan-300">🎵</span>
                 {% endif %}
