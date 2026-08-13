@@ -1,68 +1,59 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Admin - MusicApp{% endblock %}</title>
+    <title>{% block title %}Admin Console - MusicApp{% endblock %}</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        /* Off-white background */
-        .admin-bg {
-            background: #f8fafc; /* pastel off-white */
-            min-height: 100vh;
-        }
-        .admin-bg::before {
-            content: "";
-            position: fixed;
-            inset: 0;
-            z-index: 0;
-            pointer-events: none;
-            background: linear-gradient(120deg, #f8fafc 60%, #38bdf8 100%, #a21caf 120%);
-            opacity: 0.13;
-        }
-        /* Sidebar glass effect and vice accent */
-        .sidebar-glass {
-            background: linear-gradient(135deg, rgba(236,72,153,0.18) 0%, rgba(139,92,246,0.18) 100%);
-            backdrop-filter: blur(12px);
-        }
-        /* Music notes overlay with vice colors */
-        .music-notes-bg {
-            position: fixed;
-            inset: 0;
-            pointer-events: none;
-            z-index: 0;
-        }
-        .music-notes-bg svg {
-            position: absolute;
-            opacity: 0.12;
-            filter: drop-shadow(0 0 8px #a21caf);
-            animation: floatNotes 12s linear infinite;
-        }
-        @keyframes floatNotes {
-            0% { transform: translateY(0) scale(1);}
-            100% { transform: translateY(-80px) scale(1.2);}
-        }
-    </style>
+    
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom Design System -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="icon" href="{% static 'images/img.png' %}">
 </head>
-<body class="admin-bg text-gray-900 font-sans">
-    <div class="music-notes-bg">
-        <svg width="60" height="60" style="left:10%;top:80px"><text x="0" y="40" font-size="48" fill="#ec4899">🎵</text></svg>
-        <svg width="40" height="40" style="left:70%;top:200px"><text x="0" y="32" font-size="32" fill="#06b6d4">🎶</text></svg>
-        <svg width="50" height="50" style="left:40%;top:400px"><text x="0" y="36" font-size="36" fill="#a21caf">🎼</text></svg>
-        <svg width="30" height="30" style="left:80%;top:600px"><text x="0" y="24" font-size="24" fill="#f59e42">🎤</text></svg>
-    </div>
-    <!-- Sidebar -->
-    <div class="sidebar-glass fixed top-0 left-0 w-64 h-full shadow-2xl border-r-2 border-purple-400 z-30">
-        {% include 'admin/layout/admin_sidebar.html' %}
-    </div>
+<body class="bg-black text-slate-100 min-h-screen font-sans overflow-x-hidden selection:bg-purple-600 selection:text-white">
 
-    <div class="ml-64 p-6 pb-20">
+    <!-- Admin Sidebar -->
+    {% include 'admin/layout/admin_sidebar.html' %}
+
+    <!-- Main Content Area -->
+    <div class="md:ml-64 min-h-screen p-6 md:p-10 pb-16">
+        
+        <!-- Top Admin Header -->
+        <header class="flex items-center justify-between pb-6 mb-8 border-b border-white/5">
+            <div>
+                <span class="text-purple-400 font-extrabold tracking-widest uppercase text-xs">Admin Management</span>
+                <h1 class="text-2xl font-black text-white tracking-tight">System Control Panel</h1>
+            </div>
+            
+            <div class="flex items-center gap-4">
+                <a href="{% url 'home' %}" class="px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-xs font-bold text-slate-300 hover:bg-white/10 hover:text-white transition">
+                    <i class="fas fa-external-link-alt mr-1"></i> Go to App
+                </a>
+                <a href="{% url 'admin_logout' %}" class="px-4 py-2 rounded-xl bg-rose-500/10 border border-rose-500/20 text-xs font-bold text-rose-400 hover:bg-rose-500 hover:text-white transition">
+                    <i class="fas fa-sign-out-alt mr-1"></i> Logout
+                </a>
+            </div>
+        </header>
+
         {% if messages %}
-        <div id="message-container" class="mb-6">
+        <div id="message-container" class="mb-6 space-y-3">
             {% for message in messages %}
-                <div class="p-4 rounded-xl shadow-md {% if message.tags == 'success' %}bg-green-500/90 text-white{% elif message.tags == 'error' %}bg-red-500/90 text-white{% else %}bg-white/90 text-gray-900{% endif %}">
-                    <p class="font-semibold">{{ message }}</p>
+                <div class="p-4 rounded-2xl flex items-center justify-between shadow-lg backdrop-blur-md {% if message.tags == 'success' %}bg-emerald-500/10 border border-emerald-500/30 text-emerald-400{% elif message.tags == 'error' %}bg-rose-500/10 border border-rose-500/30 text-rose-400{% else %}bg-purple-500/10 border border-purple-500/30 text-purple-300{% endif %} animate-fade-up">
+                    <div class="flex items-center gap-3">
+                        <i class="fas {% if message.tags == 'success' %}fa-check-circle{% elif message.tags == 'error' %}fa-exclamation-circle{% else %}fa-info-circle{% endif %} text-base"></i>
+                        <span class="text-xs font-bold">{{ message }}</span>
+                    </div>
                 </div>
             {% endfor %}
         </div>
@@ -72,18 +63,14 @@
         {% endblock %}
     </div>
 
-    <!-- Footer -->
-    {% include 'admin/layout/admin_footer.html' %}
-
 <script>
-    // Auto-hide after 2 seconds
     setTimeout(() => {
         const container = document.getElementById('message-container');
         if (container) {
             container.style.opacity = '0';
-            setTimeout(() => container.remove(), 500);  // Smooth fade-out
+            setTimeout(() => container.remove(), 500);
         }
-    }, 2000);
+    }, 4000);
 </script>
 </body>
 </html>

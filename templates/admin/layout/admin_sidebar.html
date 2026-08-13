@@ -1,40 +1,59 @@
-<div class="fixed top-0 left-0 w-64 h-full bg-gradient-to-b from-cyan-400/90 via-purple-700/90 to-blue-500/80 p-6 shadow-2xl border-r-4 border-cyan-300 z-30 sidebar-glass" style="box-shadow: 0 0 32px 0 #38bdf8;">
-    <h2 class="text-3xl font-extrabold text-white mb-10 text-center flex items-center justify-center gap-2 drop-shadow-[0_2px_12px_#ec4899]">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-yellow-300 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-2v13"/>
-            <circle cx="6" cy="18" r="3" fill="currentColor"/>
-            <circle cx="18" cy="16" r="3" fill="currentColor"/>
-        </svg>
-        Music Admin
-    </h2>
-    <ul class="space-y-4">
-        <li>
-            <a href="{% url 'admin_dashboard' %}" class="flex items-center gap-2 px-4 py-3 rounded-lg bg-gradient-to-r from-pink-500 via-purple-500 to-blue-400 shadow-lg hover:scale-105 transition transform font-semibold text-white">
-                <span>📊</span> Dashboard
+<aside class="fixed top-0 left-0 w-64 h-full glass-dark border-r border-white/5 p-6 flex flex-col justify-between z-30">
+    <div>
+        <!-- Admin Logo Header -->
+        <div class="mb-10 flex items-center gap-3.5 px-2">
+            <div class="w-10 h-10 bg-gradient-to-tr from-purple-600 to-pink-500 rounded-2xl flex items-center justify-center shadow-[0_0_20px_rgba(139,92,246,0.4)]">
+                <i class="fas fa-shield-halved text-white text-base"></i>
+            </div>
+            <h2 class="text-xl font-extrabold tracking-tight text-white">
+                Admin<span class="text-purple-400">Portal</span>
+            </h2>
+        </div>
+
+        <!-- Sidebar Navigation Links -->
+        <nav class="space-y-2">
+            <p class="text-[10px] uppercase tracking-widest text-slate-500 font-extrabold mb-3 px-4">Navigation</p>
+
+            <a href="{% url 'admin_dashboard' %}" class="sidebar-link flex items-center gap-3.5 px-4 py-3 rounded-xl text-xs font-bold transition-all group">
+                <i class="fas fa-chart-line w-4 text-purple-400 group-hover:text-purple-300"></i>
+                <span>Dashboard</span>
             </a>
-        </li>
-        <li>
-            <a href="{% url 'admin_users' %}" class="flex items-center gap-2 px-4 py-3 rounded-lg hover:bg-pink-400/30 hover:scale-105 transition transform font-semibold text-white">
-                <span>👥</span> Manage Users
+
+            <a href="{% url 'admin_users' %}" class="sidebar-link flex items-center gap-3.5 px-4 py-3 rounded-xl text-xs font-bold transition-all group">
+                <i class="fas fa-users w-4 text-cyan-400 group-hover:text-cyan-300"></i>
+                <span>Manage Users</span>
             </a>
-        </li>
-        <li>
-            <a href="{% url 'admin_songs' %}" class="flex items-center gap-2 px-4 py-3 rounded-lg hover:bg-purple-400/30 hover:scale-105 transition transform font-semibold text-white">
-                <span>🎵</span> Manage Songs
+
+            <a href="{% url 'admin_songs' %}" class="sidebar-link flex items-center gap-3.5 px-4 py-3 rounded-xl text-xs font-bold transition-all group">
+                <i class="fas fa-music w-4 text-pink-400 group-hover:text-pink-300"></i>
+                <span>Manage Songs</span>
             </a>
-        </li>
-        <li>
-            <a href="{% url 'admin_video' %}" class="flex items-center gap-2 px-4 py-3 rounded-lg hover:bg-blue-400/30 hover:scale-105 transition transform font-semibold text-white">
-                <span>🎬</span> Manage Videos
+
+            <a href="{% url 'admin_video' %}" class="sidebar-link flex items-center gap-3.5 px-4 py-3 rounded-xl text-xs font-bold transition-all group">
+                <i class="fas fa-film w-4 text-rose-400 group-hover:text-rose-300"></i>
+                <span>Manage Videos</span>
             </a>
-        </li>
-        <li>
-            <a href="{% url 'admin_logout' %}" class="flex items-center gap-2 px-4 py-3 rounded-lg hover:bg-yellow-400/30 hover:scale-105 transition transform font-semibold text-white">
-                <span>🚪</span> Logout
-            </a>
-        </li>
-    </ul>
-    <div class="absolute bottom-6 left-0 w-full flex justify-center">
-        <span class="text-xs text-pink-200 opacity-80 tracking-widest animate-pulse">Feel the beat 🎶</span>
+        </nav>
     </div>
-</div>
+
+    <!-- Bottom Actions -->
+    <div class="pt-4 border-t border-white/5 space-y-2">
+        <a href="{% url 'home' %}" class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-bold text-slate-400 hover:text-white hover:bg-white/5 transition">
+            <i class="fas fa-arrow-left text-xs"></i> Back to User Site
+        </a>
+        <a href="{% url 'admin_logout' %}" class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-bold text-rose-400 hover:bg-rose-500/10 transition">
+            <i class="fas fa-sign-out-alt text-xs"></i> Logout Admin
+        </a>
+    </div>
+</aside>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const currentPath = window.location.pathname;
+        document.querySelectorAll('.sidebar-link').forEach(link => {
+            if (link.getAttribute('href') === currentPath) {
+                link.classList.add('active');
+            }
+        });
+    });
+</script>

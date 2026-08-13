@@ -1,69 +1,72 @@
 {% extends 'app/layout/base.html' %}
 {% load static %}
 
-{% block title %}Favorites - MusicApp{% endblock %}
+{% block title %}Favorite Tracks - MusicApp{% endblock %}
 
 {% block content %}
-<div class="animate-fade-up">
-    <div class="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
+<div class="animate-fade-up space-y-10 pb-16">
+    <!-- Header -->
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 pb-6 border-b border-white/5">
         <div>
-            <span class="text-pink-500 font-bold tracking-widest text-xs uppercase mb-2 block">Your Collection</span>
-            <h1 class="text-5xl md:text-6xl font-black tracking-tighter">
-                Your <span class="text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-red-500 to-orange-400">Favorites</span>
+            <span class="text-pink-400 font-bold tracking-widest text-xs uppercase mb-1 block">Liked Collection</span>
+            <h1 class="text-4xl md:text-5xl font-black tracking-tight text-white">
+                Your <span class="text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-rose-400 to-amber-400">Favorites</span>
             </h1>
-            <p class="text-gray-400 mt-4 text-lg max-w-xl">All the songs that moved you, saved in one high-fidelity collection.</p>
+            <p class="text-slate-400 mt-2 text-sm max-w-xl">All the tracks you have saved and favorited.</p>
         </div>
-        <div class="bg-pink-500/10 px-6 py-3 rounded-2xl border border-pink-500/20 text-pink-500 font-black flex items-center gap-3 shadow-[0_0_20px_rgba(236,72,153,0.1)]">
-            <i class="fas fa-heart animate-pulse"></i> {{ favorite_songs|length }} <span class="text-[10px] uppercase tracking-widest">Tracks</span>
+        <div class="flex items-center gap-3">
+            <span class="px-4 py-2 rounded-xl glass text-xs font-bold text-pink-400 border border-pink-500/20 flex items-center gap-2">
+                <i class="fas fa-heart"></i> {{ favorite_songs|length }} Saved Tracks
+            </span>
         </div>
     </div>
 
     {% if favorite_songs %}
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-8">
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
         {% for song in favorite_songs %}
-        <div class="song-card glass p-5 group relative" 
+        <div class="song-card p-4 rounded-2xl group relative cursor-pointer" 
              onclick="playSong('{% if song.audio_file %}{{ song.audio_file.url }}{% endif %}', '{{ song.title|escapejs }}', '{{ song.artist|escapejs }}', '{% if song.cover_image %}{{ song.cover_image.url }}{% elif song.youtube_id %}https://img.youtube.com/vi/{{ song.youtube_id }}/maxresdefault.jpg{% else %}{% static 'artists/default.jpg' %}{% endif %}', '{{ song.youtube_id|default:'' }}', '{{ song.id }}')">
             
-            <div class="relative overflow-hidden rounded-2xl aspect-square mb-5 shadow-2xl">
-                <img src="{% if song.cover_image %}{{ song.cover_image.url }}{% else %}{% static 'artists/default.jpg' %}{% endif %}" 
+            <div class="relative overflow-hidden rounded-xl aspect-square mb-4 shadow-lg">
+                <img src="{% if song.cover_image %}{{ song.cover_image.url }}{% elif song.youtube_id %}https://img.youtube.com/vi/{{ song.youtube_id }}/maxresdefault.jpg{% else %}{% static 'artists/default.jpg' %}{% endif %}" 
                      alt="{{ song.title }}" 
-                     class="w-full h-full object-cover transition duration-700 group-hover:scale-110">
+                     class="w-full h-full object-cover">
                 
-                <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-all duration-500 flex items-center justify-center backdrop-blur-[2px]">
-                    <div class="w-16 h-16 bg-white text-black rounded-full flex items-center justify-center text-2xl shadow-xl transform translate-y-8 group-hover:translate-y-0 transition-all duration-500 ease-out">
-                        <i class="fas fa-play ml-1"></i>
+                <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center backdrop-blur-[2px]">
+                    <div class="play-overlay-btn w-12 h-12 bg-white text-black rounded-full flex items-center justify-center text-lg shadow-xl">
+                        <i class="fas fa-play ml-0.5"></i>
                     </div>
                 </div>
 
-                <div class="absolute top-3 right-3">
-                    <button class="w-10 h-10 glass rounded-full flex items-center justify-center text-pink-500 hover:text-white transition-colors border border-pink-500/30 shadow-[0_0_15px_rgba(236,72,153,0.3)]">
+                <div class="absolute top-2 right-2">
+                    <div class="w-8 h-8 rounded-full bg-pink-500 text-white flex items-center justify-center shadow-lg text-xs">
                         <i class="fas fa-heart"></i>
-                    </button>
+                    </div>
                 </div>
             </div>
             
             <div class="space-y-1">
-                <h3 class="text-lg font-bold truncate group-hover:text-pink-500 transition-colors">{{ song.title }}</h3>
-                <p class="text-sm text-gray-400 truncate">{{ song.artist }}</p>
+                <h3 class="text-sm font-bold text-slate-100 truncate group-hover:text-pink-400 transition-colors">{{ song.title }}</h3>
+                <p class="text-xs text-slate-400 truncate">{{ song.artist }}</p>
             </div>
             
-            <div class="mt-4 pt-4 border-t border-white/5 flex justify-between items-center text-[10px] text-gray-500 font-bold uppercase tracking-widest">
-                <span>{{ song.genre }}</span>
-                <span>Added Recently</span>
+            <div class="mt-3 pt-3 border-t border-white/5 flex justify-between items-center text-[10px]">
+                <span class="px-2.5 py-0.5 rounded-md bg-pink-500/10 text-pink-400 font-bold border border-pink-500/20">
+                    {{ song.genre }}
+                </span>
+                <span class="text-slate-500 font-medium">Favorited</span>
             </div>
         </div>
         {% endfor %}
     </div>
     {% else %}
-    <div class="glass-dark p-20 text-center max-w-2xl mx-auto mt-10 rounded-[40px] border-dashed border-2 border-white/10">
-        <div class="w-24 h-24 bg-pink-500/10 rounded-full flex items-center justify-center mx-auto mb-8 animate-pulse">
-            <i class="fas fa-heart text-5xl text-pink-500"></i>
+    <div class="glass-dark p-16 text-center max-w-xl mx-auto rounded-3xl border-dashed border-2 border-white/10">
+        <div class="w-16 h-16 bg-pink-500/10 rounded-full flex items-center justify-center mx-auto mb-4 text-pink-400">
+            <i class="fas fa-heart text-2xl"></i>
         </div>
-        <h2 class="text-3xl font-black mb-4">Your heart is empty</h2>
-        <p class="text-gray-400 mb-10 text-lg">Start exploring and click the heart icon on any track to add it to your personal collection.</p>
-        <a href="{% url 'home' %}" class="btn-primary">
-            Discover Music
-        </a>
+        <h2 class="text-xl font-bold mb-2 text-white">No favorite songs yet</h2>
+        <p class="text-slate-400 mb-6 text-sm">Click the heart icon on any song while playing to save it to your favorites!</p>
+        <a href="{% url 'home' %}" class="btn-primary py-2.5 px-6 text-xs">Explore Songs</a>
     </div>
     {% endif %}
 </div>

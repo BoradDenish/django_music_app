@@ -1,84 +1,90 @@
-<!-- Hamburger button (mobile) -->
-<button id="toggleSidebar" class="md:hidden fixed top-4 right-4 z-50 bg-white/10 text-white p-3 rounded-xl backdrop-blur-md border border-white/20 shadow-lg focus:outline-none">
-    <i class="fas fa-bars"></i>
-</button>
-
-<!-- Sidebar -->
-<aside id="sidebar" class="fixed top-0 left-0 w-64 h-full glass-dark border-r border-white/5 p-6 transform -translate-x-full md:translate-x-0 transition-all duration-500 z-40 flex flex-col">
-    <!-- Logo -->
-    <div class="mb-12 flex items-center gap-3 px-2">
-        <div class="w-10 h-10 bg-gradient-to-tr from-purple-600 via-pink-500 to-orange-400 rounded-xl flex items-center justify-center shadow-[0_0_20px_rgba(188,19,254,0.4)]">
-            <i class="fas fa-music text-white text-lg"></i>
-        </div>
-        <h2 class="text-2xl font-black tracking-tighter text-white">
-            Music<span class="text-accent-neon-purple">App</span>
-        </h2>
-    </div>
+<!-- Sidebar Container -->
+<aside id="sidebar" class="fixed top-0 left-0 w-64 h-full glass-dark border-r border-white/5 p-6 transform -translate-x-full md:translate-x-0 transition-all duration-500 z-40 flex flex-col justify-between">
     
-    <nav class="flex-1 space-y-8 overflow-y-auto no-scrollbar">
-        <!-- Main Menu -->
-        <div>
-            <p class="text-[10px] uppercase tracking-[0.2em] text-gray-500 font-black mb-4 px-4">Menu</p>
-            <ul class="space-y-1">
-                <li><a href="{% url 'home' %}" class="sidebar-link flex items-center gap-4 px-4 py-3 rounded-xl group">
-                    <i class="fas fa-home w-5 text-gray-400 group-hover:text-white transition-colors"></i> 
-                    <span class="font-semibold">Home</span>
-                </a></li>
-                <li><a href="{% url 'trending' %}" class="sidebar-link flex items-center gap-4 px-4 py-3 rounded-xl group">
-                    <i class="fas fa-bolt w-5 text-orange-400 group-hover:text-white transition-colors"></i> 
-                    <span class="font-semibold">Trending</span>
-                </a></li>
-                <li><a href="{% url 'library' %}" class="sidebar-link flex items-center gap-4 px-4 py-3 rounded-xl group">
-                    <i class="fas fa-compass w-5 text-blue-400 group-hover:text-white transition-colors"></i> 
-                    <span class="font-semibold">Explore</span>
-                </a></li>
-            </ul>
+    <div>
+        <!-- Brand Logo Header -->
+        <div class="mb-10 flex items-center gap-3.5 px-2">
+            <div class="w-10 h-10 bg-gradient-to-tr from-purple-600 via-pink-500 to-cyan-400 rounded-2xl flex items-center justify-center shadow-[0_0_20px_rgba(139,92,246,0.5)]">
+                <i class="fas fa-music text-white text-base"></i>
+            </div>
+            <a href="{% url 'home' %}" class="text-2xl font-extrabold tracking-tight text-white flex items-center">
+                Music<span class="text-purple-400 font-black">App</span>
+            </a>
         </div>
+        
+        <!-- Navigation Menu -->
+        <nav class="space-y-7 overflow-y-auto no-scrollbar max-h-[calc(100vh-200px)]">
+            <!-- Main Menu -->
+            <div>
+                <p class="text-[10px] uppercase tracking-[0.25em] text-slate-500 font-black mb-3 px-4">Menu</p>
+                <ul class="space-y-1">
+                    <li><a href="{% url 'home' %}" class="sidebar-link flex items-center gap-3.5 px-4 py-2.5 rounded-xl text-sm font-semibold group">
+                        <i class="fas fa-house w-4 text-slate-400 group-hover:text-purple-400 transition-colors"></i> 
+                        <span>Home</span>
+                    </a></li>
+                    <li><a href="{% url 'trending' %}" class="sidebar-link flex items-center gap-3.5 px-4 py-2.5 rounded-xl text-sm font-semibold group">
+                        <i class="fas fa-fire w-4 text-amber-400 group-hover:text-amber-300 transition-colors"></i> 
+                        <span>Trending</span>
+                    </a></li>
+                    <li><a href="{% url 'library' %}" class="sidebar-link flex items-center gap-3.5 px-4 py-2.5 rounded-xl text-sm font-semibold group">
+                        <i class="fas fa-compass w-4 text-cyan-400 group-hover:text-cyan-300 transition-colors"></i> 
+                        <span>Explore</span>
+                    </a></li>
+                </ul>
+            </div>
 
-        <!-- Your Collection -->
-        <div>
-            <p class="text-[10px] uppercase tracking-[0.2em] text-gray-500 font-black mb-4 px-4">Collection</p>
-            <ul class="space-y-1">
-                <li><a href="{% url 'music_library' %}" class="sidebar-link flex items-center gap-4 px-4 py-3 rounded-xl group">
-                    <i class="fas fa-music w-5 text-purple-400 group-hover:text-white transition-colors"></i> 
-                    <span class="font-semibold">Songs</span>
-                </a></li>
-                <li><a href="{% url 'video_library' %}" class="sidebar-link flex items-center gap-4 px-4 py-3 rounded-xl group">
-                    <i class="fas fa-play-circle w-5 text-red-400 group-hover:text-white transition-colors"></i> 
-                    <span class="font-semibold">Videos</span>
-                </a></li>
-                <li><a href="{% url 'favorites' %}" class="sidebar-link flex items-center gap-4 px-4 py-3 rounded-xl group">
-                    <i class="fas fa-heart w-5 text-pink-500 group-hover:text-white transition-colors"></i> 
-                    <span class="font-semibold">Favorites</span>
-                </a></li>
-                <li><a href="{% url 'playlist' %}" class="sidebar-link flex items-center gap-4 px-4 py-3 rounded-xl group">
-                    <i class="fas fa-list w-5 text-cyan-400 group-hover:text-white transition-colors"></i> 
-                    <span class="font-semibold">Playlists</span>
-                </a></li>
-            </ul>
-        </div>
+            <!-- Collection -->
+            <div>
+                <p class="text-[10px] uppercase tracking-[0.25em] text-slate-500 font-black mb-3 px-4">Collection</p>
+                <ul class="space-y-1">
+                    <li><a href="{% url 'music_library' %}" class="sidebar-link flex items-center gap-3.5 px-4 py-2.5 rounded-xl text-sm font-semibold group">
+                        <i class="fas fa-music w-4 text-purple-400 group-hover:text-purple-300 transition-colors"></i> 
+                        <span>Songs</span>
+                    </a></li>
+                    <li><a href="{% url 'video_library' %}" class="sidebar-link flex items-center gap-3.5 px-4 py-2.5 rounded-xl text-sm font-semibold group">
+                        <i class="fas fa-film w-4 text-rose-400 group-hover:text-rose-300 transition-colors"></i> 
+                        <span>Videos</span>
+                    </a></li>
+                    <li><a href="{% url 'favorites' %}" class="sidebar-link flex items-center gap-3.5 px-4 py-2.5 rounded-xl text-sm font-semibold group">
+                        <i class="fas fa-heart w-4 text-pink-500 group-hover:text-pink-400 transition-colors"></i> 
+                        <span>Favorites</span>
+                    </a></li>
+                    <li><a href="{% url 'playlist' %}" class="sidebar-link flex items-center gap-3.5 px-4 py-2.5 rounded-xl text-sm font-semibold group">
+                        <i class="fas fa-layer-group w-4 text-indigo-400 group-hover:text-indigo-300 transition-colors"></i> 
+                        <span>Playlists</span>
+                    </a></li>
+                </ul>
+            </div>
 
-        <!-- General -->
-        <div>
-            <p class="text-[10px] uppercase tracking-[0.2em] text-gray-500 font-black mb-4 px-4">General</p>
-            <ul class="space-y-1">
-                <li><a href="{% url 'upload_url' %}" class="sidebar-link flex items-center gap-4 px-4 py-3 rounded-xl group">
-                    <i class="fas fa-cloud-upload-alt w-5 text-green-400 group-hover:text-white transition-colors"></i> 
-                    <span class="font-semibold">Upload</span>
-                </a></li>
-                <li><a href="{% url 'profile' %}" class="sidebar-link flex items-center gap-4 px-4 py-3 rounded-xl group">
-                    <i class="fas fa-user-circle w-5 text-gray-300 group-hover:text-white transition-colors"></i> 
-                    <span class="font-semibold">Profile</span>
-                </a></li>
-            </ul>
-        </div>
-    </nav>
+            <!-- General -->
+            <div>
+                <p class="text-[10px] uppercase tracking-[0.25em] text-slate-500 font-black mb-3 px-4">General</p>
+                <ul class="space-y-1">
+                    <li><a href="{% url 'upload_url' %}" class="sidebar-link flex items-center gap-3.5 px-4 py-2.5 rounded-xl text-sm font-semibold group">
+                        <i class="fas fa-cloud-arrow-up w-4 text-emerald-400 group-hover:text-emerald-300 transition-colors"></i> 
+                        <span>Upload URL</span>
+                    </a></li>
+                    <li><a href="{% url 'profile' %}" class="sidebar-link flex items-center gap-3.5 px-4 py-2.5 rounded-xl text-sm font-semibold group">
+                        <i class="fas fa-user-gear w-4 text-slate-300 group-hover:text-white transition-colors"></i> 
+                        <span>Profile</span>
+                    </a></li>
+                </ul>
+            </div>
+        </nav>
+    </div>
 
-    <!-- Logout -->
-    <div class="mt-auto pt-6 border-t border-white/5">
-        <a href="{% url 'logout' %}" class="flex items-center gap-4 px-4 py-3 rounded-xl text-gray-500 hover:text-red-400 hover:bg-red-400/10 transition-all group">
-            <i class="fas fa-sign-out-alt w-5 group-hover:rotate-12 transition-transform"></i> 
-            <span class="font-bold">Logout</span>
+    <!-- User / Admin & Logout Bottom Bar -->
+    <div class="pt-4 border-t border-white/5 space-y-2">
+        {% if user.is_staff or user.is_superuser %}
+        <a href="{% url 'admin_dashboard' %}" class="flex items-center gap-3.5 px-4 py-2.5 rounded-xl text-xs font-bold bg-purple-500/10 border border-purple-500/20 text-purple-300 hover:bg-purple-500/20 transition">
+            <i class="fas fa-shield-halved text-sm"></i>
+            <span>Admin Console</span>
+        </a>
+        {% endif %}
+
+        <a href="{% url 'logout' %}" class="flex items-center gap-3.5 px-4 py-2.5 rounded-xl text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 transition-all text-xs font-bold group">
+            <i class="fas fa-arrow-right-from-bracket text-sm group-hover:translate-x-0.5 transition-transform"></i> 
+            <span>Log out</span>
         </a>
     </div>
 </aside>
@@ -88,7 +94,6 @@
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 </style>
 
-<!-- Script to handle active states -->
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         const currentPath = window.location.pathname;
