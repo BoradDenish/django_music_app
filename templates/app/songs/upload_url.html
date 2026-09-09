@@ -1,90 +1,248 @@
 {% extends 'app/layout/base.html' %}
 {% load static %}
 
-{% block title %}Upload Media - MusicApp{% endblock %}
+{% block title %}Upload & Import Music - MusicApp{% endblock %}
 
 {% block content %}
-<div class="animate-fade-up pb-16">
-    <div class="max-w-2xl mx-auto">
-        <!-- Header -->
-        <div class="text-center mb-10">
-            <span class="text-cyan-400 font-extrabold tracking-widest uppercase text-xs mb-2 block">Content Importer</span>
-            <h1 class="text-4xl md:text-5xl font-black tracking-tight text-white">
-                Upload <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400">Media</span>
-            </h1>
-            <p class="text-slate-400 mt-2 text-sm max-w-lg mx-auto">Import YouTube audio or video tracks directly into your personal music library.</p>
+<div class="animate-fade-up pb-16 max-w-3xl mx-auto">
+    <!-- Header -->
+    <div class="text-center mb-8">
+        <span class="text-cyan-400 font-extrabold tracking-widest uppercase text-xs mb-2 inline-block">Cloud Media Importer</span>
+        <h1 class="text-3xl md:text-5xl font-black tracking-tight text-white">
+            Upload & <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400">Import Music</span>
+        </h1>
+        <p class="text-slate-400 mt-2 text-xs md:text-sm max-w-lg mx-auto">
+            Add audio tracks via YouTube smart extraction or upload your own audio files directly into your private collection.
+        </p>
+    </div>
+
+    <!-- Upload Quota Status Card -->
+    <div class="glass p-5 md:p-6 rounded-2xl mb-8 border border-white/10 relative overflow-hidden">
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-4">
+                <div class="w-12 h-12 rounded-xl {% if user.is_vip %}bg-amber-500/20 text-amber-400{% else %}bg-purple-500/20 text-purple-400{% endif %} flex items-center justify-center text-xl shadow-md">
+                    <i class="fas {% if user.is_vip %}fa-crown{% else %}fa-cloud-arrow-up{% endif %}"></i>
+                </div>
+                <div>
+                    <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                        <span>Upload Quota</span>
+                        {% if user.is_vip %}
+                            <span class="badge-vip text-[9px] px-2 py-0.5 rounded-full font-black uppercase">VIP Unlimited</span>
+                        {% else %}
+                            <span class="badge-free text-[9px] px-2 py-0.5 rounded-full font-bold uppercase">Free Plan</span>
+                        {% endif %}
+                    </h3>
+                    <p class="text-xs text-slate-400 mt-0.5">
+                        {% if user.is_vip %}
+                            You have unlimited song uploads as a VIP Member.
+                        {% else %}
+                            <strong class="text-slate-200">{{ uploaded_count }}</strong> of <strong class="text-slate-200">20</strong> songs uploaded ({{ uploads_remaining }} slots remaining).
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+
+            {% if not user.is_vip %}
+            <a href="{% url 'upgrade_premium' %}" class="btn-gold text-xs px-4 py-2 rounded-xl font-extrabold shadow-md shrink-0">
+                <i class="fas fa-sparkles"></i> Unlock Unlimited
+            </a>
+            {% endif %}
         </div>
 
-        <!-- Form Card -->
-        <div class="glass p-8 md:p-12 relative overflow-hidden rounded-3xl border border-white/10 shadow-2xl">
-            <div class="absolute -right-20 -top-20 w-64 h-64 bg-purple-600/10 rounded-full blur-[100px] pointer-events-none"></div>
-            <div class="absolute -left-20 -bottom-20 w-64 h-64 bg-cyan-600/10 rounded-full blur-[100px] pointer-events-none"></div>
+        {% if not user.is_vip %}
+        <div class="w-full h-2 bg-white/10 rounded-full mt-4 overflow-hidden">
+            <div class="h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full transition-all duration-500" style="width: {{ user.upload_percentage }}%;"></div>
+        </div>
+        {% endif %}
+    </div>
 
-            <form action="{% url 'upload_url' %}" method="POST" class="relative z-10 space-y-6">
+    <!-- Quota Exceeded Block Notice -->
+    {% if not can_upload %}
+    <div class="glass-dark p-8 rounded-3xl border border-rose-500/40 text-center mb-8 shadow-2xl">
+        <div class="w-14 h-14 bg-rose-500/20 text-rose-400 rounded-2xl flex items-center justify-center mx-auto mb-4 text-2xl">
+            <i class="fas fa-lock"></i>
+        </div>
+        <h3 class="text-xl font-bold text-white mb-2">Upload Limit Reached (20/20 Songs)</h3>
+        <p class="text-xs text-slate-300 max-w-md mx-auto mb-6 leading-relaxed">
+            You have used all 20 free song upload slots. Upgrade to a VIP Premium membership to upload unlimited tracks, or delete some existing uploads in My Uploads to free up slots.
+        </p>
+        <div class="flex flex-wrap justify-center gap-3">
+            <a href="{% url 'my_uploads' %}" class="px-5 py-2.5 rounded-xl bg-white/5 border border-white/10 text-xs font-bold text-slate-300 hover:bg-white/10 transition">
+                Manage My Uploads
+            </a>
+            <a href="{% url 'upgrade_premium' %}" class="btn-gold px-6 py-2.5 rounded-xl text-xs font-extrabold">
+                <i class="fas fa-crown"></i> Upgrade to VIP
+            </a>
+        </div>
+    </div>
+    {% else %}
+
+    <!-- Upload Tabs Card -->
+    <div class="glass p-6 md:p-8 rounded-3xl border border-white/10 shadow-2xl relative">
+        
+        <!-- Tab Selector -->
+        <div class="flex p-1 bg-white/5 rounded-2xl mb-8 border border-white/5">
+            <button type="button" id="tab-yt-btn" onclick="switchUploadTab('youtube')" 
+                    class="flex-1 py-3 text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-2 bg-gradient-to-r from-purple-600 to-pink-500 text-white shadow-md">
+                <i class="fab fa-youtube text-sm"></i> YouTube Smart Import
+            </button>
+            <button type="button" id="tab-file-btn" onclick="switchUploadTab('file')" 
+                    class="flex-1 py-3 text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-2 text-slate-400 hover:text-white">
+                <i class="fas fa-file-audio text-sm"></i> Direct File Upload
+            </button>
+        </div>
+
+        <!-- Mode 1: YouTube Importer Form -->
+        <div id="youtube-upload-panel" class="space-y-6">
+            <form action="{% url 'upload_song' %}" method="POST" class="space-y-6">
                 {% csrf_token %}
-                
+                <input type="hidden" name="upload_type" value="youtube">
+
                 <div class="space-y-2">
-                    <label class="text-xs font-bold text-slate-300 uppercase tracking-wider ml-1">YouTube URL</label>
+                    <label class="text-xs font-bold text-slate-300 uppercase tracking-wider ml-1">YouTube / YouTube Music URL</label>
                     <div class="relative group">
                         <i class="fab fa-youtube absolute left-4 top-1/2 -translate-y-1/2 text-rose-500 text-base"></i>
                         <input type="url" name="content_url" placeholder="https://www.youtube.com/watch?v=..." required
-                               class="w-full bg-white/5 border border-white/10 rounded-2xl pl-12 pr-4 py-4 focus:border-purple-500 focus:bg-white/10 outline-none transition-all duration-300 placeholder-slate-500 text-sm text-white font-medium">
+                               class="w-full bg-white/5 border border-white/10 rounded-2xl pl-12 pr-4 py-3.5 focus:border-purple-500 focus:bg-white/10 outline-none transition text-xs md:text-sm text-white font-medium">
                     </div>
+                    <p class="text-[11px] text-slate-400 ml-1">Supports standard YouTube video links, YouTube Shorts, and YouTube Music links.</p>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                     <div class="space-y-2">
                         <label class="text-xs font-bold text-slate-300 uppercase tracking-wider ml-1">Media Type</label>
-                        <select name="content_type" class="w-full bg-slate-900 border border-white/10 rounded-2xl px-4 py-4 focus:border-purple-500 outline-none transition-all text-sm text-slate-200 cursor-pointer">
-                            <option value="music" class="bg-slate-900">🎵 Audio Track</option>
-                            <option value="video" class="bg-slate-900">🎬 Music Video</option>
+                        <select name="content_type" class="w-full bg-slate-900 border border-white/10 rounded-2xl px-4 py-3.5 focus:border-purple-500 outline-none text-xs md:text-sm text-slate-200 cursor-pointer">
+                            <option value="audio">🎵 Audio Track (MP3/M4A)</option>
+                            <option value="video">🎬 Music Video (MP4)</option>
                         </select>
                     </div>
 
                     <div class="space-y-2">
-                        <label class="text-xs font-bold text-slate-300 uppercase tracking-wider ml-1">Offline Storage</label>
-                        <div class="flex items-center justify-between bg-white/5 border border-white/10 rounded-2xl px-4 py-3.5">
-                            <span class="text-xs text-slate-300 font-medium">Store File Locally</span>
+                        <label class="text-xs font-bold text-slate-300 uppercase tracking-wider ml-1">Storage Mode</label>
+                        <div class="flex items-center justify-between bg-white/5 border border-white/10 rounded-2xl px-4 py-3">
+                            <span class="text-xs text-slate-300 font-medium">Download Offline Stream</span>
                             <label class="relative inline-flex items-center cursor-pointer">
                                 <input type="checkbox" name="store_locally" class="sr-only peer" checked>
-                                <div class="w-10 h-5 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-purple-600"></div>
+                                <div class="w-9 h-5 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-purple-600"></div>
                             </label>
                         </div>
                     </div>
                 </div>
 
-                <button type="submit" class="btn-primary w-full py-4 rounded-2xl text-sm font-bold mt-4 flex items-center justify-center gap-2 shadow-xl">
-                    <i class="fas fa-bolt"></i> Import & Process Media
+                <button type="submit" class="btn-primary w-full py-3.5 rounded-2xl text-xs md:text-sm font-bold shadow-xl flex items-center justify-center gap-2">
+                    <i class="fas fa-bolt"></i> Extract Metadata & Import Song
                 </button>
             </form>
         </div>
 
-        <!-- Features Grid -->
-        <div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div class="glass p-5 rounded-2xl text-center border border-white/5">
-                <div class="w-10 h-10 bg-cyan-500/10 rounded-xl flex items-center justify-center mx-auto mb-3 text-cyan-400">
-                    <i class="fas fa-bolt text-sm"></i>
-                </div>
-                <h4 class="font-bold text-sm text-slate-200">Auto Metadata</h4>
-                <p class="text-xs text-slate-400 mt-1">Extracts title, artist, duration & cover art automatically.</p>
-            </div>
-            
-            <div class="glass p-5 rounded-2xl text-center border border-white/5">
-                <div class="w-10 h-10 bg-purple-500/10 rounded-xl flex items-center justify-center mx-auto mb-3 text-purple-400">
-                    <i class="fas fa-music text-sm"></i>
-                </div>
-                <h4 class="font-bold text-sm text-slate-200">Format Convert</h4>
-                <p class="text-xs text-slate-400 mt-1">Converts YouTube streams into high quality audio/video.</p>
-            </div>
+        <!-- Mode 2: Direct File Upload Form -->
+        <div id="file-upload-panel" class="space-y-6 hidden">
+            <form action="{% url 'upload_song' %}" method="POST" enctype="multipart/form-data" class="space-y-5">
+                {% csrf_token %}
+                <input type="hidden" name="upload_type" value="file">
 
-            <div class="glass p-5 rounded-2xl text-center border border-white/5">
-                <div class="w-10 h-10 bg-pink-500/10 rounded-xl flex items-center justify-center mx-auto mb-3 text-pink-400">
-                    <i class="fas fa-cloud text-sm"></i>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="space-y-1.5">
+                        <label class="text-xs font-bold text-slate-300 uppercase tracking-wider ml-1">Song Title *</label>
+                        <input type="text" name="title" placeholder="e.g. Midnight Waves" required
+                               class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 focus:border-purple-500 outline-none text-xs md:text-sm text-white">
+                    </div>
+                    <div class="space-y-1.5">
+                        <label class="text-xs font-bold text-slate-300 uppercase tracking-wider ml-1">Artist Name *</label>
+                        <input type="text" name="artist" placeholder="e.g. Astral Sound" required
+                               class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 focus:border-purple-500 outline-none text-xs md:text-sm text-white">
+                    </div>
                 </div>
-                <h4 class="font-bold text-sm text-slate-200">Library Sync</h4>
-                <p class="text-xs text-slate-400 mt-1">Instantly added to your songs & playlists collection.</p>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="space-y-1.5">
+                        <label class="text-xs font-bold text-slate-300 uppercase tracking-wider ml-1">Album (optional)</label>
+                        <input type="text" name="album" placeholder="e.g. Horizon"
+                               class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 focus:border-purple-500 outline-none text-xs md:text-sm text-white">
+                    </div>
+                    <div class="space-y-1.5">
+                        <label class="text-xs font-bold text-slate-300 uppercase tracking-wider ml-1">Genre</label>
+                        <select name="genre" class="w-full bg-slate-900 border border-white/10 rounded-xl px-4 py-3 focus:border-purple-500 outline-none text-xs md:text-sm text-slate-200">
+                            {% for g in genres %}
+                            <option value="{{ g }}">{{ g }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="space-y-1.5">
+                        <label class="text-xs font-bold text-slate-300 uppercase tracking-wider ml-1">Duration (mm:ss)</label>
+                        <input type="text" name="duration" placeholder="e.g. 03:45"
+                               class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 focus:border-purple-500 outline-none text-xs md:text-sm text-white">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="space-y-1.5">
+                        <label class="text-xs font-bold text-slate-300 uppercase tracking-wider ml-1">Audio File (MP3/M4A/WAV) *</label>
+                        <input type="file" name="audio_file" accept="audio/*" required
+                               class="w-full bg-white/5 border border-white/10 rounded-xl p-2.5 text-xs text-slate-300 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-purple-600 file:text-white hover:file:bg-purple-500">
+                    </div>
+                    <div class="space-y-1.5">
+                        <label class="text-xs font-bold text-slate-300 uppercase tracking-wider ml-1">Cover Poster Image</label>
+                        <input type="file" name="cover_image" accept="image/*"
+                               class="w-full bg-white/5 border border-white/10 rounded-xl p-2.5 text-xs text-slate-300 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-pink-600 file:text-white hover:file:bg-pink-500">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-primary w-full py-3.5 rounded-2xl text-xs md:text-sm font-bold shadow-xl flex items-center justify-center gap-2 mt-2">
+                    <i class="fas fa-cloud-arrow-up"></i> Upload Track to Private Library
+                </button>
+            </form>
+        </div>
+
+    </div>
+    {% endif %}
+
+    <!-- Feature Highlights -->
+    <div class="mt-10 grid grid-cols-1 md:grid-cols-3 gap-5">
+        <div class="glass p-5 rounded-2xl text-center border border-white/5">
+            <div class="w-10 h-10 bg-cyan-500/15 rounded-xl flex items-center justify-center mx-auto mb-3 text-cyan-400">
+                <i class="fas fa-wand-magic-sparkles text-sm"></i>
             </div>
+            <h4 class="font-bold text-xs md:text-sm text-slate-200">Auto Poster & Tags</h4>
+            <p class="text-[11px] text-slate-400 mt-1">Extracts high-resolution poster art, artist name, and metadata seamlessly.</p>
+        </div>
+        
+        <div class="glass p-5 rounded-2xl text-center border border-white/5">
+            <div class="w-10 h-10 bg-purple-500/15 rounded-xl flex items-center justify-center mx-auto mb-3 text-purple-400">
+                <i class="fas fa-shield-halved text-sm"></i>
+            </div>
+            <h4 class="font-bold text-xs md:text-sm text-slate-200">Private & Secure</h4>
+            <p class="text-[11px] text-slate-400 mt-1">Uploaded tracks are private to your personal library and visible only to you.</p>
+        </div>
+
+        <div class="glass p-5 rounded-2xl text-center border border-white/5">
+            <div class="w-10 h-10 bg-amber-500/15 rounded-xl flex items-center justify-center mx-auto mb-3 text-amber-400">
+                <i class="fas fa-infinity text-sm"></i>
+            </div>
+            <h4 class="font-bold text-xs md:text-sm text-slate-200">20 Free / Unlimited VIP</h4>
+            <p class="text-[11px] text-slate-400 mt-1">Free users can upload up to 20 tracks. VIP Members enjoy unlimited storage.</p>
         </div>
     </div>
 </div>
+
+<script>
+    function switchUploadTab(type) {
+        const ytPanel = document.getElementById('youtube-upload-panel');
+        const filePanel = document.getElementById('file-upload-panel');
+        const ytBtn = document.getElementById('tab-yt-btn');
+        const fileBtn = document.getElementById('tab-file-btn');
+
+        if (type === 'youtube') {
+            ytPanel.classList.remove('hidden');
+            filePanel.classList.add('hidden');
+            ytBtn.className = 'flex-1 py-3 text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-2 bg-gradient-to-r from-purple-600 to-pink-500 text-white shadow-md';
+            fileBtn.className = 'flex-1 py-3 text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-2 text-slate-400 hover:text-white';
+        } else {
+            filePanel.classList.remove('hidden');
+            ytPanel.classList.add('hidden');
+            fileBtn.className = 'flex-1 py-3 text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-2 bg-gradient-to-r from-purple-600 to-pink-500 text-white shadow-md';
+            ytBtn.className = 'flex-1 py-3 text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-2 text-slate-400 hover:text-white';
+        }
+    }
+</script>
 {% endblock %}

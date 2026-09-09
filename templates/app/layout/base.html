@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}MusicApp | Premium Sound Experience{% endblock %}</title>
+    <title>{% block title %}MusicApp | Premium Sound & Audio Experience{% endblock %}</title>
     
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -21,10 +21,10 @@
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <link rel="icon" href="{% static 'images/img.png' %}">
 </head>
-<body class="text-slate-100 min-h-screen bg-black overflow-x-hidden pb-28">
+<body class="text-slate-100 min-h-screen bg-black overflow-x-hidden pb-32">
 
     <!-- Mobile Drawer Backdrop Overlay -->
-    <div id="drawer-backdrop" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-30 hidden md:hidden transition-opacity duration-300"></div>
+    <div id="drawer-backdrop" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-30 hidden md:hidden transition-opacity duration-300"></div>
 
     <!-- Sidebar Navigation -->
     {% include 'app/layout/sidebar.html' %}
@@ -46,37 +46,41 @@
                     <i class="fas fa-search text-slate-400 mr-3 text-xs"></i>
                     <input type="text" id="global-search-input" placeholder="Search songs, artists, or genres..." 
                            class="bg-transparent border-none outline-none text-sm w-full placeholder-slate-500 text-white font-medium">
-                    <span class="hidden sm:inline-block text-[10px] bg-white/10 text-slate-400 px-2 py-0.5 rounded-md font-mono border border-white/5">Ctrl+K</span>
+                    <span class="hidden sm:inline-block text-[10px] bg-white/10 text-slate-400 px-2 py-0.5 rounded-md font-mono border border-white/5">/</span>
                 </div>
             </div>
             
             <!-- User Controls / Actions -->
-            <div class="flex items-center gap-4 ml-4">
-                <a href="{% url 'upload_url' %}" class="hidden sm:flex items-center gap-2 px-4 py-2 text-xs font-bold rounded-xl bg-purple-500/10 text-purple-400 border border-purple-500/20 hover:bg-purple-500/20 transition">
-                    <i class="fas fa-plus"></i> Add YouTube
-                </a>
+            <div class="flex items-center gap-3.5 ml-4">
+                {% if user.is_authenticated %}
+                    <a href="{% url 'upload_song' %}" class="hidden sm:flex items-center gap-2 px-3.5 py-2 text-xs font-bold rounded-xl bg-purple-500/10 text-purple-300 border border-purple-500/20 hover:bg-purple-500/25 transition">
+                        <i class="fas fa-plus text-[11px]"></i> Add Song
+                    </a>
 
-                <div class="flex items-center gap-3">
-                    <button class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/10 transition relative">
-                        <i class="fas fa-bell text-sm"></i>
-                        <span class="absolute top-2 right-2 w-2 h-2 rounded-full bg-pink-500 animate-ping"></span>
-                    </button>
-                    
-                    {% if user.is_authenticated %}
-                    <a href="{% url 'profile' %}" class="flex items-center gap-3 p-1 pr-3 rounded-xl bg-white/5 border border-white/10 hover:border-purple-500/40 transition group">
-                        <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-purple-600 to-pink-500 flex items-center justify-center text-white font-bold text-xs shadow-md">
+                    {% if not user.is_vip %}
+                    <a href="{% url 'upgrade_premium' %}" class="hidden md:flex items-center gap-1.5 px-3 py-2 text-xs font-black rounded-xl bg-amber-500/15 text-amber-300 border border-amber-500/30 hover:bg-amber-500/25 transition shadow-sm">
+                        <i class="fas fa-crown text-[10px]"></i> Get VIP
+                    </a>
+                    {% endif %}
+
+                    <a href="{% url 'profile' %}" class="flex items-center gap-2.5 p-1 pr-3 rounded-xl bg-white/5 border border-white/10 hover:border-purple-500/40 transition group">
+                        <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-purple-600 to-pink-500 flex items-center justify-center text-white font-bold text-xs shadow-md overflow-hidden">
                             {% if user.profile_pic %}
-                                <img src="{{ user.profile_pic.url }}" alt="{{ user.username }}" class="w-full h-full object-cover rounded-lg">
+                                <img src="{{ user.profile_pic.url }}" alt="{{ user.username }}" class="w-full h-full object-cover">
                             {% else %}
                                 {{ user.username|slice:":1"|upper }}
                             {% endif %}
                         </div>
-                        <span class="text-xs font-semibold text-slate-200 group-hover:text-white hidden lg:inline-block">{{ user.username }}</span>
+                        <div class="hidden lg:block text-left">
+                            <span class="text-xs font-bold text-slate-200 block leading-tight">{{ user.username }}</span>
+                            <span class="text-[9px] {% if user.is_vip %}text-amber-400 font-extrabold{% else %}text-slate-400{% endif %}">
+                                {% if user.is_vip %}VIP Member{% else %}Free Plan{% endif %}
+                            </span>
+                        </div>
                     </a>
-                    {% else %}
-                    <a href="{% url 'login' %}" class="btn-primary text-xs py-2 px-5 rounded-xl">Login</a>
-                    {% endif %}
-                </div>
+                {% else %}
+                    <a href="{% url 'login' %}" class="btn-primary text-xs py-2 px-5 rounded-xl font-bold">Login</a>
+                {% endif %}
             </div>
         </header>
 
@@ -87,7 +91,7 @@
                     <div class="mb-6 p-4 rounded-2xl flex items-center justify-between shadow-lg backdrop-blur-md {% if message.tags == 'success' %}bg-emerald-500/10 border border-emerald-500/30 text-emerald-400{% elif message.tags == 'error' %}bg-rose-500/10 border border-rose-500/30 text-rose-400{% else %}bg-purple-500/10 border border-purple-500/30 text-purple-300{% endif %} animate-fade-up">
                         <div class="flex items-center gap-3">
                             <i class="fas {% if message.tags == 'success' %}fa-check-circle{% elif message.tags == 'error' %}fa-exclamation-circle{% else %}fa-info-circle{% endif %} text-lg"></i>
-                            <span class="text-sm font-medium">{{ message }}</span>
+                            <span class="text-xs md:text-sm font-semibold">{{ message }}</span>
                         </div>
                         <button onclick="this.parentElement.remove()" class="text-slate-400 hover:text-white transition">
                             <i class="fas fa-times"></i>
@@ -101,57 +105,60 @@
         </div>
     </main>
 
-    <!-- Sleek Global Player Bar -->
+    <!-- Sleek Global Persistent Audio Player Bar -->
     <div id="global-player" class="player-bar px-4 md:px-8 flex items-center justify-between">
         
         <!-- Track Details Left -->
-        <div class="flex items-center gap-4 w-1/3 min-w-0">
-            <div class="w-14 h-14 rounded-xl bg-white/5 border border-white/10 overflow-hidden flex-shrink-0 shadow-lg relative group">
+        <div class="flex items-center gap-3.5 w-1/3 min-w-0">
+            <div class="w-13 h-13 md:w-14 md:h-14 rounded-xl bg-white/5 border border-white/10 overflow-hidden flex-shrink-0 shadow-lg relative group">
                 <img id="player-album-art" src="{% static 'artists/default.jpg' %}" alt="Album Art" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
-                <div id="player-playing-indicator" class="absolute inset-0 bg-black/40 backdrop-blur-[2px] hidden items-center justify-center gap-1">
+                <div id="player-playing-indicator" class="absolute inset-0 bg-black/50 backdrop-blur-[1px] hidden items-center justify-center gap-1">
                     <div class="equalizer-bar"></div>
                     <div class="equalizer-bar"></div>
                     <div class="equalizer-bar"></div>
                 </div>
             </div>
             <div class="truncate">
-                <h4 id="player-song-title" class="font-bold text-sm text-slate-100 truncate tracking-tight">Select a track</h4>
-                <p id="player-artist-name" class="text-xs text-slate-400 truncate mt-0.5">Explore your collection</p>
+                <div class="flex items-center gap-2">
+                    <h4 id="player-song-title" class="font-bold text-xs md:text-sm text-slate-100 truncate tracking-tight">Select a track to play</h4>
+                    <span id="player-premium-badge" class="hidden badge-vip text-[9px] px-1.5 py-0.2 rounded font-black uppercase">VIP</span>
+                </div>
+                <p id="player-artist-name" class="text-[11px] md:text-xs text-slate-400 truncate mt-0.5">Explore your sonic library</p>
             </div>
-            <button id="player-fav-btn" class="ml-2 p-2 text-slate-400 hover:text-pink-500 transition-colors rounded-lg hover:bg-white/5">
+            <button id="player-fav-btn" class="ml-1 p-2 text-slate-400 hover:text-pink-500 transition-colors rounded-lg hover:bg-white/5" title="Like / Favorite">
                 <i class="far fa-heart text-sm"></i>
             </button>
         </div>
 
         <!-- Center Controls & Progress -->
         <div class="flex flex-col items-center w-1/3 max-w-xl px-2">
-            <div class="flex items-center gap-5 mb-2">
-                <button class="text-slate-400 hover:text-purple-400 transition text-xs" title="Shuffle"><i class="fas fa-random"></i></button>
-                <button class="text-slate-300 hover:text-white text-base transition" title="Previous"><i class="fas fa-step-backward"></i></button>
-                <button id="player-play-btn" class="w-11 h-11 bg-white text-black rounded-full flex items-center justify-center hover:scale-105 active:scale-95 transition shadow-lg">
+            <div class="flex items-center gap-4 md:gap-5 mb-1.5">
+                <button id="player-shuffle-btn" class="text-slate-400 hover:text-purple-400 transition text-xs" title="Shuffle mode"><i class="fas fa-random"></i></button>
+                <button id="player-prev-btn" class="text-slate-300 hover:text-white text-base transition" title="Previous Track"><i class="fas fa-step-backward"></i></button>
+                <button id="player-play-btn" class="w-10 h-10 md:w-11 md:h-11 bg-white text-black rounded-full flex items-center justify-center hover:scale-105 active:scale-95 transition shadow-lg" title="Play / Pause">
                     <i class="fas fa-play ml-0.5 text-sm"></i>
                 </button>
-                <button class="text-slate-300 hover:text-white text-base transition" title="Next"><i class="fas fa-step-forward"></i></button>
-                <button class="text-slate-400 hover:text-purple-400 transition text-xs" title="Repeat"><i class="fas fa-redo"></i></button>
+                <button id="player-next-btn" class="text-slate-300 hover:text-white text-base transition" title="Next Track"><i class="fas fa-step-forward"></i></button>
+                <button id="player-repeat-btn" class="text-slate-400 hover:text-purple-400 transition text-xs" title="Repeat mode (Off / All / One)"><i class="fas fa-redo"></i></button>
             </div>
-            <div class="flex items-center gap-3 w-full">
-                <span id="current-time" class="text-[11px] text-slate-400 w-10 text-right font-mono font-medium">0:00</span>
+            <div class="flex items-center gap-2.5 w-full">
+                <span id="current-time" class="text-[10px] md:text-[11px] text-slate-400 w-9 text-right font-mono font-medium">0:00</span>
                 <div id="progress-container" class="progress-bar flex-1 group">
                     <div id="progress-filled" class="progress-filled">
-                        <div class="absolute right-0 top-1/2 -translate-y-1/2 w-3.5 h-3.5 bg-white rounded-full shadow-md scale-0 group-hover:scale-100 transition-transform"></div>
+                        <div class="absolute right-0 top-1/2 -translate-y-1/2 w-3 h-3 bg-white rounded-full shadow-md scale-0 group-hover:scale-100 transition-transform"></div>
                     </div>
                 </div>
-                <span id="total-duration" class="text-[11px] text-slate-400 w-10 font-mono font-medium">0:00</span>
+                <span id="total-duration" class="text-[10px] md:text-[11px] text-slate-400 w-9 font-mono font-medium">0:00</span>
             </div>
         </div>
 
         <!-- Right Side Features (Playlist, Volume, Video Expand) -->
-        <div class="flex items-center justify-end gap-4 w-1/3">
+        <div class="flex items-center justify-end gap-3 md:gap-4 w-1/3">
             <div class="relative">
                 <button id="player-playlist-btn" class="p-2 text-slate-400 hover:text-white transition rounded-xl hover:bg-white/5" title="Add to Playlist">
                     <i class="fas fa-plus-circle text-sm"></i>
                 </button>
-                <div id="playlist-dropdown" class="absolute bottom-full right-0 mb-3 w-52 glass-dark rounded-2xl p-2 hidden z-50 shadow-2xl border border-white/10">
+                <div id="playlist-dropdown" class="absolute bottom-full right-0 mb-3 w-56 glass-dark rounded-2xl p-2 hidden z-50 shadow-2xl border border-white/10">
                     <p class="text-[10px] font-extrabold uppercase tracking-widest text-slate-400 px-3 py-2 border-b border-white/5">Add to Playlist</p>
                     <div id="playlist-items" class="max-h-48 overflow-y-auto py-1"></div>
                 </div>
@@ -162,35 +169,63 @@
                 <button id="volume-icon" class="text-slate-400 group-hover:text-white text-xs p-1">
                     <i class="fas fa-volume-up"></i>
                 </button>
-                <div id="volume-container" class="w-20 h-1.5 bg-white/10 rounded-full cursor-pointer relative overflow-hidden">
+                <div id="volume-container" class="w-16 md:w-20 h-1.5 bg-white/10 rounded-full cursor-pointer relative overflow-hidden">
                     <div id="volume-filled" class="absolute inset-y-0 left-0 bg-slate-300 group-hover:bg-purple-400 rounded-full w-full transition-colors"></div>
                 </div>
             </div>
 
             <!-- Expand Video Player Toggle -->
-            <button id="expand-player" class="p-2 text-slate-400 hover:text-white transition rounded-xl hover:bg-white/5" title="Expand Video">
-                <i class="fas fa-expand text-xs"></i>
+            <button id="expand-player" class="p-2 text-slate-400 hover:text-white transition rounded-xl hover:bg-white/5" title="Toggle Video Player Frame">
+                <i class="fas fa-tv text-xs"></i>
             </button>
         </div>
     </div>
 
-    <!-- YouTube Floating Modal Frame -->
-    <audio id="main-audio-player"></audio>
+    <!-- YouTube / Video Floating Modal Frame -->
+    <audio id="main-audio-player" preload="auto"></audio>
     <div id="youtube-player-container" class="fixed bottom-28 right-6 w-80 aspect-video rounded-2xl overflow-hidden shadow-2xl border border-white/10 hidden z-50 bg-black">
-        <button id="close-yt-player" class="absolute top-2 right-2 w-7 h-7 bg-black/70 backdrop-blur-md rounded-full flex items-center justify-center text-white text-xs z-20 hover:bg-white hover:text-black transition">
+        <button id="close-yt-player" class="absolute top-2 right-2 w-7 h-7 bg-black/80 backdrop-blur-md rounded-full flex items-center justify-center text-white text-xs z-20 hover:bg-white hover:text-black transition">
             <i class="fas fa-times"></i>
         </button>
         <div id="yt-player" class="w-full h-full"></div>
+    </div>
+
+    <!-- Premium Gatekeeper Modal -->
+    <div id="premium-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+        <div class="glass-dark max-w-md w-full p-8 rounded-3xl border border-amber-500/30 text-center relative overflow-hidden shadow-[0_0_50px_rgba(245,158,11,0.2)] animate-fade-up">
+            <div class="w-16 h-16 rounded-2xl bg-amber-500/20 text-amber-400 flex items-center justify-center mx-auto mb-4 text-2xl shadow-lg">
+                <i class="fas fa-crown"></i>
+            </div>
+            <h3 class="text-2xl font-black text-white tracking-tight mb-2">VIP Exclusive Track</h3>
+            <p class="text-xs text-slate-300 leading-relaxed mb-6">
+                This track is available exclusively to VIP Premium members. Upgrade today to unlock full track playback, high-fidelity streaming, and unlimited song uploads!
+            </p>
+            <div class="flex gap-3 justify-center">
+                <button onclick="document.getElementById('premium-modal').classList.add('hidden')" class="px-5 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-bold text-slate-300 transition">
+                    Maybe Later
+                </button>
+                <a href="{% url 'upgrade_premium' %}" class="btn-gold px-6 py-2.5 rounded-xl text-xs font-extrabold shadow-lg">
+                    <i class="fas fa-sparkles"></i> Upgrade to VIP
+                </a>
+            </div>
+        </div>
     </div>
 
     <!-- YouTube IFrame API -->
     <script src="https://www.youtube.com/iframe_api"></script>
 
     <script>
+        // Global Track Queue State
+        window.playlistQueue = [];
+        window.currentQueueIndex = -1;
+        window.isUserVip = {% if user.is_vip %}true{% else %}false{% endif %};
+
         let ytPlayer;
         let isYTReady = false;
         let currentMode = 'audio';
         let currentSongId = null;
+        let repeatMode = 0; // 0: off, 1: all, 2: one
+        let isShuffle = false;
 
         function onYouTubeIframeAPIReady() {
             ytPlayer = new YT.Player('yt-player', {
@@ -216,9 +251,11 @@
                 playBtn.innerHTML = '<i class="fas fa-pause text-sm"></i>';
                 if(indicator) indicator.classList.remove('hidden'), indicator.classList.add('flex');
                 updateYTProgress();
-            } else if (event.data == YT.PlayerState.PAUSED || event.data == YT.PlayerState.ENDED) {
+            } else if (event.data == YT.PlayerState.PAUSED) {
                 playBtn.innerHTML = '<i class="fas fa-play ml-0.5 text-sm"></i>';
                 if(indicator) indicator.classList.add('hidden'), indicator.classList.remove('flex');
+            } else if (event.data == YT.PlayerState.ENDED) {
+                handleTrackEnded();
             }
         }
 
@@ -226,16 +263,22 @@
             if (currentMode === 'youtube' && isYTReady && ytPlayer.getPlayerState() === YT.PlayerState.PLAYING) {
                 const currentTime = ytPlayer.getCurrentTime();
                 const duration = ytPlayer.getDuration();
-                const percent = (currentTime / duration) * 100;
-                progressFilled.style.width = `${percent}%`;
-                currentTimeEl.textContent = formatTime(currentTime);
-                durationEl.textContent = formatTime(duration);
-                setTimeout(updateYTProgress, 1000);
+                if (duration > 0) {
+                    const percent = (currentTime / duration) * 100;
+                    progressFilled.style.width = `${percent}%`;
+                    currentTimeEl.textContent = formatTime(currentTime);
+                    durationEl.textContent = formatTime(duration);
+                }
+                setTimeout(updateYTProgress, 800);
             }
         }
 
         const audio = document.getElementById('main-audio-player');
         const playBtn = document.getElementById('player-play-btn');
+        const prevBtn = document.getElementById('player-prev-btn');
+        const nextBtn = document.getElementById('player-next-btn');
+        const shuffleBtn = document.getElementById('player-shuffle-btn');
+        const repeatBtn = document.getElementById('player-repeat-btn');
         const progressFilled = document.getElementById('progress-filled');
         const progressContainer = document.getElementById('progress-container');
         const currentTimeEl = document.getElementById('current-time');
@@ -244,6 +287,7 @@
         const volumeContainer = document.getElementById('volume-container');
         const volumeFilled = document.getElementById('volume-filled');
         const playingIndicator = document.getElementById('player-playing-indicator');
+        const premiumBadge = document.getElementById('player-premium-badge');
 
         function formatTime(seconds) {
             if (isNaN(seconds) || seconds === null) return "0:00";
@@ -279,10 +323,28 @@
             }
         });
 
+        // Track Ended Logic (Repeat / Next)
+        function handleTrackEnded() {
+            if (repeatMode === 2) {
+                // Repeat One
+                if (currentMode === 'audio') {
+                    audio.currentTime = 0;
+                    audio.play();
+                } else if (isYTReady) {
+                    ytPlayer.seekTo(0);
+                    ytPlayer.playVideo();
+                }
+            } else {
+                playNextTrack();
+            }
+        }
+
+        audio.addEventListener('ended', handleTrackEnded);
+
         // Seek Audio Track
         progressContainer.addEventListener('click', (e) => {
             const rect = progressContainer.getBoundingClientRect();
-            const percent = (e.clientX - rect.left) / rect.width;
+            const percent = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
             if (currentMode === 'audio' && audio.duration) {
                 audio.currentTime = percent * audio.duration;
             } else if (currentMode === 'youtube' && isYTReady) {
@@ -291,12 +353,27 @@
         });
 
         // Volume Slider Control
+        let lastVolume = 1;
         volumeContainer.addEventListener('click', (e) => {
             const rect = volumeContainer.getBoundingClientRect();
             const percent = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+            setVolume(percent);
+        });
+
+        function setVolume(percent) {
             volumeFilled.style.width = `${percent * 100}%`;
             audio.volume = percent;
+            lastVolume = percent;
             if (isYTReady) ytPlayer.setVolume(percent * 100);
+            const icon = document.getElementById('volume-icon');
+            if (percent === 0) icon.innerHTML = '<i class="fas fa-volume-mute text-rose-400"></i>';
+            else if (percent < 0.5) icon.innerHTML = '<i class="fas fa-volume-down"></i>';
+            else icon.innerHTML = '<i class="fas fa-volume-up"></i>';
+        }
+
+        document.getElementById('volume-icon').addEventListener('click', () => {
+            if (audio.volume > 0) setVolume(0);
+            else setVolume(lastVolume > 0 ? lastVolume : 0.8);
         });
 
         audio.addEventListener('timeupdate', () => {
@@ -313,7 +390,64 @@
             }
         });
 
-        window.playSong = function(url, title, artist, art, youtubeId = null, songId = null) {
+        // Repeat & Shuffle Toggle
+        repeatBtn.addEventListener('click', () => {
+            repeatMode = (repeatMode + 1) % 3;
+            if (repeatMode === 0) {
+                repeatBtn.className = 'text-slate-400 hover:text-purple-400 transition text-xs';
+                repeatBtn.innerHTML = '<i class="fas fa-redo"></i>';
+            } else if (repeatMode === 1) {
+                repeatBtn.className = 'text-purple-400 font-bold transition text-xs';
+                repeatBtn.innerHTML = '<i class="fas fa-redo"></i>';
+            } else {
+                repeatBtn.className = 'text-pink-400 font-bold transition text-xs';
+                repeatBtn.innerHTML = '<i class="fas fa-redo-alt"></i><span class="text-[9px] ml-0.5">1</span>';
+            }
+        });
+
+        shuffleBtn.addEventListener('click', () => {
+            isShuffle = !isShuffle;
+            shuffleBtn.className = isShuffle ? 'text-purple-400 font-bold transition text-xs' : 'text-slate-400 hover:text-purple-400 transition text-xs';
+        });
+
+        // Prev & Next Buttons
+        prevBtn.addEventListener('click', playPreviousTrack);
+        nextBtn.addEventListener('click', playNextTrack);
+
+        function playPreviousTrack() {
+            if (window.playlistQueue.length === 0) return;
+            if (window.currentQueueIndex > 0) {
+                window.currentQueueIndex--;
+            } else {
+                window.currentQueueIndex = window.playlistQueue.length - 1;
+            }
+            const track = window.playlistQueue[window.currentQueueIndex];
+            if (track) window.playSong(track.url, track.title, track.artist, track.art, track.youtubeId, track.songId, track.isPremium, false);
+        }
+
+        function playNextTrack() {
+            if (window.playlistQueue.length === 0) return;
+            if (isShuffle) {
+                window.currentQueueIndex = Math.floor(Math.random() * window.playlistQueue.length);
+            } else if (window.currentQueueIndex < window.playlistQueue.length - 1) {
+                window.currentQueueIndex++;
+            } else if (repeatMode === 1) {
+                window.currentQueueIndex = 0;
+            } else {
+                return;
+            }
+            const track = window.playlistQueue[window.currentQueueIndex];
+            if (track) window.playSong(track.url, track.title, track.artist, track.art, track.youtubeId, track.songId, track.isPremium, false);
+        }
+
+        // Global Play Song Function
+        window.playSong = function(url, title, artist, art, youtubeId = null, songId = null, isPremium = false, updateQueue = true) {
+            // Check VIP restriction
+            if (isPremium && !window.isUserVip) {
+                document.getElementById('premium-modal').classList.remove('hidden');
+                return;
+            }
+
             audio.pause();
             if (isYTReady) ytPlayer.stopVideo();
             
@@ -322,7 +456,21 @@
             document.getElementById('player-artist-name').textContent = artist;
             document.getElementById('player-album-art').src = art;
 
-            if (youtubeId) {
+            if (isPremium) {
+                premiumBadge.classList.remove('hidden');
+            } else {
+                premiumBadge.classList.add('hidden');
+            }
+
+            // If an audio file URL is available (whether local upload or downloaded YouTube audio file)
+            if (url && url.length > 0) {
+                currentMode = 'audio';
+                ytContainer.classList.add('hidden');
+                audio.src = url;
+                audio.play().catch(e => console.log('Autoplay prevented'));
+                playBtn.innerHTML = '<i class="fas fa-pause text-sm"></i>';
+                if(playingIndicator) playingIndicator.classList.remove('hidden'), playingIndicator.classList.add('flex');
+            } else if (youtubeId) {
                 currentMode = 'youtube';
                 ytContainer.classList.remove('hidden');
                 if (isYTReady) {
@@ -331,13 +479,14 @@
                 }
                 playBtn.innerHTML = '<i class="fas fa-pause text-sm"></i>';
                 if(playingIndicator) playingIndicator.classList.remove('hidden'), playingIndicator.classList.add('flex');
-            } else {
-                currentMode = 'audio';
-                ytContainer.classList.add('hidden');
-                audio.src = url;
-                audio.play().catch(e => console.log('Audio autoplay prevented'));
-                playBtn.innerHTML = '<i class="fas fa-pause text-sm"></i>';
-                if(playingIndicator) playingIndicator.classList.remove('hidden'), playingIndicator.classList.add('flex');
+            }
+
+            // Record play count via AJAX
+            if (songId) {
+                const fd = new FormData();
+                fd.append('song_id', songId);
+                fd.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+                fetch('{% url "record_play" %}', { method: 'POST', body: fd }).catch(() => {});
             }
         };
 
@@ -351,7 +500,7 @@
         document.getElementById('expand-player').addEventListener('click', () => {
             if (currentMode === 'youtube') {
                 ytContainer.classList.toggle('w-80');
-                ytContainer.classList.toggle('w-full');
+                ytContainer.classList.toggle('w-[92vw]');
                 ytContainer.classList.toggle('max-w-4xl');
                 ytContainer.classList.toggle('right-6');
                 ytContainer.classList.toggle('left-1/2');
@@ -359,6 +508,8 @@
                 ytContainer.classList.toggle('bottom-28');
                 ytContainer.classList.toggle('top-1/2');
                 ytContainer.classList.toggle('-translate-y-1/2');
+            } else {
+                ytContainer.classList.toggle('hidden');
             }
         });
 
@@ -384,7 +535,7 @@
             });
         });
 
-        // Playlist Functionality
+        // Playlist Dropdown Functionality
         const playlistBtn = document.getElementById('player-playlist-btn');
         const playlistDropdown = document.getElementById('playlist-dropdown');
         const playlistItems = document.getElementById('playlist-items');
@@ -397,12 +548,12 @@
                 .then(data => {
                     playlistItems.innerHTML = '';
                     if(!data.playlists || data.playlists.length === 0) {
-                        playlistItems.innerHTML = '<p class="text-xs text-slate-500 px-3 py-2">No playlists found</p>';
+                        playlistItems.innerHTML = '<p class="text-xs text-slate-500 px-3 py-2">No playlists found. Create one first!</p>';
                     } else {
                         data.playlists.forEach(p => {
                             const item = document.createElement('div');
-                            item.className = 'px-3 py-2 hover:bg-white/10 cursor-pointer text-xs transition rounded-xl text-slate-200 hover:text-white truncate font-medium';
-                            item.textContent = p.name;
+                            item.className = 'px-3 py-2 hover:bg-white/10 cursor-pointer text-xs transition rounded-xl text-slate-200 hover:text-white truncate font-medium flex items-center gap-2';
+                            item.innerHTML = `<i class="fas fa-music text-[10px] text-purple-400"></i> <span>${p.name}</span>`;
                             item.onclick = () => addToPlaylist(p.id);
                             playlistItems.appendChild(item);
                         });
@@ -427,10 +578,8 @@
             })
             .then(res => res.json())
             .then(data => {
-                if (data.status === 'success') {
-                    playlistDropdown.classList.add('hidden');
-                    alert('Track added to playlist!');
-                }
+                playlistDropdown.classList.add('hidden');
+                alert(data.message || 'Track added to playlist!');
             });
         }
 
@@ -449,6 +598,22 @@
             backdrop.addEventListener('click', () => {
                 sidebar.classList.add('-translate-x-full');
                 backdrop.classList.add('hidden');
+            });
+        }
+
+        // Global search shortcut
+        const searchInput = document.getElementById('global-search-input');
+        if (searchInput) {
+            window.addEventListener('keydown', (e) => {
+                if (e.key === '/' && document.activeElement !== searchInput) {
+                    e.preventDefault();
+                    searchInput.focus();
+                }
+            });
+            searchInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && searchInput.value.trim()) {
+                    window.location.href = `{% url 'music_library' %}?search=${encodeURIComponent(searchInput.value.trim())}`;
+                }
             });
         }
     </script>

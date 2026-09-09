@@ -1,71 +1,72 @@
 {% extends 'app/layout/base.html' %}
 {% load static %}
 
-{% block title %}Video Library - MusicApp{% endblock %}
+{% block title %}Music Videos - MusicApp{% endblock %}
 
 {% block content %}
-<div class="animate-fade-up space-y-10 pb-16">
-    <!-- Header -->
+<div class="animate-fade-up space-y-8 pb-16">
+    
+    <!-- Top Header -->
     <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 pb-6 border-b border-white/5">
         <div>
-            <span class="text-rose-400 font-bold tracking-widest text-xs uppercase mb-1 block">Video Stream</span>
-            <h1 class="text-4xl md:text-5xl font-black tracking-tight text-white">
-                Video <span class="text-transparent bg-clip-text bg-gradient-to-r from-rose-500 via-pink-400 to-amber-400">Library</span>
+            <span class="text-rose-400 font-extrabold tracking-widest text-xs uppercase mb-1 block">Visual Collection</span>
+            <h1 class="text-3xl md:text-5xl font-black tracking-tight text-white">
+                Music <span class="text-transparent bg-clip-text bg-gradient-to-r from-rose-400 via-pink-400 to-purple-400">Videos</span>
             </h1>
-            <p class="text-slate-400 mt-2 text-sm max-w-xl">High definition music videos and live sessions.</p>
+            <p class="text-slate-400 text-xs md:text-sm mt-1 max-w-xl">
+                Watch full HD music videos and live studio sessions.
+            </p>
         </div>
-        <div class="flex items-center gap-3">
-            <span class="px-4 py-2 rounded-xl glass text-xs font-bold text-slate-300 border border-white/10 flex items-center gap-2">
-                <i class="fas fa-film text-rose-400"></i> {{ videos|length }} Videos
-            </span>
-        </div>
+
+        <form method="GET" action="{% url 'video_library' %}" class="flex items-center gap-2">
+            <div class="search-glass flex items-center px-3.5 py-2 rounded-xl text-xs w-64">
+                <i class="fas fa-search text-slate-400 mr-2 text-xs"></i>
+                <input type="text" name="search" value="{{ search_query }}" placeholder="Search videos..." 
+                       class="bg-transparent border-none outline-none text-xs w-full text-white placeholder-slate-500">
+            </div>
+            <button type="submit" class="btn-primary py-2 px-3 text-xs rounded-xl font-bold">Search</button>
+        </form>
     </div>
 
-    {% if videos %}
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    <!-- Video Grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {% for video in videos %}
-        <div class="glass rounded-2xl overflow-hidden group hover:border-white/20 transition-all duration-300 cursor-pointer shadow-lg"
-             onclick="playSong('{% if video.audio_file %}{{ video.audio_file.url }}{% endif %}', '{{ video.title|escapejs }}', '{{ video.artist|escapejs }}', '{% if video.cover_image %}{{ video.cover_image.url }}{% elif video.youtube_id %}https://img.youtube.com/vi/{{ video.youtube_id }}/maxresdefault.jpg{% else %}{% static 'artists/default.jpg' %}{% endif %}', '{{ video.youtube_id|default:'' }}', '{{ video.id }}')">
+        <div class="song-card p-4 rounded-3xl group cursor-pointer"
+             onclick="playSong('{% if video.audio_file %}{{ video.audio_file.url }}{% endif %}', '{{ video.title|escapejs }}', '{{ video.artist|escapejs }}', '{{ video.cover_url }}', '{{ video.youtube_id|default:'' }}', '{{ video.id }}', {% if video.is_premium %}true{% else %}false{% endif %})">
             
-            <div class="relative aspect-video overflow-hidden">
-                <img src="{% if video.cover_image %}{{ video.cover_image.url }}{% elif video.youtube_id %}https://img.youtube.com/vi/{{ video.youtube_id }}/maxresdefault.jpg{% else %}{% static 'artists/default.jpg' %}{% endif %}" 
-                     class="w-full h-full object-cover transition duration-700 group-hover:scale-105" alt="{{ video.title }}">
-                
-                <div class="absolute inset-0 bg-black/40 flex items-center justify-center group-hover:bg-black/20 transition">
-                    <div class="w-14 h-14 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center text-white text-lg border border-white/30 group-hover:scale-110 transition shadow-2xl">
+            <div class="relative aspect-video rounded-2xl overflow-hidden mb-3.5 shadow-xl bg-black">
+                <img src="{{ video.cover_url }}" class="w-full h-full object-cover" alt="{{ video.title }}">
+                <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center backdrop-blur-[1px]">
+                    <div class="w-12 h-12 rounded-full bg-rose-600 text-white flex items-center justify-center text-base shadow-xl">
                         <i class="fas fa-play ml-0.5"></i>
                     </div>
                 </div>
-
+                <span class="absolute bottom-2 right-2 px-2 py-0.5 bg-black/80 backdrop-blur-md rounded-md text-[10px] font-mono text-white">
+                    {{ video.formatted_duration }}
+                </span>
                 {% if video.youtube_id %}
-                <div class="absolute top-3 left-3 px-2.5 py-1 bg-rose-600/90 backdrop-blur-md text-[9px] font-extrabold uppercase rounded-lg text-white shadow-md z-10">
-                    <i class="fab fa-youtube mr-1"></i> YouTube
-                </div>
+                <span class="absolute top-2 right-2 px-2 py-0.5 bg-rose-600/90 rounded-md text-[8px] font-black uppercase text-white shadow-md">
+                    <i class="fab fa-youtube"></i> HD
+                </span>
                 {% endif %}
             </div>
 
-            <div class="p-5">
-                <h3 class="text-base font-bold text-slate-100 truncate group-hover:text-rose-400 transition-colors">{{ video.title }}</h3>
-                <p class="text-xs text-slate-400 mt-1 truncate">{{ video.artist }}</p>
-                <div class="flex items-center gap-4 text-[11px] text-slate-500 mt-4 pt-3 border-t border-white/5 font-medium">
-                    <span><i class="fas fa-layer-group text-purple-400 mr-1"></i> {{ video.genre }}</span>
-                    <span><i class="fas fa-calendar-alt text-cyan-400 mr-1"></i> {{ video.release_date|date:"M Y" }}</span>
-                </div>
+            <h3 class="text-sm font-bold text-slate-100 group-hover:text-rose-400 transition truncate">{{ video.title }}</h3>
+            <p class="text-xs text-slate-400 truncate mt-0.5">{{ video.artist }}</p>
+        </div>
+        {% empty %}
+        <div class="col-span-full py-16 text-center glass border-dashed border-2 border-white/10 rounded-3xl space-y-4">
+            <div class="w-14 h-14 bg-rose-500/10 text-rose-400 rounded-full flex items-center justify-center mx-auto text-xl">
+                <i class="fas fa-film"></i>
             </div>
+            <h3 class="text-base font-bold text-white">No Music Videos Found</h3>
+            <p class="text-xs text-slate-400 max-w-sm mx-auto">
+                Import YouTube video links from the upload page with media type set to "Music Video".
+            </p>
+            <a href="{% url 'upload_song' %}" class="btn-primary py-2 px-5 text-xs rounded-xl font-bold inline-block">Import Video</a>
         </div>
         {% endfor %}
     </div>
-    {% else %}
-    <div class="glass-dark p-16 text-center max-w-xl mx-auto rounded-3xl border-dashed border-2 border-white/10">
-        <div class="w-16 h-16 bg-rose-500/10 rounded-full flex items-center justify-center mx-auto mb-4 text-rose-400">
-            <i class="fas fa-film text-2xl"></i>
-        </div>
-        <h2 class="text-xl font-bold mb-2 text-white">No video tracks found</h2>
-        <p class="text-slate-400 mb-6 text-sm">Upload YouTube video links to stream music videos here.</p>
-        <a href="{% url 'upload_url' %}" class="btn-primary py-2.5 px-6 text-xs">
-            <i class="fas fa-plus"></i> Upload Video URL
-        </a>
-    </div>
-    {% endif %}
+
 </div>
 {% endblock %}

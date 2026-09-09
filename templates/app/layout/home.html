@@ -1,7 +1,7 @@
 {% extends 'app/layout/base.html' %}
 {% load static %}
 
-{% block title %}Home - MusicApp{% endblock %}
+{% block title %}Home - MusicApp | Sound Experience{% endblock %}
 
 {% block content %}
 <div class="animate-fade-up space-y-12 pb-16">
@@ -9,38 +9,45 @@
     <!-- Hero Banner Section -->
     <div class="relative w-full rounded-3xl overflow-hidden shadow-2xl border border-white/10 group min-h-[380px] flex items-center">
         <!-- Background Overlay Gradients -->
-        <div class="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-950/80 to-transparent z-10"></div>
+        <div class="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-950/85 to-transparent z-10"></div>
         <img src="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&q=80&w=1600" 
              class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000" alt="Music Banner">
         
         <div class="relative z-20 p-8 sm:p-12 md:p-16 max-w-2xl">
-            <span class="inline-flex items-center gap-2 text-cyan-400 font-extrabold tracking-widest uppercase text-[10px] bg-cyan-500/10 border border-cyan-500/20 px-3 py-1 rounded-full mb-6">
-                <i class="fas fa-sparkles text-[10px]"></i> Curated Selection
-            </span>
+            <div class="flex items-center gap-2 mb-4">
+                <span class="inline-flex items-center gap-1.5 text-cyan-400 font-extrabold tracking-widest uppercase text-[10px] bg-cyan-500/10 border border-cyan-500/20 px-3 py-1 rounded-full">
+                    <i class="fas fa-sparkles text-[10px]"></i> Curated Selection
+                </span>
+                {% if user.is_vip %}
+                <span class="badge-vip text-[10px] px-3 py-1 rounded-full font-black uppercase flex items-center gap-1">
+                    <i class="fas fa-crown text-[9px]"></i> VIP Active
+                </span>
+                {% endif %}
+            </div>
 
-            <h1 class="text-4xl sm:text-5xl md:text-6xl font-black mb-4 leading-tight tracking-tight text-white">
+            <h1 class="text-3xl sm:text-5xl md:text-6xl font-black mb-4 leading-tight tracking-tight text-white">
                 Discover Your <br> 
                 <span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-400 to-amber-300">
-                    Sonic World
+                    Sonic Universe
                 </span>
             </h1>
 
-            <p class="text-slate-300 text-sm md:text-base mb-8 font-medium leading-relaxed max-w-lg">
-                Stream high-fidelity tracks, create your own playlist collections, and experience studio quality sound right in your browser.
+            <p class="text-slate-300 text-xs sm:text-sm md:text-base mb-8 font-medium leading-relaxed max-w-lg">
+                Stream high-fidelity tracks, import YouTube links with 1-click, and store up to 20 songs free (or unlimited with VIP).
             </p>
 
             <div class="flex flex-wrap gap-4">
                 {% if latest_songs %}
                     {% with song=latest_songs.0 %}
-                    <button class="btn-primary py-3 px-8 text-sm rounded-xl"
-                            onclick="playSong('{% if song.audio_file %}{{ song.audio_file.url }}{% endif %}', '{{ song.title|escapejs }}', '{{ song.artist|escapejs }}', '{% if song.cover_image %}{{ song.cover_image.url }}{% elif song.youtube_id %}https://img.youtube.com/vi/{{ song.youtube_id }}/maxresdefault.jpg{% else %}{% static 'artists/default.jpg' %}{% endif %}', '{{ song.youtube_id|default:'' }}', '{{ song.id }}')">
+                    <button class="btn-primary py-3 px-7 text-xs md:text-sm rounded-xl font-bold shadow-xl"
+                            onclick="playSong('{% if song.audio_file %}{{ song.audio_file.url }}{% endif %}', '{{ song.title|escapejs }}', '{{ song.artist|escapejs }}', '{{ song.cover_url }}', '{{ song.youtube_id|default:'' }}', '{{ song.id }}', {% if song.is_premium %}true{% else %}false{% endif %})">
                         <i class="fas fa-play text-xs"></i> Play Featured Track
                     </button>
                     {% endwith %}
                 {% endif %}
 
-                <a href="{% url 'trending' %}" class="glass py-3 px-8 text-sm font-bold rounded-xl hover:bg-white/10 transition border border-white/10 flex items-center gap-2">
-                    Explore Charts <i class="fas fa-arrow-right text-xs"></i>
+                <a href="{% url 'upload_song' %}" class="glass py-3 px-6 text-xs md:text-sm font-bold rounded-xl hover:bg-white/10 transition border border-white/10 flex items-center gap-2">
+                    <i class="fas fa-cloud-arrow-up text-cyan-400"></i> Upload / Import
                 </a>
             </div>
         </div>
@@ -48,81 +55,131 @@
 
     <!-- Fresh Releases Section -->
     <section>
-        <div class="flex justify-between items-end mb-8">
+        <div class="flex justify-between items-end mb-6">
             <div>
                 <span class="text-purple-400 font-bold tracking-widest text-xs uppercase mb-1 block">Fresh Additions</span>
-                <h2 class="text-3xl font-extrabold tracking-tight text-white">🎶 Latest <span class="text-slate-500">Releases</span></h2>
+                <h2 class="text-2xl md:text-3xl font-extrabold tracking-tight text-white">🎶 Latest <span class="text-slate-500">Releases</span></h2>
             </div>
             <a href="{% url 'music_library' %}" class="text-purple-400 hover:text-white text-xs font-bold uppercase tracking-wider transition-colors flex items-center gap-1">
                 View All <i class="fas fa-chevron-right text-[10px]"></i>
             </a>
         </div>
 
-        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5">
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-5">
             {% for song in latest_songs %}
-            <div class="song-card p-4 rounded-2xl group cursor-pointer" 
-                 onclick="playSong('{% if song.audio_file %}{{ song.audio_file.url }}{% endif %}', '{{ song.title|escapejs }}', '{{ song.artist|escapejs }}', '{% if song.cover_image %}{{ song.cover_image.url }}{% elif song.youtube_id %}https://img.youtube.com/vi/{{ song.youtube_id }}/maxresdefault.jpg{% else %}{% static 'artists/default.jpg' %}{% endif %}', '{{ song.youtube_id|default:'' }}', '{{ song.id }}')">
+            <div class="song-card p-3.5 rounded-2xl group cursor-pointer" 
+                 onclick="playSong('{% if song.audio_file %}{{ song.audio_file.url }}{% endif %}', '{{ song.title|escapejs }}', '{{ song.artist|escapejs }}', '{{ song.cover_url }}', '{{ song.youtube_id|default:'' }}', '{{ song.id }}', {% if song.is_premium %}true{% else %}false{% endif %})">
                 
-                <div class="relative overflow-hidden rounded-xl aspect-square mb-3 shadow-lg">
-                    <img src="{% if song.cover_image %}{{ song.cover_image.url }}{% elif song.youtube_id %}https://img.youtube.com/vi/{{ song.youtube_id }}/maxresdefault.jpg{% else %}{% static 'artists/default.jpg' %}{% endif %}" 
-                         class="w-full h-full object-cover" alt="{{ song.title }}">
+                <div class="relative overflow-hidden rounded-xl aspect-square mb-3 shadow-lg bg-black">
+                    <img src="{{ song.cover_url }}" class="w-full h-full object-cover" alt="{{ song.title }}">
                     
                     <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center backdrop-blur-[2px]">
-                        <div class="play-overlay-btn w-12 h-12 bg-white text-black rounded-full flex items-center justify-center text-lg shadow-xl">
+                        <div class="play-overlay-btn w-11 h-11 bg-white text-black rounded-full flex items-center justify-center text-base shadow-xl">
                             <i class="fas fa-play ml-0.5"></i>
                         </div>
                     </div>
 
+                    <!-- Badges -->
+                    <div class="absolute top-2 left-2 flex flex-col gap-1">
+                        {% if song.is_premium %}
+                        <span class="badge-vip px-2 py-0.5 text-[9px] font-black uppercase rounded-md shadow-md">
+                            <i class="fas fa-crown text-[8px]"></i> VIP
+                        </span>
+                        {% endif %}
+                        {% if song.uploaded_by == user and not user.is_staff %}
+                        <span class="badge-private px-2 py-0.5 text-[8px] font-bold uppercase rounded-md shadow-md">
+                            👤 Private
+                        </span>
+                        {% endif %}
+                    </div>
+
                     {% if song.youtube_id %}
-                    <span class="absolute top-2 right-2 px-2 py-0.5 bg-rose-600/90 backdrop-blur-md text-[9px] font-extrabold uppercase rounded-md text-white shadow-md">
-                        <i class="fab fa-youtube mr-0.5"></i> Video
+                    <span class="absolute top-2 right-2 px-1.5 py-0.5 bg-rose-600/90 backdrop-blur-md text-[8px] font-black uppercase rounded-md text-white shadow-md">
+                        <i class="fab fa-youtube"></i>
                     </span>
                     {% endif %}
                 </div>
 
-                <h3 class="text-sm font-bold truncate text-slate-100 group-hover:text-purple-400 transition-colors">{{ song.title }}</h3>
-                <p class="text-xs text-slate-400 truncate mt-0.5">{{ song.artist }}</p>
+                <h3 class="text-xs md:text-sm font-bold truncate text-slate-100 group-hover:text-purple-400 transition-colors">{{ song.title }}</h3>
+                <p class="text-[11px] text-slate-400 truncate mt-0.5">{{ song.artist }}</p>
             </div>
             {% empty %}
             <div class="col-span-full py-16 text-center glass border-dashed border-2 border-white/10 rounded-3xl">
                 <div class="w-14 h-14 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-3 text-slate-400">
                     <i class="fas fa-music text-xl"></i>
                 </div>
-                <p class="text-slate-400 font-bold text-sm">No tracks available yet</p>
+                <p class="text-slate-400 font-bold text-sm">No tracks available in the catalog</p>
             </div>
             {% endfor %}
         </div>
     </section>
 
-    <!-- Global Hits Section -->
-    <section>
-        <div class="flex justify-between items-end mb-8">
+    <!-- User's Personal Vault Section (if user has uploaded songs) -->
+    {% if user_uploads %}
+    <section class="glass p-6 md:p-8 rounded-3xl border border-emerald-500/20 bg-gradient-to-r from-emerald-950/20 via-transparent to-teal-950/20">
+        <div class="flex justify-between items-end mb-6">
             <div>
-                <span class="text-pink-400 font-bold tracking-widest text-xs uppercase mb-1 block">Charts & Hits</span>
-                <h2 class="text-3xl font-extrabold tracking-tight text-white">🔥 Trending <span class="text-slate-500">Now</span></h2>
+                <span class="text-emerald-400 font-bold tracking-widest text-xs uppercase mb-1 block">Your Private Cloud</span>
+                <h2 class="text-2xl font-extrabold tracking-tight text-white flex items-center gap-2">
+                    <span>👤 My Uploaded Tracks</span>
+                    <span class="badge-private text-[9px] px-2 py-0.5 rounded-full">Private</span>
+                </h2>
             </div>
-            <a href="{% url 'trending' %}" class="text-amber-400 hover:text-white text-xs font-bold uppercase tracking-wider transition-colors flex items-center gap-1">
-                See Trends <i class="fas fa-chevron-right text-[10px]"></i>
+            <a href="{% url 'my_uploads' %}" class="text-emerald-400 hover:text-white text-xs font-bold uppercase tracking-wider transition-colors flex items-center gap-1">
+                Manage Vault ({{ user.uploaded_count }}/20) <i class="fas fa-chevron-right text-[10px]"></i>
             </a>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            {% for song in user_uploads %}
+            <div class="glass p-3 rounded-2xl group cursor-pointer hover:border-emerald-500/40 transition"
+                 onclick="playSong('{% if song.audio_file %}{{ song.audio_file.url }}{% endif %}', '{{ song.title|escapejs }}', '{{ song.artist|escapejs }}', '{{ song.cover_url }}', '{{ song.youtube_id|default:'' }}', '{{ song.id }}', false)">
+                <div class="relative aspect-square rounded-xl overflow-hidden mb-2 bg-black">
+                    <img src="{{ song.cover_url }}" class="w-full h-full object-cover" alt="{{ song.title }}">
+                    <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
+                        <i class="fas fa-play text-white text-sm"></i>
+                    </div>
+                </div>
+                <h4 class="text-xs font-bold text-slate-100 truncate group-hover:text-emerald-400">{{ song.title }}</h4>
+                <p class="text-[10px] text-slate-400 truncate">{{ song.artist }}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- Trending Hits Section -->
+    <section>
+        <div class="flex justify-between items-end mb-6">
+            <div>
+                <span class="text-pink-400 font-bold tracking-widest text-xs uppercase mb-1 block">Charts & Hits</span>
+                <h2 class="text-2xl md:text-3xl font-extrabold tracking-tight text-white">🔥 Trending <span class="text-slate-500">Charts</span></h2>
+            </div>
+            <a href="{% url 'trending' %}" class="text-amber-400 hover:text-white text-xs font-bold uppercase tracking-wider transition-colors flex items-center gap-1">
+                See Full Top 50 <i class="fas fa-chevron-right text-[10px]"></i>
+            </a>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {% for song in trending_songs %}
             <div class="glass p-3.5 rounded-2xl flex items-center space-x-4 group hover:bg-white/10 transition-all cursor-pointer border border-white/5"
-                 onclick="playSong('{% if song.audio_file %}{{ song.audio_file.url }}{% endif %}', '{{ song.title|escapejs }}', '{{ song.artist|escapejs }}', '{% if song.cover_image %}{{ song.cover_image.url }}{% elif song.youtube_id %}https://img.youtube.com/vi/{{ song.youtube_id }}/maxresdefault.jpg{% else %}{% static 'artists/default.jpg' %}{% endif %}', '{{ song.youtube_id|default:'' }}', '{{ song.id }}')">
+                 onclick="playSong('{% if song.audio_file %}{{ song.audio_file.url }}{% endif %}', '{{ song.title|escapejs }}', '{{ song.artist|escapejs }}', '{{ song.cover_url }}', '{{ song.youtube_id|default:'' }}', '{{ song.id }}', {% if song.is_premium %}true{% else %}false{% endif %})">
                 
-                <div class="relative w-14 h-14 shrink-0 overflow-hidden rounded-xl shadow-md">
-                    <img src="{% if song.cover_image %}{{ song.cover_image.url }}{% elif song.youtube_id %}https://img.youtube.com/vi/{{ song.youtube_id }}/maxresdefault.jpg{% else %}{% static 'artists/default.jpg' %}{% endif %}" 
-                         class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" alt="{{ song.title }}">
+                <div class="relative w-14 h-14 shrink-0 overflow-hidden rounded-xl shadow-md bg-black">
+                    <img src="{{ song.cover_url }}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" alt="{{ song.title }}">
+                    {% if song.is_premium %}
+                    <span class="absolute top-1 left-1 badge-vip text-[7px] px-1 rounded font-black">VIP</span>
+                    {% endif %}
                 </div>
 
-                <div class="overflow-hidden flex-1">
-                    <h3 class="text-sm font-bold text-slate-100 truncate group-hover:text-purple-400 transition-colors">{{ song.title }}</h3>
-                    <p class="text-xs text-slate-400 truncate mt-0.5">{{ song.artist }}</p>
+                <div class="overflow-hidden flex-1 min-w-0">
+                    <h3 class="text-xs md:text-sm font-bold text-slate-100 truncate group-hover:text-purple-400 transition-colors">{{ song.title }}</h3>
+                    <p class="text-[11px] text-slate-400 truncate mt-0.5">{{ song.artist }}</p>
+                    <span class="text-[9px] text-slate-500 font-mono">{{ song.genre }} • {{ song.formatted_duration }}</span>
                 </div>
 
-                <div class="w-9 h-9 flex items-center justify-center rounded-xl bg-white/5 border border-white/10 text-slate-300 group-hover:bg-purple-600 group-hover:text-white group-hover:border-purple-500 transition-all duration-300 shadow-md">
-                    <i class="fas fa-play text-xs ml-0.5"></i>
+                <div class="w-9 h-9 flex items-center justify-center rounded-xl bg-white/5 border border-white/10 text-slate-300 group-hover:bg-purple-600 group-hover:text-white group-hover:border-purple-500 transition-all duration-300 shadow-md shrink-0">
+                    <i class="fas fa-play text-[10px] ml-0.5"></i>
                 </div>
             </div>
             {% endfor %}

@@ -1,141 +1,80 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Login - MusicApp</title>
+    <title>Admin Portal Login - MusicApp</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        /* Background Animation */
-        body {
-            background: linear-gradient(-45deg, #0f0c29, #302b63, #24243e);
-            background-size: 400% 400%;
-            animation: gradientBG 8s ease infinite;
-        }
-
-        @keyframes gradientBG {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        /* Floating Particles */
-        .particle {
-            position: absolute;
-            background: rgba(255, 255, 255, 0.2);
-            width: 5px;
-            height: 5px;
-            border-radius: 50%;
-            animation: floatUp 5s linear infinite;
-            z-index: -1;
-        }
-
-        @keyframes floatUp {
-            0% { transform: translateY(0); opacity: 1; }
-            100% { transform: translateY(-100vh); opacity: 0; }
-        }
-
-        /* Music Wave Animation */
-        .music-wave {
-            display: flex;
-            justify-content: center;
-            gap: 4px;
-            height: 20px;
-        }
-
-        .music-wave span {
-            display: inline-block;
-            width: 5px;
-            background: #8a2be2;
-            animation: waveAnim 1.2s infinite ease-in-out;
-        }
-
-        .music-wave span:nth-child(1) { animation-delay: 0s; }
-        .music-wave span:nth-child(2) { animation-delay: 0.2s; }
-        .music-wave span:nth-child(3) { animation-delay: 0.4s; }
-        .music-wave span:nth-child(4) { animation-delay: 0.6s; }
-        .music-wave span:nth-child(5) { animation-delay: 0.8s; }
-
-        @keyframes waveAnim {
-            0%, 100% { transform: scaleY(1); }
-            50% { transform: scaleY(1.8); }
-        }
-    </style>
+    
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom Design System -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="icon" href="{% static 'images/img.png' %}">
 </head>
-<body class="h-screen flex items-center justify-center overflow-hidden relative">
+<body class="flex items-center justify-center min-h-screen relative overflow-hidden bg-black text-slate-100 p-4">
 
-    <!-- Floating Particles -->
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            for (let i = 0; i < 30; i++) {
-                let particle = document.createElement("div");
-                particle.classList.add("particle");
-                particle.style.left = Math.random() * 100 + "vw";
-                particle.style.animationDuration = (Math.random() * 3 + 2) + "s";
-                document.body.appendChild(particle);
-            }
-        });
-    </script>
+    <!-- Glowing Orbs -->
+    <div class="absolute top-1/4 left-1/4 w-[450px] h-[450px] bg-purple-600/15 rounded-full blur-[140px] pointer-events-none animate-pulse-slow"></div>
+    <div class="absolute bottom-1/4 right-1/4 w-[450px] h-[450px] bg-pink-600/15 rounded-full blur-[140px] pointer-events-none animate-pulse-slow delay-2"></div>
 
-    <!-- Login Box -->
-    <div class="relative w-full max-w-md bg-black/50 backdrop-blur-md shadow-2xl p-8 rounded-2xl border border-purple-500">
+    <div class="relative w-full max-w-md p-8 sm:p-10 glass border border-white/10 shadow-2xl animate-fade-up rounded-3xl z-10">
         
-        <!-- Neon Glow Effect -->
-        <div class="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-500 blur-xl opacity-30 rounded-2xl pointer-events-none"></div>
-
-        <!-- Admin Logo + Music Wave -->
         <div class="text-center mb-8">
-            <h2 class="text-4xl font-extrabold text-purple-400 flex items-center justify-center gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 inline-block text-pink-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-2v13"/>
-                    <circle cx="6" cy="18" r="3" fill="currentColor"/>
-                    <circle cx="18" cy="16" r="3" fill="currentColor"/>
-                </svg>
-                Admin Login
-            </h2>
-            <div class="music-wave mt-4">
-                <span></span><span></span><span></span><span></span><span></span>
+            <div class="w-14 h-14 bg-gradient-to-tr from-purple-600 to-pink-500 rounded-2xl flex items-center justify-center shadow-[0_0_20px_rgba(139,92,246,0.5)] mx-auto mb-4">
+                <i class="fas fa-shield-halved text-white text-xl"></i>
             </div>
-            <p class="text-gray-300 text-sm mt-4">Access the <span class="text-pink-400 font-semibold">Music & Songs</span> dashboard</p>
+            <h2 class="text-3xl font-black tracking-tight text-white">Admin Console</h2>
+            <p class="text-slate-400 text-xs font-medium mt-1">Staff & system administrator authentication</p>
         </div>
 
         {% if messages %}
-            <div class="mb-4 text-red-400 text-sm">
-                {% for message in messages %}
-                    <p>{{ message }}</p>
-                {% endfor %}
-            </div>
+            {% for message in messages %}
+                <div class="mb-5 p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs font-medium flex items-center gap-2">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span>{{ message }}</span>
+                </div>
+            {% endfor %}
         {% endif %}
 
-        <!-- Login Form -->
-        <form method="POST" action="{% url 'admin_login' %}" class="space-y-6">
+        <form method="POST" action="{% url 'admin_login' %}" class="space-y-5">
             {% csrf_token %}
-
-            <div>
-                <label class="block text-gray-300 text-sm font-medium">Admin Email</label>
-                <input type="text" name="email" placeholder="Enter Admin Email Address" 
-                    class="w-full px-4 py-3 mt-1 rounded-lg bg-gray-900 text-white border border-gray-700 focus:ring-2 focus:ring-purple-500 focus:outline-none transition duration-300">
+            
+            <div class="space-y-1.5">
+                <label class="text-xs font-bold text-slate-300 uppercase tracking-wider ml-1">Admin Username or Email</label>
+                <div class="relative group">
+                    <i class="fas fa-user-shield absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-purple-400 transition-colors text-sm"></i>
+                    <input type="text" name="email" class="w-full bg-white/5 border border-white/10 rounded-2xl pl-11 pr-4 py-3.5 focus:border-purple-500 focus:bg-white/10 outline-none transition text-xs md:text-sm text-white font-medium" placeholder="admin or admin@example.com" required>
+                </div>
             </div>
 
-            <div>
-                <label class="block text-gray-300 text-sm font-medium">Admin Password</label>
-                <input type="password" name="password" placeholder="Enter Admin Password"
-                    class="w-full px-4 py-3 mt-1 rounded-lg bg-gray-900 text-white border border-gray-700 focus:ring-2 focus:ring-purple-500 focus:outline-none transition duration-300">
+            <div class="space-y-1.5">
+                <label class="text-xs font-bold text-slate-300 uppercase tracking-wider ml-1">Password</label>
+                <div class="relative group">
+                    <i class="fas fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-purple-400 transition-colors text-sm"></i>
+                    <input type="password" name="password" class="w-full bg-white/5 border border-white/10 rounded-2xl pl-11 pr-4 py-3.5 focus:border-purple-500 focus:bg-white/10 outline-none transition text-xs md:text-sm text-white font-medium" placeholder="••••••••" required>
+                </div>
             </div>
-
-            <button type="submit"
-                class="w-full py-3 rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold hover:scale-105 transform transition-all duration-300 shadow-lg flex items-center justify-center gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-2v13"/>
-                </svg>
-                Login
+            
+            <button type="submit" class="btn-primary w-full py-3.5 rounded-2xl text-xs md:text-sm font-bold mt-2 shadow-xl flex items-center justify-center gap-2">
+                <i class="fas fa-sign-in-alt"></i> Access Admin Portal
             </button>
         </form>
 
-        <!-- Footer -->
-        <p class="text-center text-gray-400 text-sm mt-6">© 2025 MusicApp Admin • Manage your songs & playlists</p>
+        <div class="mt-6 pt-5 border-t border-white/5 text-center">
+            <a href="{% url 'home' %}" class="text-xs font-bold text-slate-400 hover:text-white transition flex items-center justify-center gap-1.5">
+                <i class="fas fa-arrow-left text-[10px]"></i> Return to Public Site
+            </a>
+        </div>
     </div>
-
 </body>
 </html>

@@ -1,0 +1,216 @@
+{% extends 'app/layout/base.html' %}
+{% load static %}
+
+{% block title %}VIP Premium Membership - MusicApp{% endblock %}
+
+{% block content %}
+<div class="animate-fade-up pb-20 max-w-5xl mx-auto space-y-12">
+    
+    <!-- Hero Section -->
+    <div class="text-center space-y-4 pt-4">
+        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-black uppercase tracking-widest">
+            <i class="fas fa-crown"></i> MusicApp VIP Club
+        </div>
+        <h1 class="text-4xl md:text-6xl font-black tracking-tight text-white leading-tight">
+            Unlock the Ultimate <br>
+            <span class="text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-orange-400 to-pink-500">
+                VIP Sound Experience
+            </span>
+        </h1>
+        <p class="text-slate-300 text-xs md:text-base max-w-xl mx-auto font-medium">
+            Stream studio lossless audio, upload unlimited songs beyond the 20-track free limit, and access VIP-exclusive releases.
+        </p>
+    </div>
+
+    <!-- Active Membership Status Banner -->
+    {% if user.is_vip %}
+    <div class="glass-gold p-6 rounded-3xl text-center space-y-3 relative overflow-hidden">
+        <div class="inline-block p-3 rounded-2xl bg-amber-500/20 text-amber-400 text-2xl mb-1">
+            <i class="fas fa-gem"></i>
+        </div>
+        <h3 class="text-2xl font-black text-white">You are an Active VIP Member!</h3>
+        <p class="text-xs text-amber-200 max-w-md mx-auto">
+            Enjoy unlimited song uploads, zero restrictions, studio quality streaming, and premium badges across the platform.
+        </p>
+        <div class="pt-2">
+            <form method="POST" action="{% url 'cancel_premium' %}" onsubmit="return confirm('Are you sure you want to cancel your VIP subscription?');">
+                {% csrf_token %}
+                <button type="submit" class="px-4 py-2 rounded-xl bg-white/10 hover:bg-rose-500 hover:text-white text-xs font-bold text-slate-300 transition">
+                    Cancel VIP Subscription
+                </button>
+            </form>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Pricing Cards Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+        
+        <!-- Monthly Plan -->
+        <div class="glass p-8 rounded-3xl border border-white/10 flex flex-col justify-between hover:border-purple-500/40 transition duration-300 shadow-xl relative">
+            <div class="space-y-6">
+                <div class="flex justify-between items-center">
+                    <span class="text-xs font-extrabold uppercase tracking-widest text-purple-400">Monthly Pass</span>
+                    <span class="text-[10px] bg-white/5 border border-white/10 px-2.5 py-1 rounded-full text-slate-400 font-bold">Flexible</span>
+                </div>
+
+                <div>
+                    <div class="flex items-baseline gap-1">
+                        <span class="text-4xl md:text-5xl font-black text-white">$9.99</span>
+                        <span class="text-xs text-slate-400 font-semibold">/ month</span>
+                    </div>
+                    <p class="text-xs text-slate-400 mt-2">Billed monthly. Cancel anytime with 1 click.</p>
+                </div>
+
+                <ul class="space-y-3 text-xs text-slate-300">
+                    <li class="flex items-center gap-3">
+                        <i class="fas fa-check-circle text-purple-400"></i>
+                        <span><strong>Unlimited Song Uploads</strong> (No 20 song limit)</span>
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <i class="fas fa-check-circle text-purple-400"></i>
+                        <span><strong>Full Access</strong> to VIP Exclusive songs</span>
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <i class="fas fa-check-circle text-purple-400"></i>
+                        <span><strong>Ultra HD 320kbps</strong> lossless streaming</span>
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <i class="fas fa-check-circle text-purple-400"></i>
+                        <span><strong>Ad-free</strong> uninterrupted playback</span>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="mt-8 pt-6 border-t border-white/5">
+                {% if user.is_vip %}
+                    <button disabled class="w-full py-3.5 rounded-2xl bg-white/10 text-slate-400 font-bold text-xs cursor-not-allowed">
+                        Already Active
+                    </button>
+                {% else %}
+                    <form method="POST" action="{% url 'activate_premium' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="plan" value="monthly">
+                        <button type="submit" class="btn-primary w-full py-3.5 rounded-2xl text-xs font-bold shadow-xl flex items-center justify-center gap-2">
+                            <i class="fas fa-bolt"></i> Get Monthly VIP
+                        </button>
+                    </form>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Annual Plan (Best Value) -->
+        <div class="glass p-8 rounded-3xl border-2 border-amber-500/40 flex flex-col justify-between hover:border-amber-400 transition duration-300 shadow-2xl relative bg-gradient-to-b from-amber-500/[0.07] to-transparent">
+            
+            <div class="absolute -top-3.5 right-8 bg-gradient-to-r from-amber-400 to-orange-500 text-black text-[10px] font-black uppercase tracking-widest px-3.5 py-1 rounded-full shadow-lg">
+                ★ Best Value (Save 35%)
+            </div>
+
+            <div class="space-y-6">
+                <div class="flex justify-between items-center">
+                    <span class="text-xs font-extrabold uppercase tracking-widest text-amber-400">Annual VIP Pro</span>
+                    <span class="text-[10px] bg-amber-500/20 border border-amber-500/40 px-2.5 py-1 rounded-full text-amber-300 font-bold">12 Months</span>
+                </div>
+
+                <div>
+                    <div class="flex items-baseline gap-1">
+                        <span class="text-4xl md:text-5xl font-black text-white">$79.99</span>
+                        <span class="text-xs text-slate-400 font-semibold">/ year ($6.66/mo)</span>
+                    </div>
+                    <p class="text-xs text-amber-300/80 mt-2 font-medium">Includes 2 extra bonus months free.</p>
+                </div>
+
+                <ul class="space-y-3 text-xs text-slate-200">
+                    <li class="flex items-center gap-3">
+                        <i class="fas fa-check-circle text-amber-400"></i>
+                        <span><strong>Unlimited Song Uploads</strong> forever</span>
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <i class="fas fa-check-circle text-amber-400"></i>
+                        <span><strong>VIP Gold Badge</strong> next to your profile</span>
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <i class="fas fa-check-circle text-amber-400"></i>
+                        <span><strong>Access all VIP Exclusive</strong> tracks & remixes</span>
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <i class="fas fa-check-circle text-amber-400"></i>
+                        <span><strong>Fast YouTube extraction</strong> priority</span>
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <i class="fas fa-check-circle text-amber-400"></i>
+                        <span><strong>Priority VIP Support</strong> & audio backups</span>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="mt-8 pt-6 border-t border-white/5">
+                {% if user.is_vip %}
+                    <button disabled class="w-full py-3.5 rounded-2xl bg-amber-500/20 text-amber-300 font-bold text-xs cursor-not-allowed">
+                        Active VIP Plan
+                    </button>
+                {% else %}
+                    <form method="POST" action="{% url 'activate_premium' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="plan" value="annual">
+                        <button type="submit" class="btn-gold w-full py-3.5 rounded-2xl text-xs font-black shadow-xl flex items-center justify-center gap-2">
+                            <i class="fas fa-crown"></i> Activate Annual VIP (Instant)
+                        </button>
+                    </form>
+                {% endif %}
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Feature Comparison Table -->
+    <div class="glass p-6 md:p-8 rounded-3xl border border-white/10 max-w-4xl mx-auto shadow-2xl">
+        <h3 class="text-xl font-bold text-white mb-6 text-center">Plan Feature Comparison</h3>
+        
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs border-collapse">
+                <thead>
+                    <tr class="border-b border-white/10 text-[11px] font-extrabold uppercase text-slate-400">
+                        <th class="py-3 px-4">Feature</th>
+                        <th class="py-3 px-4 text-center">Free Plan</th>
+                        <th class="py-3 px-4 text-center text-amber-400">VIP Premium</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-white/5 text-slate-300">
+                    <tr>
+                        <td class="py-3.5 px-4 font-semibold">Song Upload Limit</td>
+                        <td class="py-3.5 px-4 text-center font-mono">20 Songs Max</td>
+                        <td class="py-3.5 px-4 text-center text-amber-400 font-bold">Unlimited</td>
+                    </tr>
+                    <tr>
+                        <td class="py-3.5 px-4 font-semibold">YouTube URL Importer</td>
+                        <td class="py-3.5 px-4 text-center">Standard</td>
+                        <td class="py-3.5 px-4 text-center text-amber-400 font-bold">High Speed Priority</td>
+                    </tr>
+                    <tr>
+                        <td class="py-3.5 px-4 font-semibold">VIP Premium Songs Access</td>
+                        <td class="py-3.5 px-4 text-center text-slate-500"><i class="fas fa-times"></i></td>
+                        <td class="py-3.5 px-4 text-center text-emerald-400"><i class="fas fa-check"></i> Unlimited</td>
+                    </tr>
+                    <tr>
+                        <td class="py-3.5 px-4 font-semibold">Audio Bitrate Quality</td>
+                        <td class="py-3.5 px-4 text-center">128 kbps</td>
+                        <td class="py-3.5 px-4 text-center text-amber-400 font-bold">320 kbps Lossless</td>
+                    </tr>
+                    <tr>
+                        <td class="py-3.5 px-4 font-semibold">Private Cloud Vault</td>
+                        <td class="py-3.5 px-4 text-center"><i class="fas fa-check text-emerald-400"></i></td>
+                        <td class="py-3.5 px-4 text-center"><i class="fas fa-check text-emerald-400"></i></td>
+                    </tr>
+                    <tr>
+                        <td class="py-3.5 px-4 font-semibold">Custom Playlists & Favorites</td>
+                        <td class="py-3.5 px-4 text-center"><i class="fas fa-check text-emerald-400"></i></td>
+                        <td class="py-3.5 px-4 text-center"><i class="fas fa-check text-emerald-400"></i></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

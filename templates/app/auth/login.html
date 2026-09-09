@@ -29,11 +29,13 @@
 
     <div class="relative w-full max-w-md p-8 sm:p-10 glass border border-white/10 shadow-2xl animate-fade-up rounded-3xl z-10">
         <div class="text-center mb-8">
-            <div class="w-14 h-14 bg-gradient-to-tr from-purple-600 via-pink-500 to-cyan-400 rounded-2xl flex items-center justify-center shadow-[0_0_20px_rgba(139,92,246,0.5)] mx-auto mb-5">
-                <i class="fas fa-music text-white text-xl"></i>
-            </div>
+            <a href="{% url 'index' %}" class="inline-block">
+                <div class="w-14 h-14 bg-gradient-to-tr from-purple-600 via-pink-500 to-cyan-400 rounded-2xl flex items-center justify-center shadow-[0_0_20px_rgba(139,92,246,0.5)] mx-auto mb-4 hover:scale-105 transition-transform">
+                    <i class="fas fa-music text-white text-xl"></i>
+                </div>
+            </a>
             <h2 class="text-3xl font-black tracking-tight text-white">Welcome Back</h2>
-            <p class="text-slate-400 text-xs font-medium mt-1">Sign in to access your music library</p>
+            <p class="text-slate-400 text-xs font-medium mt-1">Sign in to access your music library & private vault</p>
         </div>
 
         {% if messages %}
@@ -49,10 +51,10 @@
             {% csrf_token %}
             
             <div class="space-y-1.5">
-                <label class="text-xs font-bold text-slate-300 uppercase tracking-wider ml-1">Email Address</label>
+                <label class="text-xs font-bold text-slate-300 uppercase tracking-wider ml-1">Username or Email</label>
                 <div class="relative group">
-                    <i class="fas fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-purple-400 transition-colors text-sm"></i>
-                    <input type="email" name="email" class="w-full bg-white/5 border border-white/10 rounded-2xl pl-11 pr-4 py-3.5 focus:border-purple-500 focus:bg-white/10 outline-none transition-all duration-300 placeholder-slate-500 text-sm text-white font-medium" placeholder="name@example.com" required>
+                    <i class="fas fa-user absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-purple-400 transition-colors text-sm"></i>
+                    <input type="text" name="email" class="w-full bg-white/5 border border-white/10 rounded-2xl pl-11 pr-4 py-3.5 focus:border-purple-500 focus:bg-white/10 outline-none transition text-xs md:text-sm text-white font-medium" placeholder="username or email" required>
                 </div>
             </div>
 
@@ -60,18 +62,23 @@
                 <label class="text-xs font-bold text-slate-300 uppercase tracking-wider ml-1">Password</label>
                 <div class="relative group">
                     <i class="fas fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-purple-400 transition-colors text-sm"></i>
-                    <input type="password" name="password" class="w-full bg-white/5 border border-white/10 rounded-2xl pl-11 pr-4 py-3.5 focus:border-purple-500 focus:bg-white/10 outline-none transition-all duration-300 placeholder-slate-500 text-sm text-white font-medium" placeholder="••••••••" required>
+                    <input type="password" name="password" class="w-full bg-white/5 border border-white/10 rounded-2xl pl-11 pr-4 py-3.5 focus:border-purple-500 focus:bg-white/10 outline-none transition text-xs md:text-sm text-white font-medium" placeholder="••••••••" required>
                 </div>
             </div>
             
-            <button type="submit" class="btn-primary w-full py-3.5 rounded-2xl text-sm font-bold mt-2 shadow-xl">
+            <button type="submit" class="btn-primary w-full py-3.5 rounded-2xl text-xs md:text-sm font-bold mt-2 shadow-xl">
                 Sign In
             </button>
         </form>
 
-        <p class="mt-8 text-center text-slate-400 text-xs font-medium">
-            New to MusicApp? <a href="{% url 'signup' %}" class="text-purple-400 font-bold hover:text-purple-300 transition-colors ml-1">Create Account</a>
-        </p>
+        <div class="mt-6 pt-5 border-t border-white/5 text-center space-y-2">
+            <p class="text-slate-400 text-xs font-medium">
+                New to MusicApp? <a href="{% url 'signup' %}" class="text-purple-400 font-bold hover:text-purple-300 transition-colors ml-1">Create Free Account</a>
+            </p>
+            <p class="text-[11px] text-slate-500">
+                Staff member? <a href="{% url 'admin_login' %}" class="text-slate-400 hover:text-white font-bold">Admin Portal →</a>
+            </p>
+        </div>
     </div>
 </body>
 </html>

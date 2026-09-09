@@ -1,35 +1,117 @@
 {% extends 'admin/layout/admin_base.html' %}
-{% block title %}✏️ Edit Song{% endblock %}
+{% load static %}
+
+{% block title %}Edit Song - {{ song.title }}{% endblock %}
 
 {% block content %}
-<div class="min-h-screen px-4 py-12 bg-gradient-to-br from-cyan-400 via-purple-900 to-blue-900 text-white">
-    <div class="max-w-2xl mx-auto bg-white/10 backdrop-blur-md p-10 rounded-2xl shadow-2xl ring-1 ring-cyan-400/30">
-        <h1 class="text-4xl font-bold mb-8 flex items-center gap-2 drop-shadow-[0_2px_12px_#38bdf8]">✏️ Edit Song</h1>
-        <form method="POST" enctype="multipart/form-data" action="{% url 'edit_song' song.id %}" class="space-y-6">
+<div class="animate-fade-up max-w-3xl mx-auto pb-16 space-y-8">
+    
+    <div>
+        <a href="{% url 'admin_songs' %}" class="inline-flex items-center gap-2 text-xs font-bold text-slate-400 hover:text-white transition mb-3">
+            <i class="fas fa-arrow-left text-xs"></i> Back to Songs List
+        </a>
+        <h1 class="text-3xl font-black text-white tracking-tight">Edit Track: {{ song.title }}</h1>
+        <p class="text-xs text-slate-400 mt-1">Update track metadata, change tier access, or replace media files.</p>
+    </div>
+
+    <!-- Edit Form Card -->
+    <div class="glass p-6 md:p-8 rounded-3xl border border-white/10 shadow-2xl">
+        <form method="POST" action="{% url 'edit_song' song.id %}" enctype="multipart/form-data" class="space-y-6">
             {% csrf_token %}
-            <div>
-                <label class="block mb-2 text-sm font-semibold text-cyan-200">Song Title</label>
-                <input type="text" name="title" value="{{ song.title }}" placeholder="🎵 Song Title" required class="w-full p-3 rounded-xl bg-white/10 text-white placeholder-cyan-200 focus:outline-none focus:ring-2 focus:ring-cyan-400">
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="space-y-1.5">
+                    <label class="text-xs font-bold text-slate-300 uppercase tracking-wider">Song Title *</label>
+                    <input type="text" name="title" value="{{ song.title }}" required 
+                           class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-xs md:text-sm text-white focus:border-purple-500 outline-none">
+                </div>
+                <div class="space-y-1.5">
+                    <label class="text-xs font-bold text-slate-300 uppercase tracking-wider">Artist Name *</label>
+                    <input type="text" name="artist" value="{{ song.artist }}" required 
+                           class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-xs md:text-sm text-white focus:border-purple-500 outline-none">
+                </div>
             </div>
-            <div>
-                <label class="block mb-2 text-sm font-semibold text-cyan-200">Artist</label>
-                <input type="text" name="artist" value="{{ song.artist }}" placeholder="🎤 Artist" required class="w-full p-3 rounded-xl bg-white/10 text-white placeholder-cyan-200 focus:outline-none focus:ring-2 focus:ring-cyan-400">
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div class="space-y-1.5">
+                    <label class="text-xs font-bold text-slate-300 uppercase tracking-wider">Album</label>
+                    <input type="text" name="album" value="{{ song.album|default:'' }}" 
+                           class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-xs md:text-sm text-white focus:border-purple-500 outline-none">
+                </div>
+                <div class="space-y-1.5">
+                    <label class="text-xs font-bold text-slate-300 uppercase tracking-wider">Genre</label>
+                    <select name="genre" class="w-full bg-slate-900 border border-white/10 rounded-xl px-4 py-3 text-xs md:text-sm text-slate-200 focus:border-purple-500 outline-none">
+                        {% for g in genres %}
+                        <option value="{{ g }}" {% if song.genre == g %}selected{% endif %}>{{ g }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="space-y-1.5">
+                    <label class="text-xs font-bold text-slate-300 uppercase tracking-wider">Duration (hh:mm:ss)</label>
+                    <input type="text" name="duration" value="{{ song.formatted_duration }}" 
+                           class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-xs md:text-sm text-white focus:border-purple-500 outline-none">
+                </div>
             </div>
-            <div>
-                <label class="block mb-2 text-sm font-semibold text-cyan-200">Audio File</label>
-                <input type="file" name="audio_file" accept="audio/*" class="w-full p-3 rounded-xl bg-white/10 text-white file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-cyan-600 file:text-white hover:file:bg-cyan-500" />
-                {% if song.audio_url %}
-                    <audio controls class="mt-4 w-full">
-                        <source src="{{ song.audio_url }}" type="audio/mpeg">
-                        Your browser does not support the audio element.
-                    </audio>
-                {% endif %}
+
+            <!-- Media Replacement -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="space-y-1.5">
+                    <label class="text-xs font-bold text-slate-300 uppercase tracking-wider">Replace Audio File</label>
+                    <input type="file" name="audio_file" accept="audio/*"
+                           class="w-full bg-white/5 border border-white/10 rounded-xl p-2.5 text-xs text-slate-300 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-purple-600 file:text-white hover:file:bg-purple-500">
+                    {% if song.audio_file %}
+                    <p class="text-[10px] text-slate-400">Current: {{ song.audio_file.name }}</p>
+                    {% endif %}
+                </div>
+                <div class="space-y-1.5">
+                    <label class="text-xs font-bold text-slate-300 uppercase tracking-wider">Replace Cover Poster</label>
+                    <input type="file" name="cover_image" accept="image/*"
+                           class="w-full bg-white/5 border border-white/10 rounded-xl p-2.5 text-xs text-slate-300 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-pink-600 file:text-white hover:file:bg-pink-500">
+                    {% if song.cover_image %}
+                    <p class="text-[10px] text-slate-400">Current: {{ song.cover_image.name }}</p>
+                    {% endif %}
+                </div>
             </div>
-            <div class="flex justify-between items-center mt-6">
-                <a href="{% url 'admin_songs' %}" class="px-5 py-2 bg-gray-600 hover:bg-gray-500 text-white rounded-xl transition">Cancel</a>
-                <button type="submit" class="px-5 py-2 bg-gradient-to-r from-blue-400 to-blue-700 hover:scale-105 transition text-white rounded-xl font-semibold">Update</button>
+
+            <!-- Premium & Public Toggles -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                <div class="glass p-4 rounded-2xl border border-white/10 flex items-center justify-between">
+                    <div>
+                        <h4 class="text-xs font-bold text-white flex items-center gap-1.5">
+                            <i class="fas fa-crown text-amber-400"></i> VIP Premium Track
+                        </h4>
+                        <p class="text-[10px] text-slate-400 mt-0.5">VIP members only</p>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" name="is_premium" class="sr-only peer" {% if song.is_premium %}checked{% endif %}>
+                        <div class="w-9 h-5 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-amber-500"></div>
+                    </label>
+                </div>
+
+                <div class="glass p-4 rounded-2xl border border-white/10 flex items-center justify-between">
+                    <div>
+                        <h4 class="text-xs font-bold text-white flex items-center gap-1.5">
+                            <i class="fas fa-globe text-cyan-400"></i> Public Track
+                        </h4>
+                        <p class="text-[10px] text-slate-400 mt-0.5">Visible to all users</p>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" name="is_public" class="sr-only peer" {% if song.is_public %}checked{% endif %}>
+                        <div class="w-9 h-5 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-cyan-500"></div>
+                    </label>
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-3 pt-4 border-t border-white/5">
+                <a href="{% url 'admin_songs' %}" class="px-5 py-2.5 rounded-xl bg-white/5 text-xs font-bold text-slate-300 hover:bg-white/10 transition">
+                    Cancel
+                </a>
+                <button type="submit" class="btn-primary py-2.5 px-7 rounded-xl text-xs font-bold shadow-xl">
+                    Save Changes
+                </button>
             </div>
         </form>
     </div>
+
 </div>
 {% endblock %}

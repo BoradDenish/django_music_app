@@ -1,86 +1,120 @@
 {% extends 'app/layout/base.html' %}
 {% load static %}
 
-{% block title %}Explore Library - MusicApp{% endblock %}
+{% block title %}Explore Collection - MusicApp{% endblock %}
 
 {% block content %}
 <div class="animate-fade-up space-y-10 pb-16">
     <!-- Header -->
     <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 pb-6 border-b border-white/5">
         <div>
-            <span class="text-cyan-400 font-bold tracking-widest text-xs uppercase mb-1 block">Your Dashboard</span>
-            <h1 class="text-4xl md:text-5xl font-black tracking-tight text-white">
+            <span class="text-cyan-400 font-extrabold tracking-widest text-xs uppercase mb-1 block">Your Sound Universe</span>
+            <h1 class="text-3xl md:text-5xl font-black tracking-tight text-white">
                 Explore <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-indigo-400 to-purple-500">Collection</span>
             </h1>
-            <p class="text-slate-400 mt-2 text-sm max-w-xl">Browse tracks, playlists, and favorited songs across your music hub.</p>
+            <p class="text-slate-400 mt-1 text-xs md:text-sm max-w-xl">
+                Browse tracks, playlists, liked songs, and your private cloud vault.
+            </p>
         </div>
+
+        <form method="GET" action="{% url 'library' %}" class="flex items-center gap-2">
+            <div class="search-glass flex items-center px-3.5 py-2 rounded-xl text-xs w-64">
+                <i class="fas fa-search text-slate-400 mr-2 text-xs"></i>
+                <input type="text" name="search" value="{{ search_query }}" placeholder="Filter library tracks..." 
+                       class="bg-transparent border-none outline-none text-xs w-full text-white placeholder-slate-500">
+            </div>
+            <button type="submit" class="btn-primary py-2 px-3 text-xs rounded-xl font-bold">Filter</button>
+        </form>
     </div>
 
-    <!-- Collection Quick Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <a href="{% url 'favorites' %}" class="glass p-6 rounded-2xl group hover:border-pink-500/30 transition-all border border-white/5 flex items-center justify-between shadow-xl">
+    <!-- Collection Quick Cards (3 Columns) -->
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
+        <a href="{% url 'favorites' %}" class="glass p-6 rounded-3xl group hover:border-pink-500/40 transition-all border border-white/5 flex items-center justify-between shadow-xl">
             <div class="flex items-center gap-4">
-                <div class="w-12 h-12 bg-pink-500/10 rounded-xl flex items-center justify-center text-pink-500 text-xl group-hover:scale-110 transition duration-300">
+                <div class="w-13 h-13 bg-pink-500/10 rounded-2xl flex items-center justify-center text-pink-500 text-2xl group-hover:scale-110 transition duration-300">
                     <i class="fas fa-heart"></i>
                 </div>
                 <div>
-                    <h3 class="text-lg font-bold text-slate-100 group-hover:text-pink-400 transition-colors">Liked Songs</h3>
-                    <p class="text-xs text-slate-400 mt-0.5">Your personal favorite songs list</p>
+                    <h3 class="text-base font-bold text-slate-100 group-hover:text-pink-400 transition-colors">Liked Songs</h3>
+                    <p class="text-xs text-slate-400 mt-0.5">{{ fav_count }} favorited track{{ fav_count|pluralize }}</p>
                 </div>
             </div>
-            <i class="fas fa-chevron-right text-slate-500 group-hover:translate-x-1 transition-transform text-sm"></i>
+            <i class="fas fa-chevron-right text-slate-500 group-hover:translate-x-1 transition-transform text-xs"></i>
         </a>
 
-        <a href="{% url 'playlist' %}" class="glass p-6 rounded-2xl group hover:border-cyan-500/30 transition-all border border-white/5 flex items-center justify-between shadow-xl">
+        <a href="{% url 'playlist' %}" class="glass p-6 rounded-3xl group hover:border-indigo-500/40 transition-all border border-white/5 flex items-center justify-between shadow-xl">
             <div class="flex items-center gap-4">
-                <div class="w-12 h-12 bg-cyan-500/10 rounded-xl flex items-center justify-center text-cyan-400 text-xl group-hover:scale-110 transition duration-300">
+                <div class="w-13 h-13 bg-indigo-500/10 rounded-2xl flex items-center justify-center text-indigo-400 text-2xl group-hover:scale-110 transition duration-300">
                     <i class="fas fa-layer-group"></i>
                 </div>
                 <div>
-                    <h3 class="text-lg font-bold text-slate-100 group-hover:text-cyan-400 transition-colors">Playlists</h3>
-                    <p class="text-xs text-slate-400 mt-0.5">Custom track compilations</p>
+                    <h3 class="text-base font-bold text-slate-100 group-hover:text-indigo-400 transition-colors">Playlists</h3>
+                    <p class="text-xs text-slate-400 mt-0.5">{{ playlists.count }} custom compilation{{ playlists.count|pluralize }}</p>
                 </div>
             </div>
-            <i class="fas fa-chevron-right text-slate-500 group-hover:translate-x-1 transition-transform text-sm"></i>
+            <i class="fas fa-chevron-right text-slate-500 group-hover:translate-x-1 transition-transform text-xs"></i>
+        </a>
+
+        <a href="{% url 'my_uploads' %}" class="glass p-6 rounded-3xl group hover:border-emerald-500/40 transition-all border border-white/5 flex items-center justify-between shadow-xl">
+            <div class="flex items-center gap-4">
+                <div class="w-13 h-13 bg-emerald-500/10 rounded-2xl flex items-center justify-center text-emerald-400 text-2xl group-hover:scale-110 transition duration-300">
+                    <i class="fas fa-cloud-arrow-up"></i>
+                </div>
+                <div>
+                    <h3 class="text-base font-bold text-slate-100 group-hover:text-emerald-400 transition-colors">My Uploads</h3>
+                    <p class="text-xs text-slate-400 mt-0.5">{{ uploaded_count }}/20 private track{{ uploaded_count|pluralize }}</p>
+                </div>
+            </div>
+            <i class="fas fa-chevron-right text-slate-500 group-hover:translate-x-1 transition-transform text-xs"></i>
         </a>
     </div>
 
     <!-- Quick List Table -->
     <div class="space-y-4">
         <div class="flex items-center justify-between">
-            <h2 class="text-2xl font-bold tracking-tight text-white">All Tracks</h2>
-            <span class="text-xs text-slate-400 font-semibold">{{ library_songs|length }} Total Songs</span>
+            <h2 class="text-xl font-bold tracking-tight text-white">All Tracks</h2>
+            <span class="text-xs text-slate-400 font-semibold font-mono">{{ library_songs|length }} Tracks</span>
         </div>
 
         {% if library_songs %}
-        <div class="glass overflow-hidden rounded-2xl border border-white/5 shadow-xl">
+        <div class="glass overflow-hidden rounded-3xl border border-white/5 shadow-xl">
             <table class="w-full text-left border-collapse">
                 <thead>
                     <tr class="border-b border-white/5 text-[10px] uppercase text-slate-400 font-extrabold tracking-wider bg-white/[0.02]">
                         <th class="px-6 py-4">Title & Cover</th>
                         <th class="px-6 py-4">Artist</th>
                         <th class="px-6 py-4 hidden md:table-cell">Album</th>
+                        <th class="px-6 py-4 hidden sm:table-cell">Duration</th>
                         <th class="px-6 py-4 text-right">Play</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-white/5">
                     {% for song in library_songs %}
                     <tr class="hover:bg-white/[0.04] transition-colors group cursor-pointer"
-                        onclick="playSong('{% if song.audio_file %}{{ song.audio_file.url }}{% endif %}', '{{ song.title|escapejs }}', '{{ song.artist|escapejs }}', '{% if song.cover_image %}{{ song.cover_image.url }}{% elif song.youtube_id %}https://img.youtube.com/vi/{{ song.youtube_id }}/maxresdefault.jpg{% else %}{% static 'artists/default.jpg' %}{% endif %}', '{{ song.youtube_id|default:'' }}', '{{ song.id }}')">
-                        <td class="px-6 py-3.5 flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-lg overflow-hidden shadow-md shrink-0">
-                                <img src="{% if song.cover_image %}{{ song.cover_image.url }}{% elif song.youtube_id %}https://img.youtube.com/vi/{{ song.youtube_id }}/maxresdefault.jpg{% else %}{% static 'artists/default.jpg' %}{% endif %}" class="w-full h-full object-cover">
+                        onclick="playSong('{% if song.audio_file %}{{ song.audio_file.url }}{% endif %}', '{{ song.title|escapejs }}', '{{ song.artist|escapejs }}', '{{ song.cover_url }}', '{{ song.youtube_id|default:'' }}', '{{ song.id }}', {% if song.is_premium %}true{% else %}false{% endif %})">
+                        <td class="px-6 py-3.5 flex items-center gap-3.5">
+                            <div class="w-11 h-11 rounded-xl overflow-hidden shadow-md shrink-0 bg-black">
+                                <img src="{{ song.cover_url }}" class="w-full h-full object-cover" alt="{{ song.title }}">
                             </div>
-                            <div class="truncate">
-                                <span class="font-bold text-sm text-slate-100 block group-hover:text-purple-400 transition-colors truncate">{{ song.title }}</span>
-                                <span class="text-[10px] text-purple-400 font-bold uppercase tracking-wider">{{ song.genre }}</span>
+                            <div class="truncate max-w-xs sm:max-w-md">
+                                <span class="font-bold text-xs md:text-sm text-slate-100 block group-hover:text-purple-400 transition-colors truncate">{{ song.title }}</span>
+                                <div class="flex items-center gap-1.5 mt-0.5">
+                                    <span class="text-[10px] text-purple-400 font-bold uppercase tracking-wider">{{ song.genre }}</span>
+                                    {% if song.is_premium %}
+                                    <span class="badge-vip text-[8px] px-1.5 py-0.2 rounded font-black">VIP</span>
+                                    {% endif %}
+                                    {% if song.uploaded_by == user and not user.is_staff %}
+                                    <span class="badge-private text-[8px] px-1.5 py-0.2 rounded font-bold">My Upload</span>
+                                    {% endif %}
+                                </div>
                             </div>
                         </td>
                         <td class="px-6 py-3.5 text-xs font-medium text-slate-300">{{ song.artist }}</td>
                         <td class="px-6 py-3.5 text-xs text-slate-400 hidden md:table-cell">{{ song.album|default:"Single" }}</td>
+                        <td class="px-6 py-3.5 text-xs text-slate-400 hidden sm:table-cell font-mono">{{ song.formatted_duration }}</td>
                         <td class="px-6 py-3.5 text-right">
-                            <button class="w-8 h-8 rounded-xl bg-white/5 group-hover:bg-purple-600 group-hover:text-white transition-all duration-300 flex items-center justify-center ml-auto border border-white/10">
-                                <i class="fas fa-play text-[10px] ml-0.5"></i>
+                            <button class="w-8 h-8 rounded-xl bg-white/5 group-hover:bg-purple-600 group-hover:text-white transition-all duration-300 flex items-center justify-center ml-auto border border-white/10 text-xs">
+                                <i class="fas fa-play text-[9px] ml-0.5"></i>
                             </button>
                         </td>
                     </tr>
@@ -89,9 +123,9 @@
             </table>
         </div>
         {% else %}
-        <div class="glass-dark p-16 text-center rounded-3xl border-dashed border-2 border-white/10">
-            <div class="w-14 h-14 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-3 text-slate-400">
-                <i class="fas fa-folder-open text-xl"></i>
+        <div class="glass-dark p-16 text-center rounded-3xl border-dashed border-2 border-white/10 space-y-3">
+            <div class="w-14 h-14 bg-white/5 rounded-full flex items-center justify-center mx-auto text-slate-400 text-xl">
+                <i class="fas fa-folder-open"></i>
             </div>
             <p class="text-slate-400 font-bold text-sm">No tracks found in library</p>
         </div>
