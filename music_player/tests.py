@@ -151,3 +151,43 @@ class MusicSystemTestCase(TestCase):
         resp_pl = add_to_playlist(req_pl)
         self.assertEqual(resp_pl.status_code, 200)
         self.assertIn(self.public_song_free, playlist.songs.all())
+
+    def test_record_play_increments_count(self):
+        from music_player.views import record_play
+        self.assertEqual(self.public_song_free.play_count, 0)
+
+        req = self._setup_request(self.rf.post('/record-play', {'song_id': self.public_song_free.id}), self.user1)
+        resp = record_play(req)
+        self.assertEqual(resp.status_code, 200)
+
+        self.public_song_free.refresh_from_db()
+        self.assertEqual(self.public_song_free.play_count, 1)
+
+    def test_url_fallbacks_and_profile_pic(self):
+        # User without profile picture gets default avatar
+        self.assertIn('img.png', self.user1.profile_pic_url)
+
+        # Song with youtube_id gets YouTube thumbnail fallback if no cover image
+        song_yt = Song.objects.create(
+            title='YT Track', artist='YT Artist', genre='Pop',
+            release_date='2024-01-01', youtube_id='test12345'
+        )
+        self.assertIn('test12345', song_yt.cover_url)
+
+        # Song without audio_file returns empty string for audio_url
+        self.assertEqual(song_yt.audio_url, "")
+
+    def test_playlist_remove(self):
+        from music_player.views import remove_from_playlist
+        playlist = Playlist.objects.create(user=self.user1, name="Temp Playlist")
+        playlist.songs.add(self.public_song_free)
+        self.assertIn(self.public_song_free, playlist.songs.all())
+
+        req = self._setup_request(self.rf.post('/remove-from-playlist', {
+            'song_id': self.public_song_free.id,
+            'playlist_id': playlist.id
+        }), self.user1)
+        resp = remove_from_playlist(req)
+        self.assertEqual(resp.status_code, 200)
+        self.assertNotIn(self.public_song_free, playlist.songs.all())
+

@@ -90,8 +90,9 @@
                 </thead>
                 <tbody class="divide-y divide-white/5">
                     {% for song in library_songs %}
-                    <tr class="hover:bg-white/[0.04] transition-colors group cursor-pointer"
-                        onclick="playSong('{% if song.audio_file %}{{ song.audio_file.url }}{% endif %}', '{{ song.title|escapejs }}', '{{ song.artist|escapejs }}', '{{ song.cover_url }}', '{{ song.youtube_id|default:'' }}', '{{ song.id }}', {% if song.is_premium %}true{% else %}false{% endif %})">
+                    <tr class="hover:bg-white/[0.04] transition-colors group cursor-pointer playable-track"
+                        data-url="{{ song.audio_url }}" data-title="{{ song.title|escape }}" data-artist="{{ song.artist|escape }}" data-art="{{ song.cover_url }}" data-yt="{{ song.youtube_id|default:'' }}" data-id="{{ song.id }}" data-premium="{% if song.is_premium %}true{% else %}false{% endif %}"
+                        onclick="playSong('{{ song.audio_url }}', '{{ song.title|escapejs }}', '{{ song.artist|escapejs }}', '{{ song.cover_url }}', '{{ song.youtube_id|default:'' }}', '{{ song.id }}', {% if song.is_premium %}true{% else %}false{% endif %})">
                         <td class="px-6 py-3.5 flex items-center gap-3.5">
                             <div class="w-11 h-11 rounded-xl overflow-hidden shadow-md shrink-0 bg-black">
                                 <img src="{{ song.cover_url }}" class="w-full h-full object-cover" alt="{{ song.title }}">

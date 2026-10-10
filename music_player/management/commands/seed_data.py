@@ -8,6 +8,11 @@ class Command(BaseCommand):
     def handle(self, *args, **kwargs):
         self.stdout.write('Starting data seeding...')
 
+        # Clean up legacy broken songs without youtube_id or local audio
+        deleted_count, _ = Song.objects.filter(youtube_id__isnull=True, audio_file='').delete()
+        if deleted_count:
+            self.stdout.write(f"Cleaned up {deleted_count} broken legacy songs.")
+
         # -------------------------------------------------------------------
         # 1. USERS TABLE SEEDING
         # -------------------------------------------------------------------

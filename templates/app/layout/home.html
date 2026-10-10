@@ -40,7 +40,7 @@
                 {% if latest_songs %}
                     {% with song=latest_songs.0 %}
                     <button class="btn-primary py-3 px-7 text-xs md:text-sm rounded-xl font-bold shadow-xl"
-                            onclick="playSong('{% if song.audio_file %}{{ song.audio_file.url }}{% endif %}', '{{ song.title|escapejs }}', '{{ song.artist|escapejs }}', '{{ song.cover_url }}', '{{ song.youtube_id|default:'' }}', '{{ song.id }}', {% if song.is_premium %}true{% else %}false{% endif %})">
+                            onclick="playSong('{{ song.audio_url }}', '{{ song.title|escapejs }}', '{{ song.artist|escapejs }}', '{{ song.cover_url }}', '{{ song.youtube_id|default:'' }}', '{{ song.id }}', {% if song.is_premium %}true{% else %}false{% endif %})">
                         <i class="fas fa-play text-xs"></i> Play Featured Track
                     </button>
                     {% endwith %}
@@ -67,8 +67,9 @@
 
         <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-5">
             {% for song in latest_songs %}
-            <div class="song-card p-3.5 rounded-2xl group cursor-pointer" 
-                 onclick="playSong('{% if song.audio_file %}{{ song.audio_file.url }}{% endif %}', '{{ song.title|escapejs }}', '{{ song.artist|escapejs }}', '{{ song.cover_url }}', '{{ song.youtube_id|default:'' }}', '{{ song.id }}', {% if song.is_premium %}true{% else %}false{% endif %})">
+            <div class="song-card p-3.5 rounded-2xl group cursor-pointer playable-track" 
+                 data-url="{{ song.audio_url }}" data-title="{{ song.title|escape }}" data-artist="{{ song.artist|escape }}" data-art="{{ song.cover_url }}" data-yt="{{ song.youtube_id|default:'' }}" data-id="{{ song.id }}" data-premium="{% if song.is_premium %}true{% else %}false{% endif %}"
+                 onclick="playSong('{{ song.audio_url }}', '{{ song.title|escapejs }}', '{{ song.artist|escapejs }}', '{{ song.cover_url }}', '{{ song.youtube_id|default:'' }}', '{{ song.id }}', {% if song.is_premium %}true{% else %}false{% endif %})">
                 
                 <div class="relative overflow-hidden rounded-xl aspect-square mb-3 shadow-lg bg-black">
                     <img src="{{ song.cover_url }}" class="w-full h-full object-cover" alt="{{ song.title }}">
@@ -132,8 +133,9 @@
 
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
             {% for song in user_uploads %}
-            <div class="glass p-3 rounded-2xl group cursor-pointer hover:border-emerald-500/40 transition"
-                 onclick="playSong('{% if song.audio_file %}{{ song.audio_file.url }}{% endif %}', '{{ song.title|escapejs }}', '{{ song.artist|escapejs }}', '{{ song.cover_url }}', '{{ song.youtube_id|default:'' }}', '{{ song.id }}', false)">
+            <div class="glass p-3 rounded-2xl group cursor-pointer hover:border-emerald-500/40 transition playable-track"
+                 data-url="{{ song.audio_url }}" data-title="{{ song.title|escape }}" data-artist="{{ song.artist|escape }}" data-art="{{ song.cover_url }}" data-yt="{{ song.youtube_id|default:'' }}" data-id="{{ song.id }}" data-premium="false"
+                 onclick="playSong('{{ song.audio_url }}', '{{ song.title|escapejs }}', '{{ song.artist|escapejs }}', '{{ song.cover_url }}', '{{ song.youtube_id|default:'' }}', '{{ song.id }}', false)">
                 <div class="relative aspect-square rounded-xl overflow-hidden mb-2 bg-black">
                     <img src="{{ song.cover_url }}" class="w-full h-full object-cover" alt="{{ song.title }}">
                     <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
@@ -162,8 +164,9 @@
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {% for song in trending_songs %}
-            <div class="glass p-3.5 rounded-2xl flex items-center space-x-4 group hover:bg-white/10 transition-all cursor-pointer border border-white/5"
-                 onclick="playSong('{% if song.audio_file %}{{ song.audio_file.url }}{% endif %}', '{{ song.title|escapejs }}', '{{ song.artist|escapejs }}', '{{ song.cover_url }}', '{{ song.youtube_id|default:'' }}', '{{ song.id }}', {% if song.is_premium %}true{% else %}false{% endif %})">
+            <div class="glass p-3.5 rounded-2xl flex items-center space-x-4 group hover:bg-white/10 transition-all cursor-pointer border border-white/5 playable-track"
+                 data-url="{{ song.audio_url }}" data-title="{{ song.title|escape }}" data-artist="{{ song.artist|escape }}" data-art="{{ song.cover_url }}" data-yt="{{ song.youtube_id|default:'' }}" data-id="{{ song.id }}" data-premium="{% if song.is_premium %}true{% else %}false{% endif %}"
+                 onclick="playSong('{{ song.audio_url }}', '{{ song.title|escapejs }}', '{{ song.artist|escapejs }}', '{{ song.cover_url }}', '{{ song.youtube_id|default:'' }}', '{{ song.id }}', {% if song.is_premium %}true{% else %}false{% endif %})">
                 
                 <div class="relative w-14 h-14 shrink-0 overflow-hidden rounded-xl shadow-md bg-black">
                     <img src="{{ song.cover_url }}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" alt="{{ song.title }}">

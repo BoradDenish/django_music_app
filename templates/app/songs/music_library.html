@@ -66,8 +66,9 @@
             </thead>
             <tbody class="divide-y divide-white/5">
                 {% for song in audios %}
-                <tr class="hover:bg-white/[0.04] transition-colors group cursor-pointer"
-                    onclick="playSong('{% if song.audio_file %}{{ song.audio_file.url }}{% endif %}', '{{ song.title|escapejs }}', '{{ song.artist|escapejs }}', '{{ song.cover_url }}', '{{ song.youtube_id|default:'' }}', '{{ song.id }}', {% if song.is_premium %}true{% else %}false{% endif %})">
+                <tr class="hover:bg-white/[0.04] transition-colors group cursor-pointer playable-track"
+                    data-url="{{ song.audio_url }}" data-title="{{ song.title|escape }}" data-artist="{{ song.artist|escape }}" data-art="{{ song.cover_url }}" data-yt="{{ song.youtube_id|default:'' }}" data-id="{{ song.id }}" data-premium="{% if song.is_premium %}true{% else %}false{% endif %}"
+                    onclick="playSong('{{ song.audio_url }}', '{{ song.title|escapejs }}', '{{ song.artist|escapejs }}', '{{ song.cover_url }}', '{{ song.youtube_id|default:'' }}', '{{ song.id }}', {% if song.is_premium %}true{% else %}false{% endif %})">
                     
                     <td class="px-6 py-3.5 flex items-center gap-3.5">
                         <span class="text-xs font-mono text-slate-500 w-4 group-hover:text-purple-400">{{ forloop.counter }}</span>

@@ -23,7 +23,7 @@
 
         {% if trending_songs %}
         <button class="btn-primary py-2.5 px-6 text-xs rounded-xl font-bold flex items-center gap-2 shadow-lg"
-                onclick="playSong('{% if trending_songs.0.audio_file %}{{ trending_songs.0.audio_file.url }}{% endif %}', '{{ trending_songs.0.title|escapejs }}', '{{ trending_songs.0.artist|escapejs }}', '{{ trending_songs.0.cover_url }}', '{{ trending_songs.0.youtube_id|default:'' }}', '{{ trending_songs.0.id }}', {% if trending_songs.0.is_premium %}true{% else %}false{% endif %})">
+                onclick="playSong('{{ trending_songs.0.audio_url }}', '{{ trending_songs.0.title|escapejs }}', '{{ trending_songs.0.artist|escapejs }}', '{{ trending_songs.0.cover_url }}', '{{ trending_songs.0.youtube_id|default:'' }}', '{{ trending_songs.0.id }}', {% if trending_songs.0.is_premium %}true{% else %}false{% endif %})">
             <i class="fas fa-play text-xs"></i> Play Top Chart
         </button>
         {% endif %}
@@ -32,8 +32,9 @@
     <!-- Trending Songs Grid / List -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         {% for song in trending_songs %}
-        <div class="glass p-4 rounded-2xl flex items-center gap-4 group hover:bg-white/10 transition-all cursor-pointer border border-white/5 relative overflow-hidden"
-             onclick="playSong('{% if song.audio_file %}{{ song.audio_file.url }}{% endif %}', '{{ song.title|escapejs }}', '{{ song.artist|escapejs }}', '{{ song.cover_url }}', '{{ song.youtube_id|default:'' }}', '{{ song.id }}', {% if song.is_premium %}true{% else %}false{% endif %})">
+        <div class="glass p-4 rounded-2xl flex items-center gap-4 group hover:bg-white/10 transition-all cursor-pointer border border-white/5 relative overflow-hidden playable-track"
+             data-url="{{ song.audio_url }}" data-title="{{ song.title|escape }}" data-artist="{{ song.artist|escape }}" data-art="{{ song.cover_url }}" data-yt="{{ song.youtube_id|default:'' }}" data-id="{{ song.id }}" data-premium="{% if song.is_premium %}true{% else %}false{% endif %}"
+             onclick="playSong('{{ song.audio_url }}', '{{ song.title|escapejs }}', '{{ song.artist|escapejs }}', '{{ song.cover_url }}', '{{ song.youtube_id|default:'' }}', '{{ song.id }}', {% if song.is_premium %}true{% else %}false{% endif %})">
             
             <div class="w-8 text-center font-black font-mono text-base {% if forloop.counter == 1 %}text-amber-400 text-xl{% elif forloop.counter == 2 %}text-slate-300 text-lg{% elif forloop.counter == 3 %}text-amber-600 text-lg{% else %}text-slate-500 text-sm{% endif %}">
                 #{{ forloop.counter }}

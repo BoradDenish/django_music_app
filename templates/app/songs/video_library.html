@@ -31,8 +31,9 @@
     <!-- Video Grid -->
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {% for video in videos %}
-        <div class="song-card p-4 rounded-3xl group cursor-pointer"
-             onclick="playSong('{% if video.audio_file %}{{ video.audio_file.url }}{% endif %}', '{{ video.title|escapejs }}', '{{ video.artist|escapejs }}', '{{ video.cover_url }}', '{{ video.youtube_id|default:'' }}', '{{ video.id }}', {% if video.is_premium %}true{% else %}false{% endif %})">
+        <div class="song-card p-4 rounded-3xl group cursor-pointer playable-track"
+             data-url="{{ video.audio_url }}" data-title="{{ video.title|escape }}" data-artist="{{ video.artist|escape }}" data-art="{{ video.cover_url }}" data-yt="{{ video.youtube_id|default:'' }}" data-id="{{ video.id }}" data-premium="{% if video.is_premium %}true{% else %}false{% endif %}"
+             onclick="playSong('{{ video.audio_url }}', '{{ video.title|escapejs }}', '{{ video.artist|escapejs }}', '{{ video.cover_url }}', '{{ video.youtube_id|default:'' }}', '{{ video.id }}', {% if video.is_premium %}true{% else %}false{% endif %})">
             
             <div class="relative aspect-video rounded-2xl overflow-hidden mb-3.5 shadow-xl bg-black">
                 <img src="{{ video.cover_url }}" class="w-full h-full object-cover" alt="{{ video.title }}">

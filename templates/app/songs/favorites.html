@@ -23,7 +23,7 @@
             {% if favorite_songs %}
             <div class="pt-2 flex flex-wrap justify-center md:justify-start gap-3">
                 <button class="btn-primary py-2.5 px-6 rounded-xl text-xs font-bold shadow-lg"
-                        onclick="playSong('{% if favorite_songs.0.audio_file %}{{ favorite_songs.0.audio_file.url }}{% endif %}', '{{ favorite_songs.0.title|escapejs }}', '{{ favorite_songs.0.artist|escapejs }}', '{{ favorite_songs.0.cover_url }}', '{{ favorite_songs.0.youtube_id|default:'' }}', '{{ favorite_songs.0.id }}', {% if favorite_songs.0.is_premium %}true{% else %}false{% endif %})">
+                        onclick="playSong('{{ favorite_songs.0.audio_url }}', '{{ favorite_songs.0.title|escapejs }}', '{{ favorite_songs.0.artist|escapejs }}', '{{ favorite_songs.0.cover_url }}', '{{ favorite_songs.0.youtube_id|default:'' }}', '{{ favorite_songs.0.id }}', {% if favorite_songs.0.is_premium %}true{% else %}false{% endif %})">
                     <i class="fas fa-play text-xs"></i> Play All Liked
                 </button>
             </div>
@@ -46,8 +46,9 @@
             </thead>
             <tbody class="divide-y divide-white/5">
                 {% for song in favorite_songs %}
-                <tr class="hover:bg-white/[0.04] transition-colors group cursor-pointer"
-                    onclick="playSong('{% if song.audio_file %}{{ song.audio_file.url }}{% endif %}', '{{ song.title|escapejs }}', '{{ song.artist|escapejs }}', '{{ song.cover_url }}', '{{ song.youtube_id|default:'' }}', '{{ song.id }}', {% if song.is_premium %}true{% else %}false{% endif %})">
+                <tr class="hover:bg-white/[0.04] transition-colors group cursor-pointer playable-track"
+                    data-url="{{ song.audio_url }}" data-title="{{ song.title|escape }}" data-artist="{{ song.artist|escape }}" data-art="{{ song.cover_url }}" data-yt="{{ song.youtube_id|default:'' }}" data-id="{{ song.id }}" data-premium="{% if song.is_premium %}true{% else %}false{% endif %}"
+                    onclick="playSong('{{ song.audio_url }}', '{{ song.title|escapejs }}', '{{ song.artist|escapejs }}', '{{ song.cover_url }}', '{{ song.youtube_id|default:'' }}', '{{ song.id }}', {% if song.is_premium %}true{% else %}false{% endif %})">
                     
                     <td class="px-6 py-3.5 flex items-center gap-3.5">
                         <span class="text-xs font-mono text-slate-500 w-4 group-hover:text-pink-400">{{ forloop.counter }}</span>

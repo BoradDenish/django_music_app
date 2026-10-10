@@ -41,6 +41,16 @@ class User(AbstractUser):
             return 100
         return min(100, int((self.uploaded_count / 20) * 100))
 
+    @property
+    def profile_pic_url(self):
+        if self.profile_pic:
+            try:
+                if self.profile_pic.storage.exists(self.profile_pic.name):
+                    return self.profile_pic.url
+            except Exception:
+                pass
+        return '/static/images/img.png'
+
     def can_upload(self):
         if self.is_vip:
             return True
@@ -93,13 +103,21 @@ class Song(models.Model):
     @property
     def audio_url(self):
         if self.audio_file:
-            return self.audio_file.url
+            try:
+                if self.audio_file.storage.exists(self.audio_file.name):
+                    return self.audio_file.url
+            except Exception:
+                pass
         return ""
 
     @property
     def cover_url(self):
         if self.cover_image:
-            return self.cover_image.url
+            try:
+                if self.cover_image.storage.exists(self.cover_image.name):
+                    return self.cover_image.url
+            except Exception:
+                pass
         if self.youtube_id:
             return f"https://img.youtube.com/vi/{self.youtube_id}/hqdefault.jpg"
         return "/static/artists/default.jpg"

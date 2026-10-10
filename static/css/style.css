@@ -382,3 +382,24 @@ h1, h2, h3, h4, h5, h6 {
     background: var(--accent-purple);
     color: white;
 }
+
+/* Active Playing Track Highlighting */
+.playing-active {
+    border-color: rgba(168, 85, 247, 0.85) !important;
+    box-shadow: 0 0 25px rgba(168, 85, 247, 0.35) !important;
+}
+
+tr.playing-active {
+    background: rgba(139, 92, 246, 0.15) !important;
+    box-shadow: inset 4px 0 0 #a855f7 !important;
+}
+
+tr.playing-active td {
+    color: #f3e8ff !important;
+}
+
+.song-card.playing-active,
+.glass.playing-active {
+    background: rgba(168, 85, 247, 0.08) !important;
+}
+

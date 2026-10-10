@@ -53,6 +53,13 @@
                 </div>
             </div>
 
+            <!-- Lyrics Field -->
+            <div class="space-y-1.5">
+                <label class="text-xs font-bold text-slate-300 uppercase tracking-wider">Lyrics (Optional)</label>
+                <textarea name="lyrics" rows="3" placeholder="Enter song lyrics here..." 
+                          class="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-xs md:text-sm text-white focus:border-purple-500 outline-none">{{ song.lyrics|default:'' }}</textarea>
+            </div>
+
             <!-- Media Replacement -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div class="space-y-1.5">

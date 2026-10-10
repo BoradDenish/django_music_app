@@ -122,8 +122,9 @@
                 </thead>
                 <tbody class="divide-y divide-white/5">
                     {% for song in user_songs %}
-                    <tr class="hover:bg-white/[0.04] transition-colors group cursor-pointer"
-                        onclick="playSong('{% if song.audio_file %}{{ song.audio_file.url }}{% endif %}', '{{ song.title|escapejs }}', '{{ song.artist|escapejs }}', '{{ song.cover_url }}', '{{ song.youtube_id|default:'' }}', '{{ song.id }}', false)">
+                    <tr class="hover:bg-white/[0.04] transition-colors group cursor-pointer playable-track"
+                        data-url="{{ song.audio_url }}" data-title="{{ song.title|escape }}" data-artist="{{ song.artist|escape }}" data-art="{{ song.cover_url }}" data-yt="{{ song.youtube_id|default:'' }}" data-id="{{ song.id }}" data-premium="false"
+                        onclick="playSong('{{ song.audio_url }}', '{{ song.title|escapejs }}', '{{ song.artist|escapejs }}', '{{ song.cover_url }}', '{{ song.youtube_id|default:'' }}', '{{ song.id }}', false)">
                         
                         <td class="px-6 py-3.5 flex items-center gap-3">
                             <div class="w-12 h-12 rounded-xl overflow-hidden shadow-md shrink-0 relative bg-black">
@@ -152,7 +153,7 @@
                         <td class="px-6 py-3.5 text-right" onclick="event.stopPropagation();">
                             <div class="flex items-center justify-end gap-2">
                                 <button type="button" 
-                                        onclick="playSong('{% if song.audio_file %}{{ song.audio_file.url }}{% endif %}', '{{ song.title|escapejs }}', '{{ song.artist|escapejs }}', '{{ song.cover_url }}', '{{ song.youtube_id|default:'' }}', '{{ song.id }}', false)" 
+                                        onclick="playSong('{{ song.audio_url }}', '{{ song.title|escapejs }}', '{{ song.artist|escapejs }}', '{{ song.cover_url }}', '{{ song.youtube_id|default:'' }}', '{{ song.id }}', false)" 
                                         class="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500 hover:text-white transition flex items-center justify-center text-xs" title="Play">
                                     <i class="fas fa-play text-[10px]"></i>
                                 </button>

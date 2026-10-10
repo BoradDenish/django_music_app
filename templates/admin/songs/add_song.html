@@ -30,7 +30,7 @@
             </div>
 
             <!-- Manual Track Information -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div class="space-y-1.5">
                     <label class="text-xs font-bold text-slate-300 uppercase tracking-wider">Song Title</label>
                     <input type="text" name="title" placeholder="Leave blank if using YouTube link" 
@@ -39,6 +39,11 @@
                 <div class="space-y-1.5">
                     <label class="text-xs font-bold text-slate-300 uppercase tracking-wider">Artist Name</label>
                     <input type="text" name="artist" placeholder="e.g. Ariana Grande" 
+                           class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-xs md:text-sm text-white focus:border-purple-500 outline-none">
+                </div>
+                <div class="space-y-1.5">
+                    <label class="text-xs font-bold text-slate-300 uppercase tracking-wider">Album Name</label>
+                    <input type="text" name="album" placeholder="e.g. Positions" 
                            class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-xs md:text-sm text-white focus:border-purple-500 outline-none">
                 </div>
             </div>
@@ -64,6 +69,13 @@
                     <input type="text" name="duration" placeholder="00:03:45" 
                            class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-xs md:text-sm text-white focus:border-purple-500 outline-none">
                 </div>
+            </div>
+
+            <!-- Lyrics Field -->
+            <div class="space-y-1.5">
+                <label class="text-xs font-bold text-slate-300 uppercase tracking-wider">Lyrics (Optional)</label>
+                <textarea name="lyrics" rows="3" placeholder="Enter song lyrics here..." 
+                          class="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-xs md:text-sm text-white focus:border-purple-500 outline-none"></textarea>
             </div>
 
             <!-- Direct File Uploads -->

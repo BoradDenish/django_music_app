@@ -11,7 +11,7 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
-from django.db.models import Count, Q
+from django.db.models import Count, Q, F
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
@@ -352,6 +352,8 @@ def get_youtube_info(youtube_id):
             'no_warnings': True,
             'noplaylist': True,
             'skip_download': True,
+            'extractor_args': {'youtube': {'player_client': ['android', 'web']}},
+            'socket_timeout': 10,
         }
         with yt_dlp.YoutubeDL(opts) as ydl:
             info = ydl.extract_info(f'https://www.youtube.com/watch?v={youtube_id}', download=False)
@@ -445,6 +447,8 @@ def download_media(youtube_id, media_type='audio'):
             'noprogress': True,
             'no_warnings': True,
             'noplaylist': True,
+            'extractor_args': {'youtube': {'player_client': ['android', 'web']}},
+            'socket_timeout': 15,
         }
 
         has_ffmpeg = shutil.which('ffmpeg') or shutil.which('avconv')
@@ -508,7 +512,7 @@ def upload_song(request):
         if upload_type == 'youtube':
             content_url = request.POST.get('content_url', '').strip()
             media_type = request.POST.get('content_type', 'audio')
-            store_locally = request.POST.get('store_locally') == 'on' or True
+            store_locally = request.POST.get('store_locally') in ('on', 'true', '1')
 
             youtube_id = extract_youtube_id(content_url)
             if not youtube_id:
@@ -675,7 +679,7 @@ def create_playlist(request):
 def record_play(request):
     song_id = request.POST.get('song_id')
     if song_id:
-        Song.objects.filter(id=song_id).update(play_count=models.F('play_count') + 1)
+        Song.objects.filter(id=song_id).update(play_count=F('play_count') + 1)
     return JsonResponse({'status': 'recorded'})
 
 
@@ -816,7 +820,7 @@ def add_song(request):
         title = title or (info or {}).get('title') or "Untitled Song"
         artist = artist or (info or {}).get('artist') or "Unknown Artist"
         duration = parse_duration_str(duration_str) or (info or {}).get('duration')
-        album = (info or {}).get('album') if info else None
+        album = request.POST.get('album', '').strip() or ((info or {}).get('album') if info else None)
 
         song = Song.objects.create(
             title=title,
@@ -864,13 +868,13 @@ def add_song(request):
 def edit_song(request, song_id):
     song = get_object_or_404(Song, pk=song_id)
     if request.method == "POST":
-        song.title = request.POST.get('title', song.title).strip()
-        song.artist = request.POST.get('artist', song.artist).strip()
-        song.album = request.POST.get('album', song.album).strip()
+        song.title = request.POST.get('title', song.title or '').strip()
+        song.artist = request.POST.get('artist', song.artist or '').strip()
+        song.album = request.POST.get('album', song.album or '').strip()
         song.genre = request.POST.get('genre', song.genre)
         song.is_premium = request.POST.get('is_premium') == 'on' or request.POST.get('is_premium') == 'True'
         song.is_public = request.POST.get('is_public') == 'on' or request.POST.get('is_public') == 'True'
-        song.lyrics = request.POST.get('lyrics', song.lyrics)
+        song.lyrics = request.POST.get('lyrics', song.lyrics or '')
 
         duration_str = request.POST.get('duration')
         if duration_str:

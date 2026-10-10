@@ -65,11 +65,7 @@
 
                     <a href="{% url 'profile' %}" class="flex items-center gap-2.5 p-1 pr-3 rounded-xl bg-white/5 border border-white/10 hover:border-purple-500/40 transition group">
                         <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-purple-600 to-pink-500 flex items-center justify-center text-white font-bold text-xs shadow-md overflow-hidden">
-                            {% if user.profile_pic %}
-                                <img src="{{ user.profile_pic.url }}" alt="{{ user.username }}" class="w-full h-full object-cover">
-                            {% else %}
-                                {{ user.username|slice:":1"|upper }}
-                            {% endif %}
+                            <img src="{{ user.profile_pic_url }}" alt="{{ user.username }}" class="w-full h-full object-cover">
                         </div>
                         <div class="hidden lg:block text-left">
                             <span class="text-xs font-bold text-slate-200 block leading-tight">{{ user.username }}</span>
@@ -216,12 +212,19 @@
 
     <script>
         // Global Track Queue State
+        // Global Track Queue State
         window.playlistQueue = [];
         window.currentQueueIndex = -1;
         window.isUserVip = {% if user.is_vip %}true{% else %}false{% endif %};
+        window.userFavoriteSongIds = new Set([
+            {% if user.is_authenticated %}
+                {% for f in user.favorites.all %}{{ f.song_id }}{% if not forloop.last %},{% endif %}{% endfor %}
+            {% endif %}
+        ]);
 
         let ytPlayer;
         let isYTReady = false;
+        let pendingYouTubeId = null;
         let currentMode = 'audio';
         let currentSongId = null;
         let repeatMode = 0; // 0: off, 1: all, 2: one
@@ -236,11 +239,23 @@
                     'autoplay': 0,
                     'controls': 1,
                     'modestbranding': 1,
-                    'rel': 0
+                    'rel': 0,
+                    'playsinline': 1
                 },
                 events: {
-                    'onReady': () => { isYTReady = true; },
-                    'onStateChange': onYTStateChange
+                    'onReady': () => {
+                        isYTReady = true;
+                        if (pendingYouTubeId) {
+                            ytPlayer.loadVideoById(pendingYouTubeId);
+                            ytPlayer.playVideo();
+                            pendingYouTubeId = null;
+                        }
+                    },
+                    'onStateChange': onYTStateChange,
+                    'onError': (e) => {
+                        console.warn('YouTube Player Error:', e.data);
+                        playNextTrack();
+                    }
                 }
             });
         }
@@ -440,21 +455,65 @@
             if (track) window.playSong(track.url, track.title, track.artist, track.art, track.youtubeId, track.songId, track.isPremium, false);
         }
 
+        function collectPlayableTracks() {
+            const elements = document.querySelectorAll('.playable-track');
+            const queue = [];
+            elements.forEach(el => {
+                const url = el.getAttribute('data-url') || '';
+                const title = el.getAttribute('data-title') || '';
+                const artist = el.getAttribute('data-artist') || '';
+                const art = el.getAttribute('data-art') || '';
+                const youtubeId = el.getAttribute('data-yt') || '';
+                const songId = el.getAttribute('data-id') || null;
+                const isPremium = el.getAttribute('data-premium') === 'true';
+                if (title) {
+                    queue.push({ url, title, artist, art, youtubeId, songId, isPremium });
+                }
+            });
+            return queue;
+        }
+
+        function updateFavButton(songId) {
+            const btn = document.getElementById('player-fav-btn');
+            if (!btn) return;
+            if (songId && window.userFavoriteSongIds.has(Number(songId))) {
+                btn.innerHTML = '<i class="fas fa-heart text-pink-500 text-sm"></i>';
+            } else {
+                btn.innerHTML = '<i class="far fa-heart text-sm"></i>';
+            }
+        }
+
         // Global Play Song Function
         window.playSong = function(url, title, artist, art, youtubeId = null, songId = null, isPremium = false, updateQueue = true) {
             // Check VIP restriction
             if (isPremium && !window.isUserVip) {
-                document.getElementById('premium-modal').classList.remove('hidden');
+                const modal = document.getElementById('premium-modal');
+                if (modal) modal.classList.remove('hidden');
                 return;
+            }
+
+            if (updateQueue) {
+                const pageTracks = collectPlayableTracks();
+                if (pageTracks.length > 0) {
+                    window.playlistQueue = pageTracks;
+                    const foundIdx = window.playlistQueue.findIndex(t => String(t.songId) === String(songId));
+                    window.currentQueueIndex = foundIdx >= 0 ? foundIdx : 0;
+                } else {
+                    window.playlistQueue = [{ url, title, artist, art, youtubeId, songId, isPremium }];
+                    window.currentQueueIndex = 0;
+                }
             }
 
             audio.pause();
             if (isYTReady) ytPlayer.stopVideo();
             
             currentSongId = songId;
-            document.getElementById('player-song-title').textContent = title;
-            document.getElementById('player-artist-name').textContent = artist;
-            document.getElementById('player-album-art').src = art;
+            const songTitleEl = document.getElementById('player-song-title');
+            const artistNameEl = document.getElementById('player-artist-name');
+            const albumArtEl = document.getElementById('player-album-art');
+            if (songTitleEl) songTitleEl.textContent = title;
+            if (artistNameEl) artistNameEl.textContent = artist;
+            if (albumArtEl) albumArtEl.src = art || '{% static "artists/default.jpg" %}';
 
             if (isPremium) {
                 premiumBadge.classList.remove('hidden');
@@ -462,20 +521,33 @@
                 premiumBadge.classList.add('hidden');
             }
 
+            updateFavButton(songId);
+
+            // Visual active playing indicator
+            document.querySelectorAll('.playable-track').forEach(el => {
+                if (el.getAttribute('data-id') === String(songId)) {
+                    el.classList.add('playing-active');
+                } else {
+                    el.classList.remove('playing-active');
+                }
+            });
+
             // If an audio file URL is available (whether local upload or downloaded YouTube audio file)
             if (url && url.length > 0) {
                 currentMode = 'audio';
+                pendingYouTubeId = null;
                 ytContainer.classList.add('hidden');
                 audio.src = url;
-                audio.play().catch(e => console.log('Autoplay prevented'));
+                audio.play().catch(e => console.log('Autoplay prevented', e));
                 playBtn.innerHTML = '<i class="fas fa-pause text-sm"></i>';
                 if(playingIndicator) playingIndicator.classList.remove('hidden'), playingIndicator.classList.add('flex');
             } else if (youtubeId) {
                 currentMode = 'youtube';
-                ytContainer.classList.remove('hidden');
                 if (isYTReady) {
                     ytPlayer.loadVideoById(youtubeId);
                     ytPlayer.playVideo();
+                } else {
+                    pendingYouTubeId = youtubeId;
                 }
                 playBtn.innerHTML = '<i class="fas fa-pause text-sm"></i>';
                 if(playingIndicator) playingIndicator.classList.remove('hidden'), playingIndicator.classList.add('flex');
@@ -492,13 +564,12 @@
 
         document.getElementById('close-yt-player').addEventListener('click', () => {
             ytContainer.classList.add('hidden');
-            if (isYTReady) ytPlayer.pauseVideo();
-            playBtn.innerHTML = '<i class="fas fa-play ml-0.5 text-sm"></i>';
-            if(playingIndicator) playingIndicator.classList.add('hidden'), playingIndicator.classList.remove('flex');
         });
 
         document.getElementById('expand-player').addEventListener('click', () => {
-            if (currentMode === 'youtube') {
+            if (ytContainer.classList.contains('hidden')) {
+                ytContainer.classList.remove('hidden');
+            } else {
                 ytContainer.classList.toggle('w-80');
                 ytContainer.classList.toggle('w-[92vw]');
                 ytContainer.classList.toggle('max-w-4xl');
@@ -508,8 +579,6 @@
                 ytContainer.classList.toggle('bottom-28');
                 ytContainer.classList.toggle('top-1/2');
                 ytContainer.classList.toggle('-translate-y-1/2');
-            } else {
-                ytContainer.classList.toggle('hidden');
             }
         });
 
@@ -528,8 +597,10 @@
             .then(res => res.json())
             .then(data => {
                 if (data.status === 'added') {
+                    window.userFavoriteSongIds.add(Number(currentSongId));
                     favBtn.innerHTML = '<i class="fas fa-heart text-pink-500 text-sm"></i>';
                 } else {
+                    window.userFavoriteSongIds.delete(Number(currentSongId));
                     favBtn.innerHTML = '<i class="far fa-heart text-sm"></i>';
                 }
             });
@@ -542,6 +613,10 @@
 
         playlistBtn.addEventListener('click', (e) => {
             e.stopPropagation();
+            if (!currentSongId) {
+                alert('Please play or select a track first to add to a playlist!');
+                return;
+            }
             if (playlistDropdown.classList.contains('hidden')) {
                 fetch('{% url "get_playlists" %}')
                 .then(res => res.json())
