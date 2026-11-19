@@ -1,4 +1,5 @@
 import datetime
+import io
 import tempfile
 from unittest.mock import patch
 
@@ -6,6 +7,7 @@ from django.contrib.auth.models import AnonymousUser
 from django.contrib.messages.storage.fallback import FallbackStorage
 from django.contrib.sessions.middleware import SessionMiddleware
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.core.management import call_command
 from django.http import Http404
 from django.test import RequestFactory, TestCase, override_settings
 from django.urls import reverse
@@ -31,7 +33,10 @@ from music_player.views import (
 # Base Test Setup
 # ---------------------------------------------------------------------------
 
-@override_settings(MEDIA_ROOT=tempfile.gettempdir())
+@override_settings(
+    MEDIA_ROOT=tempfile.gettempdir(),
+    PASSWORD_HASHERS=['django.contrib.auth.hashers.MD5PasswordHasher']
+)
 class BaseMusicTestCase(TestCase):
     def setUp(self):
         self.rf = RequestFactory()
@@ -769,3 +774,160 @@ class UtilitiesTests(BaseMusicTestCase):
         self.assertIsNone(parse_duration_str('invalid'))
         self.assertIsNone(parse_duration_str(''))
         self.assertIsNone(parse_duration_str(None))
+
+
+# ---------------------------------------------------------------------------
+# 10. Client Integration & Routing Tests
+# ---------------------------------------------------------------------------
+
+class ClientRoutingTests(BaseMusicTestCase):
+    def test_anonymous_access_redirects(self):
+        protected_urls = [
+            '/home', '/trending', '/library', '/music_library',
+            '/video_library', '/favorites', '/playlist',
+            '/upload', '/my_uploads', '/premium', '/profile'
+        ]
+        for url in protected_urls:
+            resp = self.client.get(url)
+            self.assertEqual(resp.status_code, 302, f"Expected 302 for {url}, got {resp.status_code}")
+            self.assertIn(reverse('login'), resp.url)
+
+    def test_authenticated_user_access_core_pages(self):
+        self.client.force_login(self.user1)
+        core_urls = [
+            '/home', '/trending', '/library', '/music_library',
+            '/video_library', '/favorites', '/playlist',
+            '/upload', '/my_uploads', '/premium', '/profile'
+        ]
+        for url in core_urls:
+            resp = self.client.get(url)
+            self.assertEqual(resp.status_code, 200, f"Expected 200 for {url}, got {resp.status_code}")
+
+    def test_admin_user_access_admin_pages(self):
+        self.client.force_login(self.admin_user)
+        admin_urls = ['/a/dashboard', '/a/songs', '/a/users', '/a/videos']
+        for url in admin_urls:
+            resp = self.client.get(url)
+            self.assertEqual(resp.status_code, 200, f"Expected 200 for {url}, got {resp.status_code}")
+
+    def test_custom_404_page(self):
+        resp = self.client.get('/this-path-definitely-does-not-exist/')
+        self.assertEqual(resp.status_code, 404)
+        self.assertTemplateUsed(resp, '404.html')
+
+
+# ---------------------------------------------------------------------------
+# 11. Admin Form Validation Tests
+# ---------------------------------------------------------------------------
+
+class AdminFormValidationTests(BaseMusicTestCase):
+    def test_admin_user_create_form_valid(self):
+        form = AdminUserCreateForm(data={
+            'username': 'unique_staff',
+            'email': 'staff_unique@example.com',
+            'password': 'SecurePassword1!',
+            'user_phone': '1234567890',
+            'is_staff': True,
+            'is_premium': False,
+        })
+        self.assertTrue(form.is_valid(), form.errors)
+
+    def test_admin_user_create_form_duplicate_username(self):
+        form = AdminUserCreateForm(data={
+            'username': 'alice',
+            'email': 'new_staff@example.com',
+            'password': 'SecurePassword1!',
+        })
+        self.assertFalse(form.is_valid())
+        self.assertIn('username', form.errors)
+
+    def test_admin_user_create_form_duplicate_email(self):
+        form = AdminUserCreateForm(data={
+            'username': 'newstaff',
+            'email': 'alice@musicapp.com',
+            'password': 'SecurePassword1!',
+        })
+        self.assertFalse(form.is_valid())
+        self.assertIn('email', form.errors)
+
+    def test_admin_user_edit_form_valid(self):
+        form = AdminUserEditForm(data={
+            'username': 'alice_updated',
+            'email': 'alice@musicapp.com',
+            'user_phone': '9876543210',
+            'is_staff': False,
+            'is_premium': True,
+        }, instance=self.user1)
+        self.assertTrue(form.is_valid(), form.errors)
+
+    def test_admin_user_edit_form_duplicate_username(self):
+        form = AdminUserEditForm(data={
+            'username': 'bob',
+            'email': 'alice@musicapp.com',
+        }, instance=self.user1)
+        self.assertFalse(form.is_valid())
+        self.assertIn('username', form.errors)
+
+
+# ---------------------------------------------------------------------------
+# 12. Direct File Upload Tests
+# ---------------------------------------------------------------------------
+
+class DirectFileUploadTests(BaseMusicTestCase):
+    def test_direct_audio_upload_by_user(self):
+        audio_file = SimpleUploadedFile(
+            "test_sample.mp3",
+            b"ID3\x03\x00\x00\x00\x00\x00\x00mockaudiocontent",
+            content_type="audio/mpeg"
+        )
+        req = self._setup_request(self.rf.post('/upload', {
+            'upload_type': 'file',
+            'title': 'My Direct Track',
+            'artist': 'Alice Singer',
+            'album': 'Bedroom Tape',
+            'genre': 'Pop',
+            'audio_file': audio_file,
+            'content_type': 'audio'
+        }), self.user1)
+        resp = upload_song(req)
+        self.assertEqual(resp.status_code, 302)
+        uploaded = Song.objects.filter(title='My Direct Track', uploaded_by=self.user1).first()
+        self.assertIsNotNone(uploaded)
+        self.assertFalse(uploaded.is_public)
+        self.assertTrue(uploaded.is_user_upload)
+
+    def test_admin_add_song_with_file(self):
+        audio_file = SimpleUploadedFile(
+            "admin_sample.mp3",
+            b"ID3\x03\x00\x00\x00\x00\x00\x00mockaudiocontent",
+            content_type="audio/mpeg"
+        )
+        req = self._setup_request(self.rf.post('/a/songs/add', {
+            'title': 'Admin Public Track',
+            'artist': 'Featured Artist',
+            'album': 'Studio Album',
+            'genre': 'Rock',
+            'media_type': 'audio',
+            'is_public': 'on',
+            'is_premium': 'on',
+            'audio_file': audio_file
+        }), self.admin_user)
+        resp = add_song(req)
+        self.assertEqual(resp.status_code, 302)
+        song = Song.objects.filter(title='Admin Public Track').first()
+        self.assertIsNotNone(song)
+        self.assertTrue(song.is_public)
+        self.assertTrue(song.is_premium)
+
+
+# ---------------------------------------------------------------------------
+# 13. Seed Data Management Command Test
+# ---------------------------------------------------------------------------
+
+class SeedDataCommandTests(BaseMusicTestCase):
+    def test_seed_data_command(self):
+        out = io.StringIO()
+        call_command('seed_data', stdout=out)
+        output = out.getvalue()
+        self.assertIn("Starting data seeding", output)
+        self.assertTrue(Song.objects.count() > 3)
