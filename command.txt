@@ -19,7 +19,10 @@ python manage.py seed_data
 # 5. Create Superuser (Admin access)
 python manage.py createsuperuser
 
-# 6. Run the Server
+# 6. Run Automated Test Suite
+# python manage.py test
+#
+# 7. Run the Server
 # Accessible via http://localhost:8000 AND your Network IP
 python manage.py runserver 0.0.0.0:8000
 

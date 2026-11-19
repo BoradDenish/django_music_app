@@ -14,9 +14,17 @@ import os
 from pathlib import Path
 import environ
 env = environ.Env()
-environ.Env.read_env()
+# BASE_DIR definition moved up for env file resolution
+BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
+# Search for .env in music/.env or BASE_DIR/.env
+_env_file = BASE_DIR / 'music' / '.env'
+if not _env_file.exists():
+    _env_file = BASE_DIR / '.env'
+if _env_file.exists():
+    environ.Env.read_env(str(_env_file))
+
+# Quick-start settings
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
@@ -24,12 +32,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = env('SECRET_KEY')
+SECRET_KEY = env('SECRET_KEY', default='django-insecure-4$!801r#!zzvv0ypa^)%1#7)z)*=*29_dcvpaysgqz*mu)d0e8')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env.bool('DEBUG', default=True)
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['*'])
 
 
 # Application definition
@@ -136,3 +144,7 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+LOGIN_URL = 'login'
+LOGIN_REDIRECT_URL = 'home'
+LOGOUT_REDIRECT_URL = 'index'

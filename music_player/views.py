@@ -38,7 +38,7 @@ def get_user_songs_queryset(user, media_type=None):
 
     if media_type:
         qs = qs.filter(media_type=media_type)
-    return qs
+    return qs.distinct()
 
 
 # ---------------------------------------------------------------------------
@@ -76,6 +76,9 @@ def login_view(request):
         if user is not None:
             login(request, user)
             messages.success(request, f"Welcome back, {user.username}!")
+            next_url = request.POST.get('next') or request.GET.get('next')
+            if next_url and next_url.startswith('/') and not next_url.startswith('//'):
+                return redirect(next_url)
             return redirect('home')
         messages.error(request, "Invalid username/email or password.")
 
@@ -93,14 +96,16 @@ def signup_view(request):
         password1 = request.POST.get('password1', '')
         password2 = request.POST.get('password2', '')
 
-        if User.objects.filter(username__iexact=username).exists():
+        if not username:
+            messages.error(request, "Username is required.")
+        elif User.objects.filter(username__iexact=username).exists():
             messages.error(request, "Username is already taken.")
         elif email and User.objects.filter(email__iexact=email).exists():
             messages.error(request, "An account with this email already exists.")
-        elif password1 != password2:
-            messages.error(request, "Passwords do not match.")
         elif len(password1) < 6:
             messages.error(request, "Password must be at least 6 characters.")
+        elif password1 != password2:
+            messages.error(request, "Passwords do not match.")
         else:
             user = User.objects.create_user(username=username, email=email, password=password1)
             if phone:
@@ -182,7 +187,9 @@ def playlist(request):
     if request.method == "POST":
         name = request.POST.get('name', '').strip()
         description = request.POST.get('description', '').strip()
-        if name:
+        if not name:
+            messages.error(request, "Playlist name is required.")
+        else:
             Playlist.objects.create(user=request.user, name=name, description=description)
             messages.success(request, f"Playlist '{name}' created successfully!")
             return redirect('playlist')
@@ -238,6 +245,9 @@ def profile(request):
         email = request.POST.get('email', '').strip()
         phone = request.POST.get('phone', '').strip()
         if email:
+            if User.objects.filter(email__iexact=email).exclude(pk=request.user.pk).exists():
+                messages.error(request, "This email is already registered to another account.")
+                return redirect('profile')
             request.user.email = email
         if phone:
             request.user.user_phone = phone
@@ -276,10 +286,12 @@ def delete_user_song(request, song_id):
     song = get_object_or_404(Song, pk=song_id, uploaded_by=request.user)
     title = song.title
 
-    # Remove media files if local
-    if song.audio_file and os.path.exists(song.audio_file.path):
+    # Remove media files safely if local
+    if song.audio_file:
         try:
-            os.remove(song.audio_file.path)
+            if hasattr(song.audio_file, 'path') and os.path.exists(song.audio_file.path):
+                if 'songs' in str(song.audio_file.path):
+                    os.remove(song.audio_file.path)
         except Exception:
             pass
 
@@ -334,13 +346,19 @@ def cancel_premium(request):
 # ---------------------------------------------------------------------------
 
 def extract_youtube_id(url):
+    """
+    Extracts 11-character YouTube video ID from various YouTube URL formats.
+    """
+    if not url:
+        return None
+    url = str(url).strip()
     youtube_regex = re.compile(
-        r'(https?://)?(www\.|m\.|music\.)?'
-        r'(youtube|youtu|youtube-nocookie)\.(com|be)/'
-        r'(watch\?v=|embed/|v/|shorts/|.+\?v=)?([^&=%\?]{11})'
+        r'(?:https?://)?(?:www\.|m\.|music\.)?'
+        r'(?:youtube(?:-nocookie)?\.com/(?:watch\?(?:.*&)?v=|embed/|v/|shorts/|user/.*#p/u/\d+/)|youtu\.be/)'
+        r'([A-Za-z0-9_-]{11})'
     )
-    match = youtube_regex.search(url or '')
-    return match.group(6) if match else None
+    match = youtube_regex.search(url)
+    return match.group(1) if match else None
 
 
 def get_youtube_info(youtube_id):
@@ -475,10 +493,14 @@ def download_media(youtube_id, media_type='audio'):
 
 
 def parse_duration_str(value):
+    """
+    Parses a duration string into a timedelta object.
+    Supports formats: hh:mm:ss, mm:ss, ss.
+    """
     if not value:
         return None
     try:
-        parts = [int(p) for p in str(value).split(':')]
+        parts = [int(p.strip()) for p in str(value).split(':') if p.strip()]
         if len(parts) == 3:
             return timedelta(hours=parts[0], minutes=parts[1], seconds=parts[2])
         elif len(parts) == 2:
@@ -716,6 +738,9 @@ def admin_login(request):
         if user is not None and (user.is_staff or user.is_superuser):
             login(request, user)
             messages.success(request, f"Welcome to Admin Console, {user.username}!")
+            next_url = request.POST.get('next') or request.GET.get('next')
+            if next_url and next_url.startswith('/') and not next_url.startswith('//'):
+                return redirect(next_url)
             return redirect('admin_dashboard')
         messages.error(request, "Invalid administrator credentials.")
 
@@ -810,11 +835,18 @@ def add_song(request):
         media_type = request.POST.get('media_type', 'audio')
         youtube_url = request.POST.get('youtube_url', '').strip()
         duration_str = request.POST.get('duration', '')
-        is_premium = request.POST.get('is_premium') == 'on' or request.POST.get('is_premium') == 'True'
-        is_public = request.POST.get('is_public') == 'on' or request.POST.get('is_public') == 'True'
+        is_premium = request.POST.get('is_premium') in ('on', 'True', 'true', True)
+        is_public = request.POST.get('is_public') in ('on', 'True', 'true', True)
         lyrics = request.POST.get('lyrics', '').strip()
 
         youtube_id = extract_youtube_id(youtube_url) if youtube_url else None
+        has_file = 'audio_file' in request.FILES
+
+        if not has_file and not youtube_id:
+            messages.error(request, "Please provide either an audio/video file or a valid YouTube URL.")
+            genres = [g[0] for g in Song.GENRE_CHOICES]
+            return render(request, "admin/songs/add_song.html", {"genres": genres})
+
         info = get_youtube_info(youtube_id) if youtube_id else None
 
         title = title or (info or {}).get('title') or "Untitled Song"
@@ -838,7 +870,7 @@ def add_song(request):
         )
 
         # Handle file upload or youtube download
-        if 'audio_file' in request.FILES:
+        if has_file:
             song.audio_file = request.FILES['audio_file']
             song.save()
         elif youtube_id:
@@ -872,8 +904,8 @@ def edit_song(request, song_id):
         song.artist = request.POST.get('artist', song.artist or '').strip()
         song.album = request.POST.get('album', song.album or '').strip()
         song.genre = request.POST.get('genre', song.genre)
-        song.is_premium = request.POST.get('is_premium') == 'on' or request.POST.get('is_premium') == 'True'
-        song.is_public = request.POST.get('is_public') == 'on' or request.POST.get('is_public') == 'True'
+        song.is_premium = request.POST.get('is_premium') in ('on', 'True', 'true', True)
+        song.is_public = request.POST.get('is_public') in ('on', 'True', 'true', True)
         song.lyrics = request.POST.get('lyrics', song.lyrics or '')
 
         duration_str = request.POST.get('duration')
@@ -927,7 +959,9 @@ def add_user(request):
         is_staff = request.POST.get('is_staff') == 'on'
         is_premium = request.POST.get('is_premium') == 'on'
 
-        if User.objects.filter(username__iexact=username).exists():
+        if not username:
+            messages.error(request, "Username is required.")
+        elif User.objects.filter(username__iexact=username).exists():
             messages.error(request, "Username already exists.")
         elif email and User.objects.filter(email__iexact=email).exists():
             messages.error(request, "Email already exists.")
@@ -953,14 +987,34 @@ def add_user(request):
 def edit_user(request, user_id):
     user = get_object_or_404(User, pk=user_id)
     if request.method == "POST":
-        user.username = request.POST.get('username', user.username).strip()
-        user.email = request.POST.get('email', user.email).strip()
-        user.user_phone = request.POST.get('user_phone', user.user_phone).strip()
-        user.is_staff = request.POST.get('is_staff') == 'on'
-        user.is_premium = request.POST.get('is_premium') == 'on'
+        new_username = request.POST.get('username', user.username).strip()
+        new_email = request.POST.get('email', user.email or '').strip()
+        phone = request.POST.get('user_phone', '').strip()
+        is_staff = request.POST.get('is_staff') == 'on'
+        is_premium = request.POST.get('is_premium') == 'on'
+
+        if not new_username:
+            messages.error(request, "Username is required.")
+            return render(request, "admin/users/user_edit.html", {"user": user})
+
+        if User.objects.filter(username__iexact=new_username).exclude(pk=user.pk).exists():
+            messages.error(request, f"Username '{new_username}' is already taken.")
+            return render(request, "admin/users/user_edit.html", {"user": user})
+
+        if new_email and User.objects.filter(email__iexact=new_email).exclude(pk=user.pk).exists():
+            messages.error(request, f"Email '{new_email}' is already in use by another account.")
+            return render(request, "admin/users/user_edit.html", {"user": user})
+
+        user.username = new_username
+        user.email = new_email
+        user.user_phone = phone
+        user.is_staff = is_staff
+        user.is_premium = is_premium
 
         if user.is_premium and not user.premium_expiry:
             user.premium_expiry = timezone.now() + timedelta(days=365)
+        elif not user.is_premium:
+            user.premium_expiry = None
 
         if 'profile_picture' in request.FILES:
             user.profile_pic = request.FILES['profile_picture']

@@ -48,6 +48,9 @@
 
         <form method="POST" action="{% url 'admin_login' %}" class="space-y-5">
             {% csrf_token %}
+            {% if request.GET.next %}
+            <input type="hidden" name="next" value="{{ request.GET.next }}">
+            {% endif %}
             
             <div class="space-y-1.5">
                 <label class="text-xs font-bold text-slate-300 uppercase tracking-wider ml-1">Admin Username or Email</label>

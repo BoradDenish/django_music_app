@@ -39,12 +39,16 @@ class User(AbstractUser):
     def upload_percentage(self):
         if self.is_vip:
             return 100
-        return min(100, int((self.uploaded_count / 20) * 100))
+        limit = self.upload_limit or 20
+        return min(100, int((self.uploaded_count / limit) * 100))
 
     @property
     def profile_pic_url(self):
         if self.profile_pic:
             try:
+                name = str(self.profile_pic.name)
+                if name.startswith(('http://', 'https://', '/static/')):
+                    return name
                 if self.profile_pic.storage.exists(self.profile_pic.name):
                     return self.profile_pic.url
             except Exception:
@@ -104,6 +108,9 @@ class Song(models.Model):
     def audio_url(self):
         if self.audio_file:
             try:
+                name = str(self.audio_file.name)
+                if name.startswith(('http://', 'https://')):
+                    return name
                 if self.audio_file.storage.exists(self.audio_file.name):
                     return self.audio_file.url
             except Exception:
@@ -114,6 +121,9 @@ class Song(models.Model):
     def cover_url(self):
         if self.cover_image:
             try:
+                name = str(self.cover_image.name)
+                if name.startswith(('http://', 'https://', '/static/')):
+                    return name
                 if self.cover_image.storage.exists(self.cover_image.name):
                     return self.cover_image.url
             except Exception:
@@ -146,6 +156,10 @@ class Playlist(models.Model):
     songs = models.ManyToManyField(Song, related_name='playlists')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    @property
+    def song_count(self):
+        return self.songs.count()
 
     def __str__(self):
         return self.name
