@@ -51,5 +51,7 @@ urlpatterns = [
     path("a/songs/add", views.add_song, name="add_song"),
     path("a/songs/edit/<int:song_id>", views.edit_song, name="edit_song"),
     path("a/songs/delete/<int:song_id>", views.delete_song, name="delete_song"),
+    path("a/songs/toggle-public/<int:song_id>", views.admin_toggle_song_public, name="admin_toggle_song_public"),
+    path("a/songs/toggle-premium/<int:song_id>", views.admin_toggle_song_premium, name="admin_toggle_song_premium"),
     path("a/videos", views.admin_video, name="admin_video"),
 ]

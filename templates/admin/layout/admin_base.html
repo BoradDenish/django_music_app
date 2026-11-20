@@ -27,7 +27,7 @@
     {% include 'admin/layout/admin_sidebar.html' %}
 
     <!-- Main Content Area -->
-    <div class="md:ml-64 min-h-screen p-6 md:p-10 pb-16">
+    <div class="md:ml-64 min-h-screen p-6 md:p-10 pb-28">
         
         <!-- Top Admin Header -->
         <header class="flex items-center justify-between pb-6 mb-8 border-b border-white/5">
@@ -62,6 +62,398 @@
         {% block content %}
         {% endblock %}
     </div>
+
+    <!-- Hidden Native Audio Engine -->
+    <audio id="admin-audio-player" preload="auto"></audio>
+
+    <!-- Floating Admin Video Frame (for YouTube / Video Tracks) -->
+    <div id="admin-yt-container" class="fixed bottom-28 right-6 w-80 md:w-96 aspect-video rounded-2xl overflow-hidden shadow-2xl border border-white/20 hidden z-50 bg-black animate-fade-up">
+        <div class="absolute top-2 right-2 flex items-center gap-1 z-20">
+            <button id="admin-close-yt-btn" class="w-7 h-7 bg-black/80 backdrop-blur-md rounded-full flex items-center justify-center text-white text-xs hover:bg-rose-600 transition" title="Hide Video Frame">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div id="admin-yt-player" class="w-full h-full"></div>
+    </div>
+
+    <!-- Sleek Persistent Admin Media Player Dock -->
+    <div id="admin-player-bar" class="fixed bottom-0 left-0 right-0 h-24 bg-black/95 backdrop-blur-2xl border-t border-white/10 shadow-[0_-10px_40px_rgba(0,0,0,0.85)] z-40 px-4 md:px-8 flex items-center justify-between transform translate-y-full transition-transform duration-300">
+        
+        <!-- Left: Track Cover & Details -->
+        <div class="flex items-center gap-3.5 w-1/4 min-w-[200px]">
+            <div class="relative w-13 h-13 rounded-2xl overflow-hidden shrink-0 bg-black/60 shadow-lg border border-white/10">
+                <img id="admin-player-art" src="{% static 'artists/default.jpg' %}" alt="Track Art" class="w-full h-full object-cover">
+                <div id="admin-player-equalizer" class="absolute inset-0 bg-black/40 backdrop-blur-[1px] hidden items-center justify-center gap-0.5">
+                    <span class="w-1 bg-purple-400 rounded-full animate-bounce h-3"></span>
+                    <span class="w-1 bg-pink-400 rounded-full animate-bounce h-5" style="animation-delay: 0.15s"></span>
+                    <span class="w-1 bg-cyan-400 rounded-full animate-bounce h-2" style="animation-delay: 0.3s"></span>
+                </div>
+            </div>
+            <div class="truncate">
+                <div class="flex items-center gap-1.5">
+                    <h4 id="admin-player-title" class="font-bold text-xs md:text-sm text-white truncate">Track Title</h4>
+                    <span id="admin-player-vip" class="badge-vip text-[8px] px-1.5 py-0.2 rounded font-black uppercase hidden">VIP</span>
+                    <span id="admin-player-type" class="bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 text-[8px] px-1.5 py-0.2 rounded font-bold uppercase hidden">Audio</span>
+                </div>
+                <p id="admin-player-artist" class="text-[11px] text-slate-400 truncate mt-0.5">Artist Name</p>
+            </div>
+        </div>
+
+        <!-- Center: Playback Controls & Timeline Scrubber -->
+        <div class="flex flex-col items-center justify-center w-2/4 max-w-xl px-4">
+            <div class="flex items-center gap-5 mb-1.5">
+                <button id="admin-rewind-btn" class="text-slate-400 hover:text-white transition text-xs flex items-center gap-1" title="Rewind 10s">
+                    <i class="fas fa-undo-alt"></i> 10s
+                </button>
+                <button id="admin-play-btn" class="w-11 h-11 bg-white text-black hover:bg-purple-500 hover:text-white rounded-full flex items-center justify-center hover:scale-105 active:scale-95 transition shadow-xl" title="Play / Pause">
+                    <i id="admin-play-icon" class="fas fa-play text-sm ml-0.5"></i>
+                </button>
+                <button id="admin-forward-btn" class="text-slate-400 hover:text-white transition text-xs flex items-center gap-1" title="Forward 10s">
+                    10s <i class="fas fa-redo-alt"></i>
+                </button>
+            </div>
+            <div class="flex items-center gap-3 w-full">
+                <span id="admin-current-time" class="text-[10px] text-slate-400 font-mono w-10 text-right">0:00</span>
+                <div id="admin-progress-container" class="flex-1 h-1.5 bg-white/10 hover:h-2 rounded-full cursor-pointer relative group transition-all">
+                    <div id="admin-progress-bar" class="h-full bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-400 rounded-full w-0 transition-all duration-100"></div>
+                </div>
+                <span id="admin-total-duration" class="text-[10px] text-slate-400 font-mono w-10">0:00</span>
+            </div>
+        </div>
+
+        <!-- Right: Video Frame, Volume, Close -->
+        <div class="flex items-center justify-end gap-3 w-1/4">
+            <button id="admin-toggle-video-btn" class="hidden px-2.5 py-1.5 text-rose-400 bg-rose-500/10 hover:bg-rose-500 hover:text-white border border-rose-500/20 transition rounded-xl text-xs font-bold gap-1.5 items-center" title="Toggle Video Frame">
+                <i class="fab fa-youtube"></i> <span class="hidden lg:inline text-[10px]">Video Frame</span>
+            </button>
+
+            <div class="hidden sm:flex items-center gap-2">
+                <button id="admin-mute-btn" class="text-slate-400 hover:text-white transition text-xs">
+                    <i class="fas fa-volume-up"></i>
+                </button>
+                <input id="admin-volume-slider" type="range" min="0" max="1" step="0.05" value="0.9" class="w-20 accent-purple-500 h-1 bg-white/10 rounded-lg cursor-pointer">
+            </div>
+
+            <button id="admin-close-player-btn" class="p-2 text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 rounded-xl transition text-xs" title="Dismiss Player">
+                <i class="fas fa-times text-sm"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- YouTube IFrame API -->
+    <script src="https://www.youtube.com/iframe_api"></script>
+
+    <!-- Admin Player Controller Engine -->
+    <script>
+        (function() {
+            // Audio elements
+            const audio = document.getElementById('admin-audio-player');
+            const playerBar = document.getElementById('admin-player-bar');
+            const playBtn = document.getElementById('admin-play-btn');
+            const playIcon = document.getElementById('admin-play-icon');
+            const artEl = document.getElementById('admin-player-art');
+            const titleEl = document.getElementById('admin-player-title');
+            const artistEl = document.getElementById('admin-player-artist');
+            const vipBadge = document.getElementById('admin-player-vip');
+            const typeBadge = document.getElementById('admin-player-type');
+            const equalizer = document.getElementById('admin-player-equalizer');
+            const curTimeEl = document.getElementById('admin-current-time');
+            const totTimeEl = document.getElementById('admin-total-duration');
+            const progressBar = document.getElementById('admin-progress-bar');
+            const progressContainer = document.getElementById('admin-progress-container');
+            const rewindBtn = document.getElementById('admin-rewind-btn');
+            const forwardBtn = document.getElementById('admin-forward-btn');
+            const volumeSlider = document.getElementById('admin-volume-slider');
+            const muteBtn = document.getElementById('admin-mute-btn');
+            const toggleVideoBtn = document.getElementById('admin-toggle-video-btn');
+            const closePlayerBtn = document.getElementById('admin-close-player-btn');
+            const ytContainer = document.getElementById('admin-yt-container');
+            const closeYtBtn = document.getElementById('admin-close-yt-btn');
+
+            let ytPlayer = null;
+            let isYtReady = false;
+            let currentMode = null; // 'audio' or 'youtube'
+            let pendingYtId = null;
+            let lastVolume = 0.9;
+            let progressInterval = null;
+
+            // YouTube IFrame API Callback
+            window.onYouTubeIframeAPIReady = function() {
+                isYtReady = true;
+                if (pendingYtId) {
+                    loadYtVideo(pendingYtId);
+                    pendingYtId = null;
+                }
+            };
+
+            function formatTime(seconds) {
+                if (!seconds || isNaN(seconds)) return '0:00';
+                const s = Math.floor(seconds);
+                const m = Math.floor(s / 60);
+                const remS = s % 60;
+                return `${m}:${remS < 10 ? '0' : ''}${remS}`;
+            }
+
+            function setPlayingState(isPlaying) {
+                if (isPlaying) {
+                    playIcon.className = 'fas fa-pause text-sm';
+                    equalizer.classList.remove('hidden');
+                    equalizer.classList.add('flex');
+                } else {
+                    playIcon.className = 'fas fa-play text-sm ml-0.5';
+                    equalizer.classList.remove('flex');
+                    equalizer.classList.add('hidden');
+                }
+            }
+
+            function loadYtVideo(ytId) {
+                if (!isYtReady) {
+                    pendingYtId = ytId;
+                    return;
+                }
+                if (!ytPlayer) {
+                    ytPlayer = new YT.Player('admin-yt-player', {
+                        videoId: ytId,
+                        playerVars: {
+                            autoplay: 1,
+                            controls: 1,
+                            modestbranding: 1,
+                            rel: 0
+                        },
+                        events: {
+                            'onReady': function(e) {
+                                e.target.setVolume(volumeSlider.value * 100);
+                                e.target.playVideo();
+                            },
+                            'onStateChange': function(e) {
+                                if (e.data === YT.PlayerState.PLAYING) {
+                                    setPlayingState(true);
+                                } else if (e.data === YT.PlayerState.PAUSED) {
+                                    setPlayingState(false);
+                                } else if (e.data === YT.PlayerState.ENDED) {
+                                    setPlayingState(false);
+                                }
+                            }
+                        }
+                    });
+                } else if (ytPlayer.loadVideoById) {
+                    ytPlayer.loadVideoById(ytId);
+                    ytPlayer.playVideo();
+                }
+            }
+
+            // Global Admin Play Function
+            window.adminPlay = function(url, title, artist, art, youtubeId, isPremium, mediaType) {
+                // Show dock
+                playerBar.classList.remove('translate-y-full');
+
+                // Metadata
+                titleEl.textContent = title || 'Untitled Track';
+                artistEl.textContent = artist || 'Unknown Artist';
+                artEl.src = art || '{% static "artists/default.jpg" %}';
+
+                if (isPremium) {
+                    vipBadge.classList.remove('hidden');
+                } else {
+                    vipBadge.classList.add('hidden');
+                }
+
+                if (mediaType === 'video' || youtubeId) {
+                    typeBadge.textContent = mediaType === 'video' ? 'Video' : 'YouTube';
+                    typeBadge.classList.remove('hidden');
+                } else {
+                    typeBadge.textContent = 'Audio';
+                    typeBadge.classList.remove('hidden');
+                }
+
+                // Play logic
+                if (mediaType === 'video' || (!url && youtubeId)) {
+                    currentMode = 'youtube';
+                    audio.pause();
+                    audio.src = '';
+
+                    // Open video container for videos
+                    ytContainer.classList.remove('hidden');
+                    toggleVideoBtn.classList.remove('hidden');
+                    toggleVideoBtn.classList.add('flex');
+
+                    loadYtVideo(youtubeId);
+                } else if (url) {
+                    currentMode = 'audio';
+                    if (ytPlayer && ytPlayer.stopVideo) {
+                        try { ytPlayer.stopVideo(); } catch (e) {}
+                    }
+                    ytContainer.classList.add('hidden');
+                    if (youtubeId) {
+                        toggleVideoBtn.classList.remove('hidden');
+                        toggleVideoBtn.classList.add('flex');
+                    } else {
+                        toggleVideoBtn.classList.add('hidden');
+                        toggleVideoBtn.classList.remove('flex');
+                    }
+
+                    audio.src = url;
+                    audio.volume = volumeSlider.value;
+                    audio.play().then(() => {
+                        setPlayingState(true);
+                    }).catch(err => {
+                        console.warn('Audio play failed:', err);
+                    });
+                } else if (youtubeId) {
+                    currentMode = 'youtube';
+                    audio.pause();
+                    loadYtVideo(youtubeId);
+                }
+            };
+
+            // Play / Pause Toggle
+            playBtn.addEventListener('click', () => {
+                if (currentMode === 'audio') {
+                    if (audio.paused) {
+                        audio.play();
+                        setPlayingState(true);
+                    } else {
+                        audio.pause();
+                        setPlayingState(false);
+                    }
+                } else if (currentMode === 'youtube' && ytPlayer && ytPlayer.getPlayerState) {
+                    const state = ytPlayer.getPlayerState();
+                    if (state === YT.PlayerState.PLAYING) {
+                        ytPlayer.pauseVideo();
+                        setPlayingState(false);
+                    } else {
+                        ytPlayer.playVideo();
+                        setPlayingState(true);
+                    }
+                }
+            });
+
+            // Rewind 10s
+            rewindBtn.addEventListener('click', () => {
+                if (currentMode === 'audio') {
+                    audio.currentTime = Math.max(0, audio.currentTime - 10);
+                } else if (currentMode === 'youtube' && ytPlayer && ytPlayer.getCurrentTime) {
+                    ytPlayer.seekTo(Math.max(0, ytPlayer.getCurrentTime() - 10), true);
+                }
+            });
+
+            // Forward 10s
+            forwardBtn.addEventListener('click', () => {
+                if (currentMode === 'audio') {
+                    audio.currentTime = Math.min(audio.duration || 0, audio.currentTime + 10);
+                } else if (currentMode === 'youtube' && ytPlayer && ytPlayer.getCurrentTime) {
+                    ytPlayer.seekTo(ytPlayer.getCurrentTime() + 10, true);
+                }
+            });
+
+            // Scrubber Click / Seek
+            progressContainer.addEventListener('click', (e) => {
+                const rect = progressContainer.getBoundingClientRect();
+                const ratio = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+
+                if (currentMode === 'audio' && audio.duration) {
+                    audio.currentTime = ratio * audio.duration;
+                } else if (currentMode === 'youtube' && ytPlayer && ytPlayer.getDuration) {
+                    ytPlayer.seekTo(ratio * ytPlayer.getDuration(), true);
+                }
+            });
+
+            // Time Updates
+            audio.addEventListener('timeupdate', () => {
+                if (currentMode === 'audio' && audio.duration) {
+                    const cur = audio.currentTime;
+                    const dur = audio.duration;
+                    curTimeEl.textContent = formatTime(cur);
+                    totTimeEl.textContent = formatTime(dur);
+                    progressBar.style.width = `${(cur / dur) * 100}%`;
+                }
+            });
+
+            audio.addEventListener('ended', () => {
+                setPlayingState(false);
+                progressBar.style.width = '0%';
+                curTimeEl.textContent = '0:00';
+            });
+
+            // YouTube time update polling
+            setInterval(() => {
+                if (currentMode === 'youtube' && ytPlayer && ytPlayer.getCurrentTime && ytPlayer.getDuration) {
+                    try {
+                        const cur = ytPlayer.getCurrentTime();
+                        const dur = ytPlayer.getDuration();
+                        if (dur > 0) {
+                            curTimeEl.textContent = formatTime(cur);
+                            totTimeEl.textContent = formatTime(dur);
+                            progressBar.style.width = `${(cur / dur) * 100}%`;
+                        }
+                    } catch (e) {}
+                }
+            }, 300);
+
+            // Volume Control
+            volumeSlider.addEventListener('input', (e) => {
+                const val = parseFloat(e.target.value);
+                audio.volume = val;
+                if (ytPlayer && ytPlayer.setVolume) {
+                    try { ytPlayer.setVolume(val * 100); } catch (err) {}
+                }
+                updateMuteIcon(val);
+            });
+
+            muteBtn.addEventListener('click', () => {
+                if (audio.volume > 0 || (ytPlayer && ytPlayer.isMuted && !ytPlayer.isMuted())) {
+                    lastVolume = volumeSlider.value > 0 ? volumeSlider.value : 0.9;
+                    volumeSlider.value = 0;
+                    audio.volume = 0;
+                    if (ytPlayer && ytPlayer.mute) try { ytPlayer.mute(); } catch (err) {}
+                    updateMuteIcon(0);
+                } else {
+                    volumeSlider.value = lastVolume;
+                    audio.volume = lastVolume;
+                    if (ytPlayer && ytPlayer.unMute) {
+                        try {
+                            ytPlayer.unMute();
+                            ytPlayer.setVolume(lastVolume * 100);
+                        } catch (err) {}
+                    }
+                    updateMuteIcon(lastVolume);
+                }
+            });
+
+            function updateMuteIcon(vol) {
+                const icon = muteBtn.querySelector('i');
+                if (vol <= 0) {
+                    icon.className = 'fas fa-volume-mute text-rose-400';
+                } else if (vol < 0.5) {
+                    icon.className = 'fas fa-volume-down text-slate-300';
+                } else {
+                    icon.className = 'fas fa-volume-up text-slate-300';
+                }
+            }
+
+            // Toggle Video Container
+            toggleVideoBtn.addEventListener('click', () => {
+                ytContainer.classList.toggle('hidden');
+            });
+
+            closeYtBtn.addEventListener('click', () => {
+                ytContainer.classList.add('hidden');
+            });
+
+            // Close Player Bar
+            closePlayerBtn.addEventListener('click', () => {
+                audio.pause();
+                audio.src = '';
+                if (ytPlayer && ytPlayer.stopVideo) {
+                    try { ytPlayer.stopVideo(); } catch (e) {}
+                }
+                ytContainer.classList.add('hidden');
+                playerBar.classList.add('translate-y-full');
+                setPlayingState(false);
+            });
+        })();
+    </script>
+
 
 <script>
     setTimeout(() => {

@@ -1070,3 +1070,28 @@ def admin_video(request):
         "videos": page_obj,
         "search_query": search,
     })
+
+
+@admin_required
+@require_POST
+def admin_toggle_song_public(request, song_id):
+    song = get_object_or_404(Song, pk=song_id)
+    song.is_public = not song.is_public
+    song.save()
+    status_label = "Public Catalog" if song.is_public else "Private (Uploader Only)"
+    messages.success(request, f"Track '{song.title}' set to {status_label}.")
+    referer = request.META.get('HTTP_REFERER')
+    return redirect(referer if referer else 'admin_songs')
+
+
+@admin_required
+@require_POST
+def admin_toggle_song_premium(request, song_id):
+    song = get_object_or_404(Song, pk=song_id)
+    song.is_premium = not song.is_premium
+    song.save()
+    status_label = "VIP Exclusive" if song.is_premium else "Free for All"
+    messages.success(request, f"Track '{song.title}' set to {status_label}.")
+    referer = request.META.get('HTTP_REFERER')
+    return redirect(referer if referer else 'admin_songs')
+

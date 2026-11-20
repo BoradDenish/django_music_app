@@ -25,7 +25,8 @@ from music_player.views import (
     get_playlists, get_user_songs_queryset, home, index, library, login_view,
     logout_view, music_library, my_uploads, parse_duration_str, playlist,
     playlist_detail, profile, record_play, remove_from_playlist, signup_view,
-    toggle_favorite, trending, upgrade_premium, upload_song, video_library
+    toggle_favorite, trending, upgrade_premium, upload_song, video_library,
+    admin_toggle_song_public, admin_toggle_song_premium
 )
 
 
@@ -747,6 +748,35 @@ class AdminConsoleTests(BaseMusicTestCase):
         req = self._setup_request(self.rf.get('/a/videos'), self.admin_user)
         resp = admin_video(req)
         self.assertEqual(resp.status_code, 200)
+
+    def test_admin_toggle_song_public(self):
+        self.assertTrue(self.song_free.is_public)
+        req = self._setup_request(self.rf.post(f'/a/songs/toggle-public/{self.song_free.id}'), self.admin_user)
+        resp = admin_toggle_song_public(req, song_id=self.song_free.id)
+        self.assertEqual(resp.status_code, 302)
+        self.song_free.refresh_from_db()
+        self.assertFalse(self.song_free.is_public)
+
+        # Toggle back
+        resp2 = admin_toggle_song_public(req, song_id=self.song_free.id)
+        self.assertEqual(resp2.status_code, 302)
+        self.song_free.refresh_from_db()
+        self.assertTrue(self.song_free.is_public)
+
+    def test_admin_toggle_song_premium(self):
+        self.assertFalse(self.song_free.is_premium)
+        req = self._setup_request(self.rf.post(f'/a/songs/toggle-premium/{self.song_free.id}'), self.admin_user)
+        resp = admin_toggle_song_premium(req, song_id=self.song_free.id)
+        self.assertEqual(resp.status_code, 302)
+        self.song_free.refresh_from_db()
+        self.assertTrue(self.song_free.is_premium)
+
+        # Toggle back
+        resp2 = admin_toggle_song_premium(req, song_id=self.song_free.id)
+        self.assertEqual(resp2.status_code, 302)
+        self.song_free.refresh_from_db()
+        self.assertFalse(self.song_free.is_premium)
+
 
 
 # ---------------------------------------------------------------------------
