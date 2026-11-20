@@ -451,6 +451,26 @@
                 playerBar.classList.add('translate-y-full');
                 setPlayingState(false);
             });
+
+            // Admin Keyboard Shortcuts
+            window.addEventListener('keydown', (e) => {
+                const tag = document.activeElement ? document.activeElement.tagName.toLowerCase() : '';
+                if (tag === 'input' || tag === 'textarea' || tag === 'select' || (document.activeElement && document.activeElement.isContentEditable)) {
+                    return;
+                }
+                if (e.code === 'Space' && !playerBar.classList.contains('translate-y-full')) {
+                    e.preventDefault();
+                    playBtn.click();
+                } else if (e.code === 'ArrowRight' && !playerBar.classList.contains('translate-y-full')) {
+                    forwardBtn.click();
+                } else if (e.code === 'ArrowLeft' && !playerBar.classList.contains('translate-y-full')) {
+                    rewindBtn.click();
+                } else if ((e.key === 'm' || e.key === 'M') && !playerBar.classList.contains('translate-y-full')) {
+                    muteBtn.click();
+                } else if (e.key === 'Escape') {
+                    ytContainer.classList.add('hidden');
+                }
+            });
         })();
     </script>
 

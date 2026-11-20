@@ -403,3 +403,139 @@ tr.playing-active td {
     background: rgba(168, 85, 247, 0.08) !important;
 }
 
+/* Mini Equalizer for Active Track Visuals */
+.mini-equalizer {
+    display: inline-flex;
+    align-items: flex-end;
+    gap: 2px;
+    height: 14px;
+    width: 14px;
+    padding-bottom: 1px;
+}
+
+.mini-eq-bar {
+    width: 3px;
+    height: 100%;
+    background: #c084fc;
+    border-radius: 1.5px;
+    animation: miniEq 0.9s infinite ease-in-out alternate;
+    transform-origin: bottom;
+}
+
+.mini-eq-bar:nth-child(2) {
+    animation-delay: 0.25s;
+    background: #f472b6;
+    animation-duration: 0.75s;
+}
+
+.mini-eq-bar:nth-child(3) {
+    animation-delay: 0.5s;
+    background: #38bdf8;
+    animation-duration: 1.05s;
+}
+
+.mini-equalizer.paused .mini-eq-bar {
+    animation-play-state: paused;
+    height: 3px !important;
+}
+
+@keyframes miniEq {
+    0% { height: 20%; }
+    50% { height: 100%; }
+    100% { height: 35%; }
+}
+
+/* Progress Bar Hover Tooltip */
+#progress-tooltip {
+    position: absolute;
+    bottom: calc(100% + 8px);
+    transform: translateX(-50%);
+    background: rgba(15, 23, 42, 0.95);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #f8fafc;
+    font-size: 10px;
+    font-family: monospace;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 6px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+    white-space: nowrap;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+    z-index: 120;
+}
+
+#progress-container:hover #progress-tooltip {
+    opacity: 1;
+}
+
+/* Mobile Bottom Navigation Bar */
+.mobile-bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background: rgba(9, 11, 16, 0.96);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    z-index: 90;
+    padding: 0 8px;
+    box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.6);
+}
+
+.mobile-nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    color: var(--text-muted);
+    font-size: 9px;
+    font-weight: 700;
+    transition: all 0.2s ease;
+    padding: 6px 10px;
+    border-radius: 12px;
+}
+
+.mobile-nav-item i {
+    font-size: 15px;
+}
+
+.mobile-nav-item.active,
+.mobile-nav-item:hover {
+    color: #ffffff;
+}
+
+.mobile-nav-item.active i {
+    color: var(--accent-purple);
+    transform: scale(1.1);
+}
+
+/* Responsive adjustments for Player Bar on mobile */
+@media (max-width: 767px) {
+    .player-bar {
+        bottom: 60px !important;
+        height: 72px !important;
+        padding-left: 12px !important;
+        padding-right: 12px !important;
+    }
+
+    #admin-player-bar {
+        height: 78px !important;
+        padding-left: 12px !important;
+        padding-right: 12px !important;
+    }
+
+    .main-content-pad {
+        padding-bottom: 140px !important;
+    }
+}
+
+

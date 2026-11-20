@@ -16,7 +16,7 @@
         <div class="space-y-3 text-center md:text-left flex-1">
             <span class="text-pink-400 font-extrabold tracking-widest text-xs uppercase">Your Collection</span>
             <h1 class="text-3xl md:text-5xl font-black text-white tracking-tight">Liked Songs</h1>
-            <p class="text-xs md:text-sm text-slate-300">
+            <p id="fav-count" class="text-xs md:text-sm text-slate-300">
                 {{ favorite_songs|length }} favorite track{{ favorite_songs|length|pluralize }} saved to your profile.
             </p>
 
@@ -68,8 +68,13 @@
                     <td class="px-6 py-3.5 text-xs text-slate-400 hidden md:table-cell">{{ song.album|default:"Single" }}</td>
                     <td class="px-6 py-3.5 text-xs text-slate-400 hidden sm:table-cell font-mono">{{ song.formatted_duration }}</td>
 
-                    <td class="px-6 py-3.5 text-right">
-                        <span class="text-pink-500 text-sm"><i class="fas fa-heart"></i></span>
+                    <td class="px-6 py-3.5 text-right" onclick="event.stopPropagation();">
+                        <button type="button" 
+                                class="p-2 text-pink-500 hover:text-slate-400 hover:scale-110 active:scale-90 transition rounded-xl"
+                                title="Remove from Liked Songs"
+                                onclick="toggleLikeRow(this, '{{ song.id }}')">
+                            <i class="fas fa-heart text-sm"></i>
+                        </button>
                     </td>
                 </tr>
                 {% endfor %}
@@ -90,4 +95,40 @@
     {% endif %}
 
 </div>
+
+<script>
+function toggleLikeRow(btn, songId) {
+    const fd = new FormData();
+    fd.append('song_id', songId);
+    fd.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+
+    fetch('{% url "toggle_favorite" %}', { method: 'POST', body: fd })
+    .then(res => res.json())
+    .then(data => {
+        if (data.status === 'removed') {
+            window.userFavoriteSongIds.delete(Number(songId));
+            const tr = btn.closest('tr');
+            if (tr) {
+                tr.style.transition = 'all 0.3s ease';
+                tr.style.opacity = '0';
+                tr.style.transform = 'translateX(20px)';
+                setTimeout(() => {
+                    tr.remove();
+                    const remaining = document.querySelectorAll('tbody tr').length;
+                    const countEl = document.getElementById('fav-count');
+                    if (countEl) {
+                        countEl.textContent = `${remaining} favorite track${remaining === 1 ? '' : 's'} saved to your profile.`;
+                    }
+                    if (remaining === 0) {
+                        location.reload();
+                    }
+                }, 300);
+            }
+            if (window.showToast) {
+                showToast('Removed from Liked Songs', 'info');
+            }
+        }
+    });
+}
+</script>
 {% endblock %}
